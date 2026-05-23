@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/architecture")({
   head: () => ({ meta: [{ title: "Architecture — Data Pipelines" }] }),
