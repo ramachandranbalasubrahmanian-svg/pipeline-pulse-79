@@ -15,33 +15,66 @@ export const Route = createFileRoute("/tenants")({
   component: Tenants,
 });
 
+type Tenant = (typeof TENANTS)[number];
+
 function Tenants() {
   const [open, setOpen] = useState(false);
+  const [tenants, setTenants] = useState<Tenant[]>(TENANTS);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [hours, setHours] = useState("");
+  const [rate, setRate] = useState("");
+  const [payment, setPayment] = useState("");
+
+  const reset = () => { setName(""); setEmail(""); setHours(""); setRate(""); setPayment(""); };
+
+  const handleCreate = () => {
+    if (!name.trim()) { toast.error("Tenant name is required"); return; }
+    if (!email.trim() || !email.includes("@")) { toast.error("Valid contact email required"); return; }
+    const h = Number(hours), r = Number(rate);
+    if (!h || h <= 0) { toast.error("Contracted hours must be > 0"); return; }
+    if (!r || r <= 0) { toast.error("Monthly rate must be > 0"); return; }
+    const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 12);
+    const newTenant: Tenant = {
+      id: `${slug}-${String(tenants.length + 1).padStart(3, "0")}`,
+      name: name.trim(),
+      email: email.trim(),
+      hours: h,
+      used: 0,
+      rate: r,
+      status: "Active",
+      since: new Date().toLocaleString("en-US", { month: "short", year: "numeric" }),
+    };
+    setTenants((p) => [newTenant, ...p]);
+    setOpen(false);
+    reset();
+    toast.success("Tenant onboarded", { description: `${newTenant.name} added with ${h} hrs/mo capacity.` });
+  };
 
   return (
     <div>
       <PageHeader
         title="Tenants"
-        description="Enterprise customers, contracts, and onboarded capacity."
+        description={`${tenants.length} enterprise customers onboarded`}
         actions={
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
             <DialogTrigger asChild>
               <Button><Plus className="size-4" />Onboard New Tenant</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Onboard New Tenant</DialogTitle></DialogHeader>
               <div className="space-y-4">
-                <div className="space-y-1.5"><Label>Tenant Name</Label><Input placeholder="Acme Corp" /></div>
-                <div className="space-y-1.5"><Label>Contact Email</Label><Input type="email" placeholder="ops@acme.com" /></div>
+                <div className="space-y-1.5"><Label>Tenant Name</Label><Input placeholder="Acme Corp" value={name} onChange={(e) => setName(e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Contact Email</Label><Input type="email" placeholder="ops@acme.com" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5"><Label>Contracted Hours/mo</Label><Input type="number" placeholder="500" /></div>
-                  <div className="space-y-1.5"><Label>Monthly Rate ($)</Label><Input type="number" placeholder="48000" /></div>
+                  <div className="space-y-1.5"><Label>Contracted Hours/mo</Label><Input type="number" placeholder="500" value={hours} onChange={(e) => setHours(e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>Monthly Rate ($)</Label><Input type="number" placeholder="48000" value={rate} onChange={(e) => setRate(e.target.value)} /></div>
                 </div>
-                <div className="space-y-1.5"><Label>Initial Payment ($)</Label><Input type="number" placeholder="48000" /></div>
+                <div className="space-y-1.5"><Label>Initial Payment ($)</Label><Input type="number" placeholder="48000" value={payment} onChange={(e) => setPayment(e.target.value)} /></div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={() => { setOpen(false); toast.success("Tenant onboarded", { description: "Welcome email sent to contact." }); }}>Create Tenant</Button>
+                <Button onClick={handleCreate}>Create Tenant</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -49,7 +82,7 @@ function Tenants() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {TENANTS.map((t) => (
+        {tenants.map((t) => (
           <Card key={t.id} className="p-5">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
