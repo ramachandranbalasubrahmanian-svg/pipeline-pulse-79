@@ -1,0 +1,18 @@
+# Data Pipelines — Enterprise Observability
+
+> A demo enterprise-grade observability platform for data pipelines: real-time job monitoring, multi-tenant management, lineage maps, audit trails with AI anomaly detection, AI incident analysis, and narrated architecture reports.
+
+This is a frontend demo built with TanStack Start, React, and Tailwind CSS. It showcases what a production data pipelines control plane looks like. All data is mock data; no backend, authentication, or persistent storage is used.
+
+## Pages
+
+- [Overview](/): KPIs, job execution trend, system pulse, data freshness scoreboard
+- [Job Manager](/jobs): Job lifecycle, filters, log viewer, AI-powered config generator
+- [Projects](/projects): Pipeline projects across tenants
+- [Pipeline Maps](/lineage): End-to-end lineage with AI impact analysis on every node
+- [Incidents](/incidents): Active incidents with severity and ownership
+- [Tenants](/tenants): Multi-tenant management, contracted hours, billing rates
+- [Billing](/billing): Usage, alerts, contract upgrades
+- [Audit Trail](/audit): Audit log with AI anomaly detection (off-hours, external IPs, sensitive changes)
+- [Architecture](/architecture): System diagrams with narrated PDF export
+- [Settings](/settings): Organization preferences and integrations
