@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/architecture")({
   head: () => ({ meta: [{ title: "Architecture — Data Pipelines" }] }),
@@ -128,10 +130,181 @@ function Diagram({ title, desc, svg, children }: { title: string; desc: string; 
   );
 }
 
+// Narrated PDF builder
+async function generateArchitecturePDF(): Promise<void> {
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const M = 48;
+  let y = M;
+
+  // Cover
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, W, 180, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(26);
+  doc.text("Architecture Report", M, 90);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  doc.text("Data Pipelines Platform — System Design Overview", M, 115);
+  doc.setFontSize(10);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, M, 138);
+  doc.text("Audience: Lead Architects, Security Reviewers", M, 154);
+  y = 220;
+
+  doc.setTextColor(15, 23, 42);
+
+  const section = (title: string, narrative: string[], svgFn: () => string) => {
+    if (y > H - 260) { doc.addPage(); y = M; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(title, M, y);
+    y += 8;
+    doc.setDrawColor(99, 102, 241);
+    doc.setLineWidth(2);
+    doc.line(M, y, M + 60, y);
+    y += 18;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.setTextColor(51, 65, 85);
+    narrative.forEach((para) => {
+      const lines = doc.splitTextToSize(para, W - M * 2);
+      lines.forEach((ln: string) => {
+        if (y > H - M) { doc.addPage(); y = M; }
+        doc.text(ln, M, y);
+        y += 15;
+      });
+      y += 6;
+    });
+    doc.setTextColor(15, 23, 42);
+
+    // Inline a simplified diagram representation as boxes
+    if (y > H - 160) { doc.addPage(); y = M; }
+    drawDiagramRepresentation(doc, svgFn, M, y, W - M * 2);
+    y += 130;
+  };
+
+  section(
+    "1. Data Flow Diagram",
+    [
+      "This diagram describes the logical movement of data through the platform, from source systems through extraction, transformation, and loading stages, ending in BI and analytics consumption.",
+      "Each stage is independently scalable. The Transform stage runs on isolated Spark clusters with horizontal autoscaling, while the Load stage writes to BigQuery and Snowflake in parallel for redundancy.",
+      "Recovery time objective (RTO) for any single stage failure is under 5 minutes via automated retry and failover.",
+    ],
+    dataFlowSVG
+  );
+
+  section(
+    "2. C4 — Container Architecture",
+    [
+      "The platform deploys inside a single production VPC. The React frontend communicates with an Express API gateway over HTTPS using short-lived JWTs issued by Firebase Auth.",
+      "The Execution Engine orchestrates 24 compute nodes that pull job configurations from Postgres metadata store and stage intermediate artifacts to S3-compatible object storage.",
+      "Identity & RBAC: All container-to-container calls use mutually-authenticated tokens. No long-lived secrets exist in compute nodes — they receive rotating credentials from Firebase Auth on every cold start.",
+    ],
+    c4SVG
+  );
+
+  section(
+    "3. Semantic Layer Blueprint",
+    [
+      "Raw extracted data flows into the metadata mapping layer, which normalises schemas across heterogeneous sources (Salesforce, SAP, Oracle, S3).",
+      "Business logic rules — defined as version-controlled dbt models — derive enterprise metrics such as MRR, Churn Rate, and Customer Lifetime Value.",
+      "Metrics are exposed through an Enterprise API consumed by Looker dashboards, embedded analytics, and downstream operational systems.",
+    ],
+    semanticSVG
+  );
+
+  // Appendix
+  doc.addPage();
+  y = M;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("Appendix — Operational Posture", M, y);
+  y += 24;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(51, 65, 85);
+  const appendix = [
+    "• Redundancy: 3x replication across availability zones for all stateful services.",
+    "• Observability: Datadog + structured JSON logs; PagerDuty bridge for P1/P2 incidents.",
+    "• Compliance: SOC 2 Type II, GDPR, HIPAA-aligned for HealthSys tenant.",
+    "• Disaster Recovery: RPO 15 minutes, RTO 60 minutes across regional failover.",
+    "• Encryption: TLS 1.3 in transit, AES-256 at rest, customer-managed KMS keys.",
+  ];
+  appendix.forEach((ln) => { doc.text(ln, M, y); y += 18; });
+
+  doc.save(`architecture-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
+function drawDiagramRepresentation(doc: jsPDF, svgFn: () => string, x: number, y: number, w: number) {
+  // Extract text labels from the SVG and render as a simplified box chain.
+  const svg = svgFn();
+  const labels = Array.from(svg.matchAll(/<text[^>]*>([^<]+)<\/text>/g))
+    .map((m) => m[1])
+    .filter((t) => !/^VPC|PRODUCTION$/i.test(t) && !/short-lived|issues|concatenat/i.test(t))
+    .slice(1); // drop the SVG title
+  if (labels.length === 0) return;
+
+  const max = Math.min(labels.length, 6);
+  const bw = (w - (max - 1) * 12) / max;
+  const bh = 50;
+  const palette = [
+    [239, 246, 255, 37, 99, 235],
+    [255, 251, 235, 180, 83, 9],
+    [236, 253, 245, 21, 128, 61],
+    [241, 245, 249, 30, 41, 59],
+    [245, 243, 255, 124, 58, 237],
+    [254, 242, 242, 185, 28, 28],
+  ];
+  for (let i = 0; i < max; i++) {
+    const [fr, fg, fb, tr, tg, tb] = palette[i % palette.length];
+    const bx = x + i * (bw + 12);
+    doc.setFillColor(fr, fg, fb);
+    doc.setDrawColor(tr, tg, tb);
+    doc.roundedRect(bx, y, bw, bh, 6, 6, "FD");
+    doc.setTextColor(tr, tg, tb);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    const lines = doc.splitTextToSize(labels[i], bw - 12);
+    doc.text(lines, bx + bw / 2, y + bh / 2 + 3, { align: "center" });
+    if (i < max - 1) {
+      doc.setDrawColor(148, 163, 184);
+      doc.setLineWidth(1);
+      doc.line(bx + bw + 1, y + bh / 2, bx + bw + 11, y + bh / 2);
+    }
+  }
+  doc.setTextColor(15, 23, 42);
+}
+
 function Architecture() {
+  const [busy, setBusy] = useState(false);
+
+  const exportPDF = async () => {
+    setBusy(true);
+    try {
+      await generateArchitecturePDF();
+      toast.success("Architecture report generated", { description: "Narrated PDF saved to your downloads." });
+    } catch (e) {
+      toast.error("PDF generation failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div>
-      <PageHeader title="Architecture Viewer" description="System diagrams for lead architects and security reviewers." />
+      <PageHeader
+        title="Architecture Viewer"
+        description="System diagrams for lead architects and security reviewers."
+        actions={
+          <Button onClick={exportPDF} disabled={busy} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <FileText className="size-4" />}
+            {busy ? "Generating..." : "Export Narrated PDF"}
+          </Button>
+        }
+      />
       <div className="space-y-5">
         <Diagram title="Data Flow Diagram" desc="Logical movement from source systems to BI consumption" svg={dataFlowSVG()}>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -182,3 +355,4 @@ function Architecture() {
     </div>
   );
 }
+

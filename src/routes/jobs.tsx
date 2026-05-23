@@ -10,7 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { StatusBadge } from "@/components/StatusBadge";
 import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
 import { Label } from "@/components/ui/label";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download } from "lucide-react";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download, Sparkles, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
 
@@ -55,6 +56,51 @@ function JobsPage() {
   const [newHw, setNewHw] = useState(HARDWARE_OPTIONS[0]);
   const [newThreads, setNewThreads] = useState(2);
   const [newFile, setNewFile] = useState<File | null>(null);
+
+  // AI generator
+  const [aiDesc, setAiDesc] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+
+  const aiGenerate = () => {
+    const desc = aiDesc.trim();
+    if (!desc) { toast.error("Describe the job first"); return; }
+    setAiBusy(true);
+    setTimeout(() => {
+      const lower = desc.toLowerCase();
+      // Slug-style name from first 5 meaningful words
+      const stop = new Set(["the","a","an","and","or","to","from","with","for","of","on","in","at","by","every","each"]);
+      const words = desc.split(/[^a-zA-Z0-9]+/).filter(w => w && !stop.has(w.toLowerCase())).slice(0, 5);
+      const name = words.map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join("_") || "Generated_Pipeline_Job";
+
+      // Heuristic hardware sizing
+      const heavy = /(million|tb|terabyte|petabyte|huge|large|enterprise|petab|spark|warehouse|warehouses|backfill|migration|consolidat)/i.test(desc);
+      const medium = /(daily|hourly|nightly|sync|etl|attribution|enrich)/i.test(desc);
+      const realtime = /(real[\s-]?time|stream|webhook|sub[- ]minute|kafka)/i.test(desc);
+      const hw = heavy ? HARDWARE_OPTIONS[4] : realtime ? HARDWARE_OPTIONS[3] : medium ? HARDWARE_OPTIONS[2] : HARDWARE_OPTIONS[1];
+      const m = hw.match(/max (\d+) threads/);
+      const max = m ? parseInt(m[1], 10) : 10;
+      const threads = Math.max(2, Math.round(max * (realtime ? 0.9 : heavy ? 0.85 : 0.5)));
+
+      setNewName(name);
+      setNewHw(hw);
+      setNewThreads(threads);
+
+      const detected: string[] = [];
+      if (/salesforce|sf\b/i.test(lower)) detected.push("Salesforce source");
+      if (/snowflake/i.test(lower)) detected.push("Snowflake destination");
+      if (/bigquery|bq\b/i.test(lower)) detected.push("BigQuery destination");
+      if (/sap/i.test(lower)) detected.push("SAP source");
+      if (/oracle/i.test(lower)) detected.push("Oracle source");
+      if (/nightly|daily/i.test(lower)) detected.push("daily schedule");
+      if (/retry/i.test(lower)) detected.push("retry policy");
+
+      setAiBusy(false);
+      toast.success("Config generated", {
+        description: detected.length ? `Detected: ${detected.join(", ")}` : "Filled name, hardware and thread count.",
+      });
+    }, 900);
+  };
+
   
 
   const maxThreads = useMemo(() => {
@@ -63,7 +109,7 @@ function JobsPage() {
   }, [newHw]);
 
   const resetCreate = () => {
-    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null);
+    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null); setAiDesc("");
   };
 
   const handleCreate = () => {
@@ -136,11 +182,35 @@ function JobsPage() {
                   <p className="text-sm text-muted-foreground">Define the resource allocation and parallelism for your job.</p>
                 </DialogHeader>
 
-                <div className="space-y-5 py-2">
+                <div className="space-y-5 py-2 max-h-[70vh] overflow-y-auto pr-1">
+                  <div className="rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-3 space-y-2">
+                    <Label className="flex items-center gap-1.5 text-purple-900">
+                      <Sparkles className="size-4" />Generate from description
+                    </Label>
+                    <Textarea
+                      placeholder='e.g. "ETL from Salesforce to Snowflake nightly, retry 3x"'
+                      value={aiDesc}
+                      onChange={(e) => setAiDesc(e.target.value)}
+                      rows={2}
+                      className="bg-white"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={aiGenerate}
+                      disabled={aiBusy}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    >
+                      {aiBusy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                      {aiBusy ? "Generating..." : "Generate Config"}
+                    </Button>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="job-name">Job Name</Label>
                     <Input id="job-name" placeholder="e.g. Daily ETL Sync" value={newName} onChange={(e) => setNewName(e.target.value)} />
                   </div>
+
 
                   <div className="space-y-2">
                     <Label>Job Configuration (ZIP)</Label>

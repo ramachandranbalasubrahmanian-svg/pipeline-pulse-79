@@ -102,6 +102,9 @@ export const AUDIT = [
   { ts: "2026-05-23 08:12:55", user: "infra@company.com", action: "UPDATE", actionLabel: "Compute Node Restarted", resource: "Infra / node-07", tenant: "Global", ip: "10.0.0.7", status: "Success" },
   { ts: "2026-05-23 07:55:01", user: "admin@company.com", action: "CREATE", actionLabel: "API Key Issued", resource: "Settings / api-keys", tenant: "RetailCo Global", ip: "10.0.1.4", status: "Success" },
   { ts: "2026-05-22 22:14:03", user: "admin@company.com", action: "DELETE", actionLabel: "Tenant Suspended (manual)", resource: "Tenants / legacy-005", tenant: "Legacy Co", ip: "10.0.1.4", status: "Success" },
+  { ts: "2026-05-23 02:47:33", user: "svc-etl@company.com", action: "UPDATE", actionLabel: "Bulk Permission Change", resource: "Settings / users/*", tenant: "Global", ip: "203.0.113.42", status: "Success" },
+  { ts: "2026-05-23 03:12:08", user: "ops@retailco.com", action: "DELETE", actionLabel: "Audit Logs Truncated", resource: "Audit / events", tenant: "RetailCo Global", ip: "198.51.100.7", status: "Success" },
+  { ts: "2026-05-23 01:55:21", user: "admin@apex.com", action: "UPDATE", actionLabel: "API Secret Rotated", resource: "Settings / api-keys", tenant: "Apex Financial", ip: "45.77.12.91", status: "Success" },
 ];
 
 export const JOB_TREND = [
