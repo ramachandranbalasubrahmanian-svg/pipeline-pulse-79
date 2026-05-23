@@ -16,7 +16,7 @@ export const Route = createFileRoute("/incidents")({
   component: Incidents,
 });
 
-type Incident = (typeof INCIDENTS)[number] & { status: "Open" | "Resolved" };
+type Incident = Omit<(typeof INCIDENTS)[number], "status"> & { status: "Open" | "Resolved" };
 
 const STATS = [
   { label: "Open Incidents", value: "openCount", tone: "text-foreground" },
