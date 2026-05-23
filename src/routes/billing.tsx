@@ -189,7 +189,7 @@ function Billing() {
         </div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={TENANTS.map((t) => ({ name: t.name, actual: t.used, predicted: Math.round(t.used * 1.15) }))}>
+            <BarChart data={tenants.map((t) => ({ name: t.name, actual: t.used, predicted: Math.round(t.used * 1.15) }))}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
