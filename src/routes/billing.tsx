@@ -74,7 +74,7 @@ function Billing() {
       </div>
 
       <div className="space-y-3 mb-6">
-        {TENANTS.map((t) => {
+        {tenants.map((t) => {
           const util = Math.round((t.used / t.hours) * 100);
           const s = statusFor(util);
           const isOpen = expanded === t.id;
