@@ -98,7 +98,7 @@ function Incidents() {
             </tr>
           </thead>
           <tbody>
-            {INCIDENTS.map((inc) => (
+            {incidents.map((inc) => (
               <tr key={inc.id} onClick={() => openIncident(inc)} className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer">
                 <td className="py-3 px-4 font-mono text-xs">{inc.id}</td>
                 <td className="py-3 px-4 font-medium">{inc.job}</td>
