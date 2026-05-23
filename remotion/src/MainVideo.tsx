@@ -7,8 +7,14 @@ import { loadFont as loadDisplay } from "@remotion/google-fonts/SpaceGrotesk";
 import { loadFont as loadBody } from "@remotion/google-fonts/Inter";
 import { SceneHero } from "./scenes/SceneHero";
 import { SceneKPIs } from "./scenes/SceneKPIs";
+import { SceneJobs } from "./scenes/SceneJobs";
 import { SceneAI } from "./scenes/SceneAI";
 import { SceneLineage } from "./scenes/SceneLineage";
+import { SceneIncidents } from "./scenes/SceneIncidents";
+import { SceneTenants } from "./scenes/SceneTenants";
+import { SceneBilling } from "./scenes/SceneBilling";
+import { SceneAudit } from "./scenes/SceneAudit";
+import { SceneArchitecture } from "./scenes/SceneArchitecture";
 import { SceneOutro } from "./scenes/SceneOutro";
 
 loadDisplay("normal", { weights: ["500", "700"], subsets: ["latin"] });
@@ -18,8 +24,8 @@ const Backdrop: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const t = frame / durationInFrames;
-  const x = interpolate(t, [0, 1], [0, 40]);
-  const y = interpolate(t, [0, 1], [0, -30]);
+  const x = interpolate(t, [0, 1], [0, 60]);
+  const y = interpolate(t, [0, 1], [0, -50]);
   return (
     <AbsoluteFill
       style={{
@@ -42,31 +48,49 @@ const Grid: React.FC = () => (
   />
 );
 
+const fadeT = () => (
+  <TransitionSeries.Transition
+    presentation={fade()}
+    timing={springTiming({ durationInFrames: 18, config: { damping: 200 } })}
+  />
+);
+const slideT = () => (
+  <TransitionSeries.Transition
+    presentation={slide({ direction: "from-right" })}
+    timing={springTiming({ durationInFrames: 22, config: { damping: 200 } })}
+  />
+);
+
+// Sequence durations chosen so total ≈ 1800 frames (60s) accounting for transition overlaps.
+// 11 sequences × ~170 avg = 1870; minus 10 transitions × ~20 = 200 → ~1670 effective.
+// We size individual scenes generously below and target ~1800 total.
 export const MainVideo: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#070a18" }}>
       <Backdrop />
       <Grid />
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={110}>
-          <SceneHero />
-        </TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ durationInFrames: 18, config: { damping: 200 } })} />
-        <TransitionSeries.Sequence durationInFrames={110}>
-          <SceneKPIs />
-        </TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={slide({ direction: "from-right" })} timing={springTiming({ durationInFrames: 22, config: { damping: 200 } })} />
-        <TransitionSeries.Sequence durationInFrames={130}>
-          <SceneAI />
-        </TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={slide({ direction: "from-right" })} timing={springTiming({ durationInFrames: 22, config: { damping: 200 } })} />
-        <TransitionSeries.Sequence durationInFrames={120}>
-          <SceneLineage />
-        </TransitionSeries.Sequence>
-        <TransitionSeries.Transition presentation={fade()} timing={springTiming({ durationInFrames: 18, config: { damping: 200 } })} />
-        <TransitionSeries.Sequence durationInFrames={110}>
-          <SceneOutro />
-        </TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={160}><SceneHero /></TransitionSeries.Sequence>
+        {fadeT()}
+        <TransitionSeries.Sequence durationInFrames={170}><SceneKPIs /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={190}><SceneJobs /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={200}><SceneAI /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={190}><SceneLineage /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={190}><SceneIncidents /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={180}><SceneTenants /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={190}><SceneBilling /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={180}><SceneAudit /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={190}><SceneArchitecture /></TransitionSeries.Sequence>
+        {fadeT()}
+        <TransitionSeries.Sequence durationInFrames={170}><SceneOutro /></TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>
   );
