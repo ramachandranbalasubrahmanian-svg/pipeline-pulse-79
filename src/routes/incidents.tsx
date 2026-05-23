@@ -5,9 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { INCIDENTS } from "@/lib/mock";
-import { Sparkles, Loader2, Ticket, BookOpen } from "lucide-react";
+import { Sparkles, Loader2, Ticket, BookOpen, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+
+
 
 export const Route = createFileRoute("/incidents")({
   head: () => ({ meta: [{ title: "Incidents — Data Pipelines" }] }),
