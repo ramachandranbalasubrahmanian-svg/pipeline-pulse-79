@@ -8,6 +8,9 @@ import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Send, ArrowUpRight }
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Legend } from "recharts";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+type Tenant = (typeof TENANTS)[number];
 
 export const Route = createFileRoute("/billing")({
   head: () => ({ meta: [{ title: "Billing & Usage — Data Pipelines" }] }),
@@ -34,7 +37,18 @@ const DAILY = Array.from({ length: 14 }, (_, i) => ({
 }));
 
 function Billing() {
+  const [tenants, setTenants] = useState<Tenant[]>(TENANTS);
   const [expanded, setExpanded] = useState<string | null>(TENANTS[0].id);
+  const [alertTenant, setAlertTenant] = useState<Tenant | null>(null);
+
+  const handleUpgrade = (t: Tenant) => {
+    const newHours = Math.ceil(t.used * 1.2);
+    const newRate = Math.round((t.rate / t.hours) * newHours);
+    setTenants((prev) =>
+      prev.map((x) => (x.id === t.id ? { ...x, hours: newHours, rate: newRate } : x)),
+    );
+    toast.success(`${t.name} upgraded to ${newHours} hrs/mo`);
+  };
 
   return (
     <div>
@@ -60,7 +74,7 @@ function Billing() {
       </div>
 
       <div className="space-y-3 mb-6">
-        {TENANTS.map((t) => {
+        {tenants.map((t) => {
           const util = Math.round((t.used / t.hours) * 100);
           const s = statusFor(util);
           const isOpen = expanded === t.id;
@@ -118,8 +132,8 @@ function Billing() {
                   <div className="flex gap-2">
                     {util > 100 && (
                       <>
-                        <Button size="sm" onClick={() => toast.success(`Upgrade quote sent to ${t.name}`)}>Upgrade Contract</Button>
-                        <Button size="sm" variant="outline" onClick={() => toast.success(`Alert sent to ${t.email}`)}>
+                        <Button size="sm" onClick={() => handleUpgrade(t)}>Upgrade Contract</Button>
+                        <Button size="sm" variant="outline" onClick={() => setAlertTenant(t)}>
                           <Send className="size-3.5" />Send Alert
                         </Button>
                       </>
@@ -175,7 +189,7 @@ function Billing() {
         </div>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={TENANTS.map((t) => ({ name: t.name, actual: t.used, predicted: Math.round(t.used * 1.15) }))}>
+            <BarChart data={tenants.map((t) => ({ name: t.name, actual: t.used, predicted: Math.round(t.used * 1.15) }))}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} />
@@ -187,6 +201,66 @@ function Billing() {
           </ResponsiveContainer>
         </div>
       </Card>
+
+      <Dialog open={!!alertTenant} onOpenChange={(o) => !o && setAlertTenant(null)}>
+        <DialogContent className="max-w-xl">
+          {alertTenant && (() => {
+            const util = Math.round((alertTenant.used / alertTenant.hours) * 100);
+            const overHrs = Math.max(0, alertTenant.used - alertTenant.hours);
+            const ratePerHr = alertTenant.rate / alertTenant.hours;
+            const overCost = Math.round(overHrs * ratePerHr);
+            const ts = new Date().toLocaleString();
+            return (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-2">
+                    <div className="size-8 rounded-md bg-destructive/10 flex items-center justify-center">
+                      <AlertTriangle className="size-4 text-destructive" />
+                    </div>
+                    <div>
+                      <DialogTitle>Usage Overage Alert</DialogTitle>
+                      <DialogDescription>Preview of the alert email to be delivered.</DialogDescription>
+                    </div>
+                  </div>
+                </DialogHeader>
+
+                <div className="rounded-md border border-border bg-muted/30 text-sm">
+                  <div className="px-4 py-3 border-b border-border space-y-1">
+                    <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-muted-foreground">From</span><span>billing@datapipelines.io</span></div>
+                    <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-muted-foreground">To</span><span>{alertTenant.email}</span></div>
+                    <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-muted-foreground">Subject</span><span className="font-medium">[Action Required] {alertTenant.name} — Contracted capacity exceeded ({util}%)</span></div>
+                    <div className="grid grid-cols-[80px_1fr] gap-2"><span className="text-muted-foreground">Sent</span><span>{ts}</span></div>
+                  </div>
+                  <div className="px-4 py-3 space-y-3 text-foreground">
+                    <p>Hi {alertTenant.name} team,</p>
+                    <p>
+                      Your account has consumed <strong className="tabular-nums">{alertTenant.used} hrs</strong> against
+                      a contracted monthly allowance of <strong className="tabular-nums">{alertTenant.hours} hrs</strong>
+                      {" "}— currently at <strong className="text-destructive tabular-nums">{util}%</strong> utilization.
+                    </p>
+                    <div className="rounded-md bg-background border border-border p-3 grid grid-cols-3 gap-3 text-xs">
+                      <div><div className="text-muted-foreground">Overage hours</div><div className="font-semibold tabular-nums text-base">{overHrs} hrs</div></div>
+                      <div><div className="text-muted-foreground">Overage cost</div><div className="font-semibold tabular-nums text-base text-destructive">+${overCost.toLocaleString()}</div></div>
+                      <div><div className="text-muted-foreground">Effective rate</div><div className="font-semibold tabular-nums text-base">${ratePerHr.toFixed(2)}/hr</div></div>
+                    </div>
+                    <p>
+                      Overage is billed on your next invoice at the contracted hourly rate. To avoid future overages,
+                      we recommend upgrading your plan to align with current consumption.
+                    </p>
+                    <p className="text-muted-foreground text-xs">Ref: ALERT-{alertTenant.id.toUpperCase()}-{Date.now().toString().slice(-6)}</p>
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button onClick={() => { toast.success(`Alert sent to ${alertTenant.email}`); setAlertTenant(null); }}>
+                    OK, Send Alert
+                  </Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
