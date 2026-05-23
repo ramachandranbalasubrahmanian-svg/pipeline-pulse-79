@@ -35,6 +35,31 @@ export const JOBS: Job[] = [
   { id: "JOB-1010", name: "Daily_KPI_Aggregation", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 100, duration: "6m 11s", started: "4h ago", project: "Marketing Attribution Pipeline" },
   { id: "JOB-1011", name: "Realtime_Webhook_Ingest", status: "Running", tenant: "TechStart Inc", hardware: "4 CPU / 21GB", threads: 20, duration: "2h 14m", started: "2h ago", project: "Customer 360 Enrichment" },
   { id: "JOB-1012", name: "Data_Quality_Validation", status: "Errored Out", tenant: "RetailCo Global", hardware: "8 CPU / 32GB", threads: 80, duration: "1m 47s", started: "12 min ago", project: "Real-time Inventory Sync" },
+
+  // ---- Historical runs (Jan 1 2026 → May 2026) ----
+  { id: "JOB-0985", name: "Weekly_Revenue_Rollup", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 80, duration: "9m 12s", started: "May 20, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0984", name: "Customer_Churn_Model_Train", status: "Completed", tenant: "TechStart Inc", hardware: "16 CPU / 64GB", threads: 160, duration: "42m 51s", started: "May 18, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0983", name: "SF_CRM_Daily_Full_Sync", status: "Completed", tenant: "Apex Financial", hardware: "32 CPU / 128GB", threads: 400, duration: "11m 03s", started: "May 15, 2026", project: "Salesforce → BigQuery Sync" },
+  { id: "JOB-0982", name: "Inventory_Sync_RT", status: "Errored Out", tenant: "RetailCo Global", hardware: "16 CPU / 64GB", threads: 180, duration: "6m 22s", started: "May 12, 2026", project: "Real-time Inventory Sync" },
+  { id: "JOB-0981", name: "GDPR_Compliance_Scan", status: "Completed", tenant: "HealthSys Corp", hardware: "2 CPU / 8GB", threads: 10, duration: "28m 14s", started: "May 08, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0980", name: "Marketing_Attribution_v2", status: "Completed", tenant: "RetailCo Global", hardware: "4 CPU / 21GB", threads: 20, duration: "14m 09s", started: "May 03, 2026", project: "Marketing Attribution Pipeline" },
+  { id: "JOB-0979", name: "Oracle_Legacy_Migrate_Batch2", status: "Completed", tenant: "HealthSys Corp", hardware: "16 CPU / 64GB", threads: 200, duration: "1h 18m", started: "Apr 28, 2026", project: "Legacy Oracle Migration" },
+  { id: "JOB-0978", name: "SAP_GL_Extract_Q1", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 100, duration: "13m 47s", started: "Apr 22, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0977", name: "Snowflake_DW_Refresh", status: "Cancelled", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 50, duration: "3m 51s", started: "Apr 17, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0976", name: "Daily_KPI_Aggregation", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 100, duration: "5m 42s", started: "Apr 10, 2026", project: "Marketing Attribution Pipeline" },
+  { id: "JOB-0975", name: "Customer_360_Enrich", status: "Timeout", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 80, duration: "30m 00s", started: "Apr 04, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0974", name: "SF_Lead_Scoring_Hourly", status: "Completed", tenant: "Apex Financial", hardware: "4 CPU / 21GB", threads: 18, duration: "2m 38s", started: "Mar 29, 2026", project: "Salesforce → BigQuery Sync" },
+  { id: "JOB-0973", name: "Oracle_Legacy_Migrate_Batch1", status: "Completed", tenant: "HealthSys Corp", hardware: "16 CPU / 64GB", threads: 200, duration: "1h 42m", started: "Mar 21, 2026", project: "Legacy Oracle Migration" },
+  { id: "JOB-0972", name: "Inventory_Sync_RT", status: "Completed", tenant: "RetailCo Global", hardware: "16 CPU / 64GB", threads: 180, duration: "52m 11s", started: "Mar 14, 2026", project: "Real-time Inventory Sync" },
+  { id: "JOB-0971", name: "Data_Quality_Validation", status: "Completed", tenant: "RetailCo Global", hardware: "8 CPU / 32GB", threads: 80, duration: "4m 18s", started: "Mar 06, 2026", project: "Real-time Inventory Sync" },
+  { id: "JOB-0970", name: "Realtime_Webhook_Ingest", status: "Errored Out", tenant: "TechStart Inc", hardware: "4 CPU / 21GB", threads: 20, duration: "0m 49s", started: "Feb 27, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0969", name: "SAP_GL_Extract_YearEnd", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 100, duration: "21m 02s", started: "Feb 18, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0968", name: "Marketing_Attribution_v2", status: "Completed", tenant: "RetailCo Global", hardware: "4 CPU / 21GB", threads: 20, duration: "12m 55s", started: "Feb 09, 2026", project: "Marketing Attribution Pipeline" },
+  { id: "JOB-0967", name: "GDPR_Compliance_Scan", status: "Completed", tenant: "HealthSys Corp", hardware: "2 CPU / 8GB", threads: 10, duration: "26m 41s", started: "Jan 31, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0966", name: "SF_CRM_Daily_Full_Sync", status: "Completed", tenant: "Apex Financial", hardware: "32 CPU / 128GB", threads: 400, duration: "10m 27s", started: "Jan 22, 2026", project: "Salesforce → BigQuery Sync" },
+  { id: "JOB-0965", name: "Customer_360_Enrich", status: "Completed", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 80, duration: "18m 04s", started: "Jan 14, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0964", name: "Snowflake_DW_Refresh", status: "Completed", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 50, duration: "7m 33s", started: "Jan 08, 2026", project: "Customer 360 Enrichment" },
+  { id: "JOB-0963", name: "NewYear_Baseline_Backfill", status: "Completed", tenant: "Apex Financial", hardware: "16 CPU / 64GB", threads: 200, duration: "2h 14m", started: "Jan 01, 2026", project: "SAP Financial Consolidation" },
 ];
 
 export const TENANTS = [
