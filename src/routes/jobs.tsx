@@ -109,7 +109,7 @@ function JobsPage() {
   }, [newHw]);
 
   const resetCreate = () => {
-    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null);
+    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null); setAiDesc("");
   };
 
   const handleCreate = () => {
