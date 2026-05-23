@@ -40,8 +40,17 @@ const STACK = `java.lang.NullPointerException
     at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)`;
 
 function Incidents() {
+  const [incidents, setIncidents] = useState<Incident[]>(INCIDENTS as Incident[]);
   const [selected, setSelected] = useState<Incident | null>(null);
   const [aiState, setAiState] = useState<"idle" | "loading" | "done">("idle");
+
+  const openCount = incidents.filter((i) => i.status === "Open").length;
+  const p1Count = incidents.filter((i) => i.status === "Open" && i.severity === "P1").length;
+  const computed: Record<string, string> = {
+    openCount: String(openCount),
+    p1Count: String(p1Count),
+    totalCount: String(incidents.length),
+  };
 
   function openIncident(inc: Incident) {
     setSelected(inc);
@@ -52,6 +61,14 @@ function Incidents() {
     setAiState("loading");
     setTimeout(() => setAiState("done"), 2000);
   }
+
+  function resolve(inc: Incident) {
+    setIncidents((prev) => prev.map((x) => (x.id === inc.id ? { ...x, status: "Resolved" } : x)));
+    setSelected(null);
+    toast.success(`${inc.id} marked as resolved`);
+  }
+
+
 
   return (
     <div>
