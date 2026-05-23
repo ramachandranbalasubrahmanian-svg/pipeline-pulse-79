@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AUDIT, TENANTS } from "@/lib/mock";
-import { Search, Calendar } from "lucide-react";
+import { Search, Calendar, Download } from "lucide-react";
+import { downloadCSV } from "@/lib/csv";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/audit")({
   head: () => ({ meta: [{ title: "Audit Trail — Data Pipelines" }] }),

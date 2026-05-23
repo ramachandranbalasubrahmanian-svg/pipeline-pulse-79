@@ -10,8 +10,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { StatusBadge } from "@/components/StatusBadge";
 import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
 import { Label } from "@/components/ui/label";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud } from "lucide-react";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download } from "lucide-react";
+import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/jobs")({
   head: () => ({ meta: [{ title: "Job Manager — Data Pipelines" }] }),
