@@ -37,7 +37,18 @@ const DAILY = Array.from({ length: 14 }, (_, i) => ({
 }));
 
 function Billing() {
+  const [tenants, setTenants] = useState<Tenant[]>(TENANTS);
   const [expanded, setExpanded] = useState<string | null>(TENANTS[0].id);
+  const [alertTenant, setAlertTenant] = useState<Tenant | null>(null);
+
+  const handleUpgrade = (t: Tenant) => {
+    const newHours = Math.ceil(t.used * 1.2);
+    const newRate = Math.round((t.rate / t.hours) * newHours);
+    setTenants((prev) =>
+      prev.map((x) => (x.id === t.id ? { ...x, hours: newHours, rate: newRate } : x)),
+    );
+    toast.success(`${t.name} upgraded to ${newHours} hrs/mo`);
+  };
 
   return (
     <div>
