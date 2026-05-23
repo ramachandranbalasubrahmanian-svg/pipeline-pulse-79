@@ -17,7 +17,7 @@ function detectAnomaly(a: { ts: string; ip: string; action: string; resource: st
   if (!Number.isNaN(hour) && hour >= 0 && hour < 6) reasons.push(`Off-hours access (${a.ts.slice(11, 16)})`);
   if (a.ip && a.ip !== "—" && !a.ip.startsWith("10.")) reasons.push(`External IP (${a.ip})`);
   if (a.action === "DELETE" && /audit/i.test(a.resource)) reasons.push("Audit log tampering");
-  if (/bulk permission|api secret|api key/i.test(a.resource + " " + (a as any).actionLabel ?? "")) reasons.push("Sensitive change");
+  if (/bulk permission|api secret|api key/i.test(a.resource + " " + ((a as any).actionLabel || ""))) reasons.push("Sensitive change");
   return reasons;
 }
 
