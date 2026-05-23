@@ -182,11 +182,35 @@ function JobsPage() {
                   <p className="text-sm text-muted-foreground">Define the resource allocation and parallelism for your job.</p>
                 </DialogHeader>
 
-                <div className="space-y-5 py-2">
+                <div className="space-y-5 py-2 max-h-[70vh] overflow-y-auto pr-1">
+                  <div className="rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-3 space-y-2">
+                    <Label className="flex items-center gap-1.5 text-purple-900">
+                      <Sparkles className="size-4" />Generate from description
+                    </Label>
+                    <Textarea
+                      placeholder='e.g. "ETL from Salesforce to Snowflake nightly, retry 3x"'
+                      value={aiDesc}
+                      onChange={(e) => setAiDesc(e.target.value)}
+                      rows={2}
+                      className="bg-white"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={aiGenerate}
+                      disabled={aiBusy}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    >
+                      {aiBusy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+                      {aiBusy ? "Generating..." : "Generate Config"}
+                    </Button>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="job-name">Job Name</Label>
                     <Input id="job-name" placeholder="e.g. Daily ETL Sync" value={newName} onChange={(e) => setNewName(e.target.value)} />
                   </div>
+
 
                   <div className="space-y-2">
                     <Label>Job Configuration (ZIP)</Label>
