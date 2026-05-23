@@ -100,9 +100,10 @@ function JobsPage() {
             <Button
               variant="outline"
               onClick={() => {
-                downloadCSV(`jobs-${new Date().toISOString().slice(0, 10)}.csv`, filtered);
+                downloadCSV(`jobs-${new Date().toISOString().slice(0, 10)}.csv`, filtered.map((j) => ({ ...j })));
                 toast.success(`Exported ${filtered.length} jobs`);
               }}
+
             >
               <Download className="size-4" />Export CSV
             </Button>
