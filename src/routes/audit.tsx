@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AUDIT } from "@/lib/mock";
+import { AUDIT, TENANTS } from "@/lib/mock";
 import { Search, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/audit")({
@@ -21,14 +22,28 @@ const ACTION_STYLE: Record<string, string> = {
 };
 
 function Audit() {
+  const [action, setAction] = useState<string>("all");
+  const [tenant, setTenant] = useState<string>("all");
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => AUDIT.filter((a) => {
+    if (action !== "all" && a.action !== action) return false;
+    if (tenant !== "all" && a.tenant !== tenant) return false;
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      if (!a.user.toLowerCase().includes(q) && !a.resource.toLowerCase().includes(q) && !a.actionLabel.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  }), [action, tenant, query]);
+
   return (
     <div>
-      <PageHeader title="Audit Trail" description="Immutable log of every privileged action across tenants." />
+      <PageHeader title="Audit Trail" description={`${filtered.length} of ${AUDIT.length} events`} />
 
       <Card className="p-4 mb-4">
         <div className="flex flex-wrap gap-3 items-center">
           <Button variant="outline" size="sm" className="h-9"><Calendar className="size-4" />May 1 — May 23</Button>
-          <Select defaultValue="all">
+          <Select value={action} onValueChange={setAction}>
             <SelectTrigger className="w-44 h-9"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All actions</SelectItem>
@@ -39,17 +54,18 @@ function Audit() {
               <SelectItem value="AI_ACTION">AI_ACTION</SelectItem>
             </SelectContent>
           </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-44 h-9"><SelectValue placeholder="Tenant" /></SelectTrigger>
+          <Select value={tenant} onValueChange={setTenant}>
+            <SelectTrigger className="w-52 h-9"><SelectValue placeholder="Tenant" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All tenants</SelectItem>
-              <SelectItem value="apex">Apex Financial</SelectItem>
-              <SelectItem value="retailco">RetailCo Global</SelectItem>
+              {TENANTS.map((t) => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
+              <SelectItem value="Global">Global</SelectItem>
+              <SelectItem value="Legacy Co">Legacy Co</SelectItem>
             </SelectContent>
           </Select>
           <div className="relative flex-1 min-w-60">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input placeholder="Search by user or resource..." className="pl-9 h-9" />
+            <Input placeholder="Search by user, resource, or action..." value={query} onChange={(e) => setQuery(e.target.value)} className="pl-9 h-9" />
           </div>
         </div>
       </Card>
@@ -69,7 +85,7 @@ function Audit() {
               </tr>
             </thead>
             <tbody>
-              {AUDIT.map((a, i) => (
+              {filtered.map((a, i) => (
                 <tr key={i} className="border-b border-border last:border-0 hover:bg-muted/50">
                   <td className="py-3 px-4 font-mono text-xs text-muted-foreground whitespace-nowrap">{a.ts}</td>
                   <td className="py-3 px-4 text-xs">{a.user}</td>
@@ -89,6 +105,9 @@ function Audit() {
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground text-sm">No audit events match your filters.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
