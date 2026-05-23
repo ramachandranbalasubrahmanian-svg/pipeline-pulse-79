@@ -45,6 +45,42 @@ function JobsPage() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Job | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [jobs, setJobs] = useState<Job[]>(JOBS);
+
+  // Create-job form state
+  const [newName, setNewName] = useState("");
+  const [newHw, setNewHw] = useState(HARDWARE_OPTIONS[0]);
+  const [newThreads, setNewThreads] = useState(2);
+  const [newFile, setNewFile] = useState<File | null>(null);
+  const fileInputRef = useState<HTMLInputElement | null>(null)[0];
+
+  const maxThreads = useMemo(() => {
+    const m = newHw.match(/max (\d+) threads/);
+    return m ? parseInt(m[1], 10) : 10;
+  }, [newHw]);
+
+  const resetCreate = () => {
+    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null);
+  };
+
+  const handleCreate = () => {
+    if (!newName.trim()) { toast.error("Job name is required"); return; }
+    if (!newFile) { toast.error("Please upload a job config ZIP"); return; }
+    if (newThreads < 1 || newThreads > maxThreads) { toast.error(`Threads must be between 1 and ${maxThreads}`); return; }
+    const id = `JOB-${1000 + jobs.length + 1}`;
+    const hwShort = newHw.split(" / ").slice(0, 2).join(" / ").replace(" RAM", "");
+    const job: Job = {
+      id, name: newName.trim(), status: "Initialising",
+      tenant: TENANTS[0].name, hardware: hwShort, threads: newThreads,
+      duration: "—", started: "Just now", project: "Custom Deployment",
+    };
+    setJobs((p) => [job, ...p]);
+    setCreateOpen(false);
+    resetCreate();
+    toast.success("Job Deployed", { description: `${job.name} is initialising.` });
+  };
+
 
   const filtered = useMemo(() => JOBS.filter((j) =>
     (statusFilter === "All" || j.status === statusFilter) &&
