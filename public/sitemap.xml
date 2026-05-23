@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9">
+  <url><loc>/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>/jobs</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/projects</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/lineage</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/incidents</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>/tenants</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>/billing</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>/audit</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>/architecture</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>/settings</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
+</urlset>
