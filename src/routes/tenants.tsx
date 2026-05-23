@@ -16,15 +16,20 @@ export const Route = createFileRoute("/tenants")({
 });
 
 type Tenant = (typeof TENANTS)[number];
+type EditableTenant = Omit<Tenant, "status"> & { status: "Active" | "Suspended" };
 
 function Tenants() {
   const [open, setOpen] = useState(false);
-  const [tenants, setTenants] = useState<Tenant[]>(TENANTS);
+  const [tenants, setTenants] = useState<EditableTenant[]>(TENANTS as EditableTenant[]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [hours, setHours] = useState("");
   const [rate, setRate] = useState("");
   const [payment, setPayment] = useState("");
+
+  const [manage, setManage] = useState<EditableTenant | null>(null);
+  const [mHours, setMHours] = useState("");
+  const [mRate, setMRate] = useState("");
 
   const reset = () => { setName(""); setEmail(""); setHours(""); setRate(""); setPayment(""); };
 
@@ -35,7 +40,7 @@ function Tenants() {
     if (!h || h <= 0) { toast.error("Contracted hours must be > 0"); return; }
     if (!r || r <= 0) { toast.error("Monthly rate must be > 0"); return; }
     const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 12);
-    const newTenant: Tenant = {
+    const newTenant: EditableTenant = {
       id: `${slug}-${String(tenants.length + 1).padStart(3, "0")}`,
       name: name.trim(),
       email: email.trim(),
@@ -49,6 +54,28 @@ function Tenants() {
     setOpen(false);
     reset();
     toast.success("Tenant onboarded", { description: `${newTenant.name} added with ${h} hrs/mo capacity.` });
+  };
+
+  const openManage = (t: EditableTenant) => {
+    setManage(t);
+    setMHours(String(t.hours));
+    setMRate(String(t.rate));
+  };
+
+  const saveManage = () => {
+    if (!manage) return;
+    const h = Number(mHours), r = Number(mRate);
+    if (!h || h <= 0 || !r || r <= 0) { toast.error("Hours and rate must be > 0"); return; }
+    setTenants((p) => p.map((x) => (x.id === manage.id ? { ...x, hours: h, rate: r } : x)));
+    toast.success(`${manage.name} updated`);
+    setManage(null);
+  };
+
+  const toggleStatus = (t: EditableTenant) => {
+    const next: EditableTenant["status"] = t.status === "Active" ? "Suspended" : "Active";
+    setTenants((p) => p.map((x) => (x.id === t.id ? { ...x, status: next } : x)));
+    setManage((m) => (m && m.id === t.id ? { ...m, status: next } : m));
+    toast.success(`${t.name} ${next === "Active" ? "resumed" : "suspended"}`);
   };
 
   return (
@@ -94,8 +121,10 @@ function Tenants() {
                   <div className="text-xs text-muted-foreground font-mono">{t.id}</div>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-success/10 text-success">
-                <span className="size-1.5 rounded-full bg-success pulse-dot" />{t.status}
+              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
+                t.status === "Active" ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+              }`}>
+                <span className={`size-1.5 rounded-full pulse-dot ${t.status === "Active" ? "bg-success" : "bg-warning"}`} />{t.status}
               </span>
             </div>
 
@@ -106,10 +135,48 @@ function Tenants() {
               <Field label="Monthly Rate" value={`$${t.rate.toLocaleString()}`} />
             </div>
 
-            <Button variant="outline" className="w-full" onClick={() => toast(`Opening ${t.name} settings...`)}>Manage</Button>
+            <Button variant="outline" className="w-full" onClick={() => openManage(t)}>Manage</Button>
           </Card>
         ))}
       </div>
+
+      <Dialog open={!!manage} onOpenChange={(o) => !o && setManage(null)}>
+        <DialogContent>
+          {manage && (
+            <>
+              <DialogHeader><DialogTitle>Manage {manage.name}</DialogTitle></DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Tenant ID" value={manage.id} />
+                  <Field label="Contact" value={manage.email} />
+                  <Field label="Customer Since" value={manage.since} />
+                  <Field label="Utilization" value={`${Math.round((manage.used / manage.hours) * 100)}%`} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Contracted Hours/mo</Label>
+                    <Input type="number" value={mHours} onChange={(e) => setMHours(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Monthly Rate ($)</Label>
+                    <Input type="number" value={mRate} onChange={(e) => setMRate(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => toggleStatus(manage)}
+                >
+                  {manage.status === "Active" ? "Suspend Tenant" : "Resume Tenant"}
+                </Button>
+                <Button variant="outline" onClick={() => setManage(null)}>Cancel</Button>
+                <Button onClick={saveManage}>Save changes</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

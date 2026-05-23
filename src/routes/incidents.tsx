@@ -5,23 +5,26 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { INCIDENTS } from "@/lib/mock";
-import { Sparkles, Loader2, Ticket, BookOpen } from "lucide-react";
+import { Sparkles, Loader2, Ticket, BookOpen, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+
+
 
 export const Route = createFileRoute("/incidents")({
   head: () => ({ meta: [{ title: "Incidents — Data Pipelines" }] }),
   component: Incidents,
 });
 
-type Incident = (typeof INCIDENTS)[number];
+type Incident = Omit<(typeof INCIDENTS)[number], "status"> & { status: "Open" | "Resolved" };
 
 const STATS = [
-  { label: "Open Incidents", value: "4", tone: "text-foreground" },
-  { label: "P1 Critical", value: "1", tone: "text-destructive" },
+  { label: "Open Incidents", value: "openCount", tone: "text-foreground" },
+  { label: "P1 Critical", value: "p1Count", tone: "text-destructive" },
   { label: "Avg Resolution Time", value: "42 min", tone: "text-foreground" },
-  { label: "Incidents This Week", value: "12", tone: "text-foreground" },
+  { label: "Incidents This Week", value: "totalCount", tone: "text-foreground" },
 ];
+
 
 const SEV_STYLE = {
   P1: "bg-destructive/10 text-destructive",
@@ -37,8 +40,17 @@ const STACK = `java.lang.NullPointerException
     at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)`;
 
 function Incidents() {
+  const [incidents, setIncidents] = useState<Incident[]>(INCIDENTS as Incident[]);
   const [selected, setSelected] = useState<Incident | null>(null);
   const [aiState, setAiState] = useState<"idle" | "loading" | "done">("idle");
+
+  const openCount = incidents.filter((i) => i.status === "Open").length;
+  const p1Count = incidents.filter((i) => i.status === "Open" && i.severity === "P1").length;
+  const computed: Record<string, string> = {
+    openCount: String(openCount),
+    p1Count: String(p1Count),
+    totalCount: String(incidents.length),
+  };
 
   function openIncident(inc: Incident) {
     setSelected(inc);
@@ -50,6 +62,14 @@ function Incidents() {
     setTimeout(() => setAiState("done"), 2000);
   }
 
+  function resolve(inc: Incident) {
+    setIncidents((prev) => prev.map((x) => (x.id === inc.id ? { ...x, status: "Resolved" } : x)));
+    setSelected(null);
+    toast.success(`${inc.id} marked as resolved`);
+  }
+
+
+
   return (
     <div>
       <PageHeader title="Incidents" description="AI-assisted root cause analysis and remediation." />
@@ -58,9 +78,10 @@ function Incidents() {
         {STATS.map((s) => (
           <Card key={s.label} className="p-5">
             <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{s.label}</div>
-            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>{s.value}</div>
+            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>{computed[s.value] ?? s.value}</div>
           </Card>
         ))}
+
       </div>
 
       <Card className="overflow-hidden">
@@ -77,7 +98,7 @@ function Incidents() {
             </tr>
           </thead>
           <tbody>
-            {INCIDENTS.map((inc) => (
+            {incidents.map((inc) => (
               <tr key={inc.id} onClick={() => openIncident(inc)} className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer">
                 <td className="py-3 px-4 font-mono text-xs">{inc.id}</td>
                 <td className="py-3 px-4 font-medium">{inc.job}</td>
@@ -207,14 +228,20 @@ function Incidents() {
                           </div>
                         </div>
 
-                        <div className="flex gap-2 mt-5">
+                        <div className="flex gap-2 mt-5 flex-wrap">
                           <Button variant="outline" onClick={() => toast.success("ServiceNow ticket INC-SN-2891 created")}>
                             <Ticket className="size-4" />Create ServiceNow Ticket
                           </Button>
                           <Button variant="outline" onClick={() => toast.success("Draft KB article generated")}>
                             <BookOpen className="size-4" />Generate KB Article
                           </Button>
+                          {selected.status === "Open" && (
+                            <Button className="bg-success text-white hover:bg-success/90" onClick={() => resolve(selected)}>
+                              <CheckCircle2 className="size-4" />Mark Resolved
+                            </Button>
+                          )}
                         </div>
+
                       </div>
                     </motion.div>
                   )}

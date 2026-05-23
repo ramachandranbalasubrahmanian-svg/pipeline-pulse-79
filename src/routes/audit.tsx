@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AUDIT, TENANTS } from "@/lib/mock";
-import { Search, Calendar } from "lucide-react";
+import { Search, Calendar, Download } from "lucide-react";
+import { downloadCSV } from "@/lib/csv";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/audit")({
   head: () => ({ meta: [{ title: "Audit Trail — Data Pipelines" }] }),
@@ -38,7 +41,22 @@ function Audit() {
 
   return (
     <div>
-      <PageHeader title="Audit Trail" description={`${filtered.length} of ${AUDIT.length} events`} />
+      <PageHeader
+        title="Audit Trail"
+        description={`${filtered.length} of ${AUDIT.length} events`}
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => {
+              downloadCSV(`audit-trail-${new Date().toISOString().slice(0, 10)}.csv`, filtered);
+              toast.success(`Exported ${filtered.length} events`);
+            }}
+          >
+            <Download className="size-4" />Export CSV
+          </Button>
+        }
+      />
+
 
       <Card className="p-4 mb-4">
         <div className="flex flex-wrap gap-3 items-center">

@@ -10,8 +10,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { StatusBadge } from "@/components/StatusBadge";
 import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
 import { Label } from "@/components/ui/label";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud } from "lucide-react";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download } from "lucide-react";
+import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/jobs")({
   head: () => ({ meta: [{ title: "Job Manager — Data Pipelines" }] }),
@@ -95,6 +97,17 @@ function JobsPage() {
         description={`${filtered.length} of ${jobs.length} jobs visible`}
         actions={
           <>
+            <Button
+              variant="outline"
+              onClick={() => {
+                downloadCSV(`jobs-${new Date().toISOString().slice(0, 10)}.csv`, filtered.map((j) => ({ ...j })));
+                toast.success(`Exported ${filtered.length} jobs`);
+              }}
+
+            >
+              <Download className="size-4" />Export CSV
+            </Button>
+
             <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline"><Upload className="size-4" />Upload Config</Button>
