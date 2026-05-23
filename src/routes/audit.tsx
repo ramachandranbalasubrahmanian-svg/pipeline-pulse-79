@@ -39,16 +39,21 @@ function Audit() {
   const [action, setAction] = useState<string>("all");
   const [tenant, setTenant] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [onlyAnomalies, setOnlyAnomalies] = useState(false);
 
-  const filtered = useMemo(() => AUDIT.filter((a) => {
+  const enriched = useMemo(() => AUDIT.map((a) => ({ ...a, anomalies: detectAnomaly(a) })), []);
+  const totalAnomalies = useMemo(() => enriched.filter((a) => a.anomalies.length > 0).length, [enriched]);
+
+  const filtered = useMemo(() => enriched.filter((a) => {
     if (action !== "all" && a.action !== action) return false;
     if (tenant !== "all" && a.tenant !== tenant) return false;
+    if (onlyAnomalies && a.anomalies.length === 0) return false;
     if (query.trim()) {
       const q = query.toLowerCase();
       if (!a.user.toLowerCase().includes(q) && !a.resource.toLowerCase().includes(q) && !a.actionLabel.toLowerCase().includes(q)) return false;
     }
     return true;
-  }), [action, tenant, query]);
+  }), [enriched, action, tenant, query, onlyAnomalies]);
 
   return (
     <div>
