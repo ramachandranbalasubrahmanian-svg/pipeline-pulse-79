@@ -16,14 +16,15 @@ export const Route = createFileRoute("/incidents")({
   component: Incidents,
 });
 
-type Incident = (typeof INCIDENTS)[number];
+type Incident = (typeof INCIDENTS)[number] & { status: "Open" | "Resolved" };
 
 const STATS = [
-  { label: "Open Incidents", value: "4", tone: "text-foreground" },
-  { label: "P1 Critical", value: "1", tone: "text-destructive" },
+  { label: "Open Incidents", value: "openCount", tone: "text-foreground" },
+  { label: "P1 Critical", value: "p1Count", tone: "text-destructive" },
   { label: "Avg Resolution Time", value: "42 min", tone: "text-foreground" },
-  { label: "Incidents This Week", value: "12", tone: "text-foreground" },
+  { label: "Incidents This Week", value: "totalCount", tone: "text-foreground" },
 ];
+
 
 const SEV_STYLE = {
   P1: "bg-destructive/10 text-destructive",
