@@ -97,6 +97,16 @@ function JobsPage() {
         description={`${filtered.length} of ${jobs.length} jobs visible`}
         actions={
           <>
+            <Button
+              variant="outline"
+              onClick={() => {
+                downloadCSV(`jobs-${new Date().toISOString().slice(0, 10)}.csv`, filtered);
+                toast.success(`Exported ${filtered.length} jobs`);
+              }}
+            >
+              <Download className="size-4" />Export CSV
+            </Button>
+
             <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline"><Upload className="size-4" />Upload Config</Button>

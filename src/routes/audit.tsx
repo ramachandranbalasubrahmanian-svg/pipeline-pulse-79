@@ -41,7 +41,22 @@ function Audit() {
 
   return (
     <div>
-      <PageHeader title="Audit Trail" description={`${filtered.length} of ${AUDIT.length} events`} />
+      <PageHeader
+        title="Audit Trail"
+        description={`${filtered.length} of ${AUDIT.length} events`}
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => {
+              downloadCSV(`audit-trail-${new Date().toISOString().slice(0, 10)}.csv`, filtered);
+              toast.success(`Exported ${filtered.length} events`);
+            }}
+          >
+            <Download className="size-4" />Export CSV
+          </Button>
+        }
+      />
+
 
       <Card className="p-4 mb-4">
         <div className="flex flex-wrap gap-3 items-center">
