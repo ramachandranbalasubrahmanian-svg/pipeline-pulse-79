@@ -132,8 +132,8 @@ function Billing() {
                   <div className="flex gap-2">
                     {util > 100 && (
                       <>
-                        <Button size="sm" onClick={() => toast.success(`Upgrade quote sent to ${t.name}`)}>Upgrade Contract</Button>
-                        <Button size="sm" variant="outline" onClick={() => toast.success(`Alert sent to ${t.email}`)}>
+                        <Button size="sm" onClick={() => handleUpgrade(t)}>Upgrade Contract</Button>
+                        <Button size="sm" variant="outline" onClick={() => setAlertTenant(t)}>
                           <Send className="size-3.5" />Send Alert
                         </Button>
                       </>
