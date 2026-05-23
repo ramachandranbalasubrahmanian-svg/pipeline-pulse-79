@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
+import { VisitorCounter } from "@/components/VisitorCounter";
 import { Card } from "@/components/ui/card";
 import { FRESHNESS, JOB_TREND } from "@/lib/mock";
 import { TrendingUp, TrendingDown, Activity, CheckCircle2, AlertTriangle, Clock, Cpu, Layers, Wifi } from "lucide-react";
