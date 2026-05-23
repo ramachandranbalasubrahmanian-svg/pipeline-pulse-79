@@ -6,9 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AUDIT, TENANTS } from "@/lib/mock";
-import { Search, Calendar, Download } from "lucide-react";
+import { Search, Calendar, Download, ShieldAlert, AlertTriangle } from "lucide-react";
 import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
+
+// Anomaly detection: off-hours (00:00–05:59), external IP (not 10.x), or destructive on Audit/Settings
+function detectAnomaly(a: { ts: string; ip: string; action: string; resource: string }): string[] {
+  const reasons: string[] = [];
+  const hour = parseInt(a.ts.slice(11, 13), 10);
+  if (!Number.isNaN(hour) && hour >= 0 && hour < 6) reasons.push(`Off-hours access (${a.ts.slice(11, 16)})`);
+  if (a.ip && a.ip !== "—" && !a.ip.startsWith("10.")) reasons.push(`External IP (${a.ip})`);
+  if (a.action === "DELETE" && /audit/i.test(a.resource)) reasons.push("Audit log tampering");
+  if (/bulk permission|api secret|api key/i.test(a.resource + " " + (a as any).actionLabel ?? "")) reasons.push("Sensitive change");
+  return reasons;
+}
 
 
 export const Route = createFileRoute("/audit")({
