@@ -74,6 +74,29 @@ function Audit() {
       />
 
 
+
+
+      {totalAnomalies > 0 && (
+        <Card className={`p-4 mb-4 border-l-4 ${onlyAnomalies ? "border-l-destructive bg-destructive/5" : "border-l-warning bg-warning/5"}`}>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-full bg-warning/15 flex items-center justify-center">
+                <ShieldAlert className="size-4 text-warning" />
+              </div>
+              <div>
+                <div className="font-semibold text-sm">AI Anomaly Detection</div>
+                <div className="text-xs text-muted-foreground">
+                  {totalAnomalies} suspicious event{totalAnomalies === 1 ? "" : "s"} detected — off-hours access, external IPs, or sensitive changes.
+                </div>
+              </div>
+            </div>
+            <Button size="sm" variant={onlyAnomalies ? "default" : "outline"} onClick={() => setOnlyAnomalies((v) => !v)}>
+              <AlertTriangle className="size-3.5" />{onlyAnomalies ? "Show all events" : "Review anomalies only"}
+            </Button>
+          </div>
+        </Card>
+      )}
+
       <Card className="p-4 mb-4">
         <div className="flex flex-wrap gap-3 items-center">
           <Button variant="outline" size="sm" className="h-9"><Calendar className="size-4" />May 1 — May 23</Button>
