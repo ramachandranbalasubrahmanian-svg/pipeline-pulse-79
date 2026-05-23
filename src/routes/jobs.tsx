@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { StatusBadge } from "@/components/StatusBadge";
-import { JOBS, type Job, type JobStatus, TENANTS } from "@/lib/mock";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive } from "lucide-react";
+import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
+import { Label } from "@/components/ui/label";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/jobs")({
@@ -44,38 +45,156 @@ function JobsPage() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Job | null>(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [jobs, setJobs] = useState<Job[]>(JOBS);
 
-  const filtered = useMemo(() => JOBS.filter((j) =>
+  // Create-job form state
+  const [newName, setNewName] = useState("");
+  const [newHw, setNewHw] = useState(HARDWARE_OPTIONS[0]);
+  const [newThreads, setNewThreads] = useState(2);
+  const [newFile, setNewFile] = useState<File | null>(null);
+  
+
+  const maxThreads = useMemo(() => {
+    const m = newHw.match(/max (\d+) threads/);
+    return m ? parseInt(m[1], 10) : 10;
+  }, [newHw]);
+
+  const resetCreate = () => {
+    setNewName(""); setNewHw(HARDWARE_OPTIONS[0]); setNewThreads(2); setNewFile(null);
+  };
+
+  const handleCreate = () => {
+    if (!newName.trim()) { toast.error("Job name is required"); return; }
+    if (!newFile) { toast.error("Please upload a job config ZIP"); return; }
+    if (newThreads < 1 || newThreads > maxThreads) { toast.error(`Threads must be between 1 and ${maxThreads}`); return; }
+    const id = `JOB-${1000 + jobs.length + 1}`;
+    const hwShort = newHw.split(" / ").slice(0, 2).join(" / ").replace(" RAM", "");
+    const job: Job = {
+      id, name: newName.trim(), status: "Initialising",
+      tenant: TENANTS[0].name, hardware: hwShort, threads: newThreads,
+      duration: "—", started: "Just now", project: "Custom Deployment",
+    };
+    setJobs((p) => [job, ...p]);
+    setCreateOpen(false);
+    resetCreate();
+    toast.success("Job Deployed", { description: `${job.name} is initialising.` });
+  };
+
+
+  const filtered = useMemo(() => jobs.filter((j) =>
     (statusFilter === "All" || j.status === statusFilter) &&
     (tenantFilter === "All" || j.tenant === tenantFilter) &&
     (query === "" || j.name.toLowerCase().includes(query.toLowerCase()))
-  ), [statusFilter, tenantFilter, query]);
+  ), [jobs, statusFilter, tenantFilter, query]);
 
   return (
     <div>
       <PageHeader
         title="Job Manager"
-        description={`${filtered.length} of ${JOBS.length} jobs visible`}
+        description={`${filtered.length} of ${jobs.length} jobs visible`}
         actions={
-          <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-            <DialogTrigger asChild>
-              <Button><Upload className="size-4" />Upload Config</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Upload Pipeline Config</DialogTitle></DialogHeader>
-              <div className="border-2 border-dashed border-border rounded-lg p-10 text-center bg-muted/30">
-                <FileArchive className="size-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-medium text-sm">Drop a ZIP file here</p>
-                <p className="text-xs text-muted-foreground mt-1">or click to browse — max 50MB</p>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setUploadOpen(false)}>Cancel</Button>
-                <Button onClick={() => { setUploadOpen(false); toast.success("Config Uploaded", { description: "Pipeline config queued for validation." }); }}>Upload</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <>
+            <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline"><Upload className="size-4" />Upload Config</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Upload Pipeline Config</DialogTitle></DialogHeader>
+                <div className="border-2 border-dashed border-border rounded-lg p-10 text-center bg-muted/30">
+                  <FileArchive className="size-10 text-muted-foreground mx-auto mb-3" />
+                  <p className="font-medium text-sm">Drop a ZIP file here</p>
+                  <p className="text-xs text-muted-foreground mt-1">or click to browse — max 50MB</p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setUploadOpen(false)}>Cancel</Button>
+                  <Button onClick={() => { setUploadOpen(false); toast.success("Config Uploaded", { description: "Pipeline config queued for validation." }); }}>Upload</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={createOpen} onOpenChange={(o) => { setCreateOpen(o); if (!o) resetCreate(); }}>
+              <DialogTrigger asChild>
+                <Button><Plus className="size-4" />Create Job</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Configure Data Pipeline Job</DialogTitle>
+                  <p className="text-sm text-muted-foreground">Define the resource allocation and parallelism for your job.</p>
+                </DialogHeader>
+
+                <div className="space-y-5 py-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="job-name">Job Name</Label>
+                    <Input id="job-name" placeholder="e.g. Daily ETL Sync" value={newName} onChange={(e) => setNewName(e.target.value)} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Job Configuration (ZIP)</Label>
+                    <label
+                      htmlFor="job-zip"
+                      className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-8 text-center bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
+                    >
+                      <UploadCloud className="size-8 text-muted-foreground mb-2" />
+                      <p className="font-medium text-sm text-primary">
+                        {newFile ? newFile.name : "Click to upload job details (ZIP)"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Max file size: 50MB</p>
+                      <input
+                        id="job-zip"
+                        type="file"
+                        accept=".zip"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0] ?? null;
+                          if (f && f.size > 50 * 1024 * 1024) { toast.error("File exceeds 50MB"); return; }
+                          setNewFile(f);
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Hardware Configuration</Label>
+                    <Select value={newHw} onValueChange={(v) => {
+                      setNewHw(v);
+                      const m = v.match(/max (\d+) threads/);
+                      const max = m ? parseInt(m[1], 10) : 10;
+                      setNewThreads((t) => Math.min(t, max));
+                    }}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {HARDWARE_OPTIONS.map((h) => <SelectItem key={h} value={h}>{h}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-baseline justify-between">
+                      <Label htmlFor="threads">Parallel Threads</Label>
+                      <span className="text-xs text-muted-foreground">Max: {maxThreads}</span>
+                    </div>
+                    <Input
+                      id="threads"
+                      type="number"
+                      min={1}
+                      max={maxThreads}
+                      value={newThreads}
+                      onChange={(e) => setNewThreads(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                  <Button onClick={handleCreate}>Deploy Job</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
         }
       />
+
 
       <Card className="p-4 mb-4">
         <div className="flex flex-wrap gap-3 items-center">
