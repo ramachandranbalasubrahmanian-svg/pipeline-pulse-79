@@ -15,6 +15,7 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LineageRouteImport } from './routes/lineage'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as IncidentsRouteImport } from './routes/incidents'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as ArchitectureRouteImport } from './routes/architecture'
@@ -50,6 +51,11 @@ const IncidentsRoute = IncidentsRouteImport.update({
   path: '/incidents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BillingRoute = BillingRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/architecture': typeof ArchitectureRoute
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
+  '/demo': typeof DemoRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/architecture': typeof ArchitectureRoute
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
+  '/demo': typeof DemoRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/architecture': typeof ArchitectureRoute
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
+  '/demo': typeof DemoRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/audit'
     | '/billing'
+    | '/demo'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/audit'
     | '/billing'
+    | '/demo'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/architecture'
     | '/audit'
     | '/billing'
+    | '/demo'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   ArchitectureRoute: typeof ArchitectureRoute
   AuditRoute: typeof AuditRoute
   BillingRoute: typeof BillingRoute
+  DemoRoute: typeof DemoRoute
   IncidentsRoute: typeof IncidentsRoute
   JobsRoute: typeof JobsRoute
   LineageRoute: typeof LineageRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IncidentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/billing': {
       id: '/billing'
       path: '/billing'
@@ -240,6 +260,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchitectureRoute: ArchitectureRoute,
   AuditRoute: AuditRoute,
   BillingRoute: BillingRoute,
+  DemoRoute: DemoRoute,
   IncidentsRoute: IncidentsRoute,
   JobsRoute: JobsRoute,
   LineageRoute: LineageRoute,
@@ -250,3 +271,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
