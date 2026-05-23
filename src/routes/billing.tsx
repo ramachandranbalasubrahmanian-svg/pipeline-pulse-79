@@ -8,6 +8,9 @@ import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Send, ArrowUpRight }
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Legend } from "recharts";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+type Tenant = (typeof TENANTS)[number];
 
 export const Route = createFileRoute("/billing")({
   head: () => ({ meta: [{ title: "Billing & Usage — Data Pipelines" }] }),
