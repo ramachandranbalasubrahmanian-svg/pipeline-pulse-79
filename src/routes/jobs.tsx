@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { StatusBadge } from "@/components/StatusBadge";
-import { JOBS, type Job, type JobStatus, TENANTS } from "@/lib/mock";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive } from "lucide-react";
+import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
+import { Label } from "@/components/ui/label";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/jobs")({
