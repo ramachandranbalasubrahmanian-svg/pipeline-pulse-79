@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
+import { VisitorCounter } from "@/components/VisitorCounter";
 import { Card } from "@/components/ui/card";
 import { FRESHNESS, JOB_TREND } from "@/lib/mock";
 import { TrendingUp, TrendingDown, Activity, CheckCircle2, AlertTriangle, Clock, Cpu, Layers, Wifi } from "lucide-react";
@@ -36,6 +37,8 @@ function Overview() {
   return (
     <div>
       <PageHeader title="Overview" description="Real-time command center across all tenants and pipelines." />
+      <VisitorCounter />
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {KPIS.map((k, i) => {
