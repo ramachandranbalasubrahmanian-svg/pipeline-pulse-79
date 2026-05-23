@@ -78,9 +78,10 @@ function Incidents() {
         {STATS.map((s) => (
           <Card key={s.label} className="p-5">
             <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{s.label}</div>
-            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>{s.value}</div>
+            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>{computed[s.value] ?? s.value}</div>
           </Card>
         ))}
+
       </div>
 
       <Card className="overflow-hidden">
