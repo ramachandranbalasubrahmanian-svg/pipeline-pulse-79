@@ -228,14 +228,20 @@ function Incidents() {
                           </div>
                         </div>
 
-                        <div className="flex gap-2 mt-5">
+                        <div className="flex gap-2 mt-5 flex-wrap">
                           <Button variant="outline" onClick={() => toast.success("ServiceNow ticket INC-SN-2891 created")}>
                             <Ticket className="size-4" />Create ServiceNow Ticket
                           </Button>
                           <Button variant="outline" onClick={() => toast.success("Draft KB article generated")}>
                             <BookOpen className="size-4" />Generate KB Article
                           </Button>
+                          {selected.status === "Open" && (
+                            <Button className="bg-success text-white hover:bg-success/90" onClick={() => resolve(selected)}>
+                              <CheckCircle2 className="size-4" />Mark Resolved
+                            </Button>
+                          )}
                         </div>
+
                       </div>
                     </motion.div>
                   )}
