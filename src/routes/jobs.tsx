@@ -53,7 +53,7 @@ function JobsPage() {
   const [newHw, setNewHw] = useState(HARDWARE_OPTIONS[0]);
   const [newThreads, setNewThreads] = useState(2);
   const [newFile, setNewFile] = useState<File | null>(null);
-  const fileInputRef = useState<HTMLInputElement | null>(null)[0];
+  
 
   const maxThreads = useMemo(() => {
     const m = newHw.match(/max (\d+) threads/);
