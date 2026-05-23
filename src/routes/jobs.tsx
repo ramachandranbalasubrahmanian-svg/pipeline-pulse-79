@@ -10,7 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { StatusBadge } from "@/components/StatusBadge";
 import { JOBS, type Job, type JobStatus, TENANTS, HARDWARE_OPTIONS } from "@/lib/mock";
 import { Label } from "@/components/ui/label";
-import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download } from "lucide-react";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive, Plus, UploadCloud, Download, Sparkles, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { downloadCSV } from "@/lib/csv";
 import { toast } from "sonner";
 
