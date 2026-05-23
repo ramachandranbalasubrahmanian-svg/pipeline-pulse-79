@@ -142,26 +142,37 @@ function Audit() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((a, i) => (
-                <tr key={i} className="border-b border-border last:border-0 hover:bg-muted/50">
-                  <td className="py-3 px-4 font-mono text-xs text-muted-foreground whitespace-nowrap">{a.ts}</td>
-                  <td className="py-3 px-4 text-xs">{a.user}</td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${ACTION_STYLE[a.action]}`}>{a.action}</span>
-                      <span className="text-xs">{a.actionLabel}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-xs text-muted-foreground">{a.resource}</td>
-                  <td className="py-3 px-4 text-xs">{a.tenant}</td>
-                  <td className="py-3 px-4 font-mono text-xs text-muted-foreground">{a.ip}</td>
-                  <td className="py-3 px-4">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-success">
-                      <span className="size-1.5 rounded-full bg-success" />{a.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((a, i) => {
+                const flagged = a.anomalies.length > 0;
+                return (
+                  <tr key={i} className={`border-b border-border last:border-0 hover:bg-muted/50 ${flagged ? "bg-warning/5" : ""}`}>
+                    <td className="py-3 px-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        {flagged && <ShieldAlert className="size-3.5 text-warning shrink-0" />}
+                        {a.ts}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-xs">{a.user}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${ACTION_STYLE[a.action]}`}>{a.action}</span>
+                        <span className="text-xs">{a.actionLabel}</span>
+                      </div>
+                      {flagged && (
+                        <div className="text-[10px] text-warning mt-1 font-medium">⚠ {a.anomalies.join(" · ")}</div>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-xs text-muted-foreground">{a.resource}</td>
+                    <td className="py-3 px-4 text-xs">{a.tenant}</td>
+                    <td className={`py-3 px-4 font-mono text-xs ${flagged && !a.ip.startsWith("10.") && a.ip !== "—" ? "text-warning font-semibold" : "text-muted-foreground"}`}>{a.ip}</td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex items-center gap-1.5 text-xs text-success">
+                        <span className="size-1.5 rounded-full bg-success" />{a.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
               {filtered.length === 0 && (
                 <tr><td colSpan={7} className="text-center py-10 text-muted-foreground text-sm">No audit events match your filters.</td></tr>
               )}
