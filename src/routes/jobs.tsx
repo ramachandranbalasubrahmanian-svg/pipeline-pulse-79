@@ -1,0 +1,200 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
+import { PageHeader } from "@/components/PageHeader";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { StatusBadge } from "@/components/StatusBadge";
+import { JOBS, type Job, type JobStatus, TENANTS } from "@/lib/mock";
+import { Search, Calendar, Upload, RefreshCw, X, FileArchive } from "lucide-react";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/jobs")({
+  head: () => ({ meta: [{ title: "Job Manager — Data Pipelines" }] }),
+  component: JobsPage,
+});
+
+const STATUSES: ("All" | JobStatus)[] = ["All", "Running", "Completed", "Errored Out", "Queueing", "Cancelled", "Initialising", "Timeout"];
+
+const LOG_LINES = [
+  "[14:21:08] INFO  Starting job SF_CRM_Daily_Full_Sync",
+  "[14:21:08] INFO  Tenant=Apex Financial Project=Salesforce → BigQuery Sync",
+  "[14:21:09] INFO  Provisioning 32 CPU / 128GB compute node...",
+  "[14:21:14] INFO  Node ready. Allocating 400 worker threads.",
+  "[14:21:15] INFO  Authenticating against Salesforce REST API v58.0",
+  "[14:21:16] INFO  Auth OK. Refreshing OAuth token.",
+  "[14:21:17] INFO  Issuing query: SELECT Id, AccountId, Amount FROM Opportunity",
+  "[14:21:22] INFO  Received 2,412,883 records. Beginning batched extract.",
+  "[14:22:14] INFO  Batch 100/2400 written to staging bucket (12.4 MB).",
+  "[14:24:51] INFO  Batch 800/2400 written to staging bucket (98.1 MB).",
+  "[14:26:32] WARN  Throttling detected. Backing off for 2.3s.",
+  "[14:27:01] INFO  Resumed. Batch 1300/2400 in progress.",
+  "[14:28:11] INFO  Schema validation step queued.",
+  "[14:28:33] INFO  Records passing validation: 2,412,036 / 2,412,883 (99.96%).",
+  "[14:29:00] INFO  847 records flagged for review (null AccountId).",
+  "[14:29:01] ERROR NullPointerException in schema validator at line 847",
+];
+
+function JobsPage() {
+  const [statusFilter, setStatusFilter] = useState<"All" | JobStatus>("All");
+  const [tenantFilter, setTenantFilter] = useState<string>("All");
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<Job | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
+
+  const filtered = useMemo(() => JOBS.filter((j) =>
+    (statusFilter === "All" || j.status === statusFilter) &&
+    (tenantFilter === "All" || j.tenant === tenantFilter) &&
+    (query === "" || j.name.toLowerCase().includes(query.toLowerCase()))
+  ), [statusFilter, tenantFilter, query]);
+
+  return (
+    <div>
+      <PageHeader
+        title="Job Manager"
+        description={`${filtered.length} of ${JOBS.length} jobs visible`}
+        actions={
+          <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+            <DialogTrigger asChild>
+              <Button><Upload className="size-4" />Upload Config</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Upload Pipeline Config</DialogTitle></DialogHeader>
+              <div className="border-2 border-dashed border-border rounded-lg p-10 text-center bg-muted/30">
+                <FileArchive className="size-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-medium text-sm">Drop a ZIP file here</p>
+                <p className="text-xs text-muted-foreground mt-1">or click to browse — max 50MB</p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setUploadOpen(false)}>Cancel</Button>
+                <Button onClick={() => { setUploadOpen(false); toast.success("Config Uploaded", { description: "Pipeline config queued for validation." }); }}>Upload</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        }
+      />
+
+      <Card className="p-4 mb-4">
+        <div className="flex flex-wrap gap-3 items-center">
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>{STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={tenantFilter} onValueChange={setTenantFilter}>
+            <SelectTrigger className="w-52"><SelectValue placeholder="Tenant" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Tenants</SelectItem>
+              {TENANTS.map((t) => <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" className="h-9"><Calendar className="size-4" />May 1 — May 23</Button>
+          <div className="relative flex-1 min-w-60">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input placeholder="Search by job name..." value={query} onChange={(e) => setQuery(e.target.value)} className="pl-9 h-9" />
+          </div>
+        </div>
+      </Card>
+
+      <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-muted-foreground bg-muted/40 border-b border-border">
+                <th className="font-medium py-3 px-4">Job Name</th>
+                <th className="font-medium py-3 px-4">Status</th>
+                <th className="font-medium py-3 px-4">Tenant</th>
+                <th className="font-medium py-3 px-4">Hardware</th>
+                <th className="font-medium py-3 px-4">Threads</th>
+                <th className="font-medium py-3 px-4">Duration</th>
+                <th className="font-medium py-3 px-4">Started</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((j) => (
+                <tr
+                  key={j.id}
+                  className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer"
+                  onClick={() => setSelected(j)}
+                >
+                  <td className="py-3 px-4">
+                    <div className="font-medium">{j.name}</div>
+                    <div className="text-xs text-muted-foreground">{j.id}</div>
+                  </td>
+                  <td className="py-3 px-4"><StatusBadge status={j.status} /></td>
+                  <td className="py-3 px-4 text-muted-foreground">{j.tenant}</td>
+                  <td className="py-3 px-4 text-xs">{j.hardware}</td>
+                  <td className="py-3 px-4 tabular-nums">{j.threads}</td>
+                  <td className="py-3 px-4 tabular-nums">{j.duration}</td>
+                  <td className="py-3 px-4 text-muted-foreground">{j.started}</td>
+                </tr>
+              ))}
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} className="text-center py-10 text-muted-foreground text-sm">No jobs match your filters.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Sheet open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+          {selected && (
+            <>
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-3">
+                  {selected.name}<StatusBadge status={selected.status} />
+                </SheetTitle>
+                <p className="text-xs text-muted-foreground">{selected.id} · {selected.tenant} · {selected.project}</p>
+              </SheetHeader>
+
+              <div className="space-y-5 mt-5 px-1">
+                <div className="grid grid-cols-3 gap-3">
+                  <Metric label="CPU" value="73%" />
+                  <Metric label="RAM" value="61%" />
+                  <Metric label="Threads" value={`${Math.min(selected.threads, 380)}/${selected.threads}`} />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-xs font-medium text-muted-foreground">Thread Utilization</div>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary to-purple-500" style={{ width: "82%" }} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-xs font-medium text-muted-foreground">Log Output</div>
+                  <div className="rounded-lg bg-[#0d0f12] text-green-300 p-4 font-mono text-[11px] leading-relaxed max-h-80 overflow-y-auto">
+                    {LOG_LINES.map((l, i) => (
+                      <div key={i} className={l.includes("ERROR") ? "text-red-400" : l.includes("WARN") ? "text-yellow-300" : ""}>{l}</div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => toast.success("Job re-run queued")}>
+                    <RefreshCw className="size-4" />Re-run
+                  </Button>
+                  <Button variant="destructive" onClick={() => { toast.success("Job cancelled"); setSelected(null); }}>
+                    <X className="size-4" />Cancel Job
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border p-3 bg-muted/30">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-lg font-semibold tabular-nums mt-0.5">{value}</div>
+    </div>
+  );
+}
