@@ -506,42 +506,46 @@ function DQPage() {
           </Card>
         </TabsContent>
 
-        {/* ---- Quarantine & Golden ---- */}
-        <TabsContent value="quarantine" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="size-4 text-warning" />
-              <div className="font-medium">Quarantined Record</div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
-              <div><div className="text-xs text-muted-foreground">Row</div><div className="font-mono">{QUARANTINE.row}</div></div>
-              <div><div className="text-xs text-muted-foreground">Issue</div><div>{QUARANTINE.issue}</div></div>
-              <div><div className="text-xs text-muted-foreground">Match Confidence</div><div className="font-semibold text-warning">{QUARANTINE.confidence}</div></div>
-              <div><div className="text-xs text-muted-foreground">Action</div><span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span></div>
-              <div className="md:col-span-5 text-muted-foreground text-xs">{QUARANTINE.reason}</div>
-            </div>
-          </Card>
+        {resultsVisible && (
+          <>
+            {/* ---- Quarantine & Golden ---- */}
+            <TabsContent value="quarantine" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle className="size-4 text-warning" />
+                  <div className="font-medium">Quarantined Record</div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+                  <div><div className="text-xs text-muted-foreground">Row</div><div className="font-mono">{QUARANTINE.row}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Issue</div><div>{QUARANTINE.issue}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Match Confidence</div><div className="font-semibold text-warning">{QUARANTINE.confidence}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Action</div><span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span></div>
+                  <div className="md:col-span-5 text-muted-foreground text-xs">{QUARANTINE.reason}</div>
+                </div>
+              </Card>
 
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <GitMerge className="size-4 text-primary" />
-              <div className="font-medium">Golden Record Recommendation</div>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">
-              Retain most recent verified email, highest quality phone number, and most complete customer profile based on survivorship rules.
-            </p>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Attribute</TableHead><TableHead>Survivorship Rule</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {SURVIVORSHIP.map((s) => (
-                  <TableRow key={s.attr}><TableCell>{s.attr}</TableCell><TableCell className="text-muted-foreground">{s.rule}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <GitMerge className="size-4 text-primary" />
+                  <div className="font-medium">Golden Record Recommendation</div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Retain most recent verified email, highest quality phone number, and most complete customer profile based on survivorship rules.
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Attribute</TableHead><TableHead>Survivorship Rule</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {SURVIVORSHIP.map((s) => (
+                      <TableRow key={s.attr}><TableCell>{s.attr}</TableCell><TableCell className="text-muted-foreground">{s.rule}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
