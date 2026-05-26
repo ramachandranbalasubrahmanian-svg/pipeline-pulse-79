@@ -166,11 +166,13 @@ function FlowDiagram() {
 function DQPage() {
   const [runState, setRunState] = useState<"idle" | "running" | "done">("idle");
   const [stepIdx, setStepIdx] = useState(0);
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("feed");
   const [search, setSearch] = useState("");
   const [sevFilter, setSevFilter] = useState<string>("All");
+  const [resultsVisible, setResultsVisible] = useState(false);
 
   function runValidation() {
+    setResultsVisible(true);
     setRunState("running");
     setStepIdx(0);
     setTab("results");
