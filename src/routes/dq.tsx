@@ -656,65 +656,69 @@ function DQPage() {
           </Card>
         </TabsContent>
 
-        {/* ---- Business Impact ---- */}
-        <TabsContent value="impact" className="space-y-4 mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="p-5">
-              <TrendingUp className="size-5 text-primary mb-2" />
-              <div className="text-2xl font-semibold">85%</div>
-              <div className="text-sm font-medium mt-1">Faster Onboarding</div>
-              <div className="text-xs text-muted-foreground mt-1">From 4–8 weeks to 2–3 days using control-file-driven onboarding.</div>
-            </Card>
-            <Card className="p-5">
-              <CheckCircle2 className="size-5 text-success mb-2" />
-              <div className="text-2xl font-semibold">90%+</div>
-              <div className="text-sm font-medium mt-1">Duplicate Reduction</div>
-              <div className="text-xs text-muted-foreground mt-1">Automated duplicate detection and Golden Record logic.</div>
-            </Card>
-            <Card className="p-5">
-              <XCircle className="size-5 text-warning mb-2" />
-              <div className="text-2xl font-semibold">80%+</div>
-              <div className="text-sm font-medium mt-1">Faster Incident Resolution</div>
-              <div className="text-xs text-muted-foreground mt-1">Root cause identified in minutes instead of days.</div>
-            </Card>
-            <Card className="p-5">
-              <Sparkles className="size-5 text-primary mb-2" />
-              <div className="text-2xl font-semibold">$5M+</div>
-              <div className="text-sm font-medium mt-1">Savings Potential</div>
-              <div className="text-xs text-muted-foreground mt-1">Reduced operational cost from poor data quality incidents.</div>
-            </Card>
-          </div>
+        {resultsVisible && (
+          <>
+            {/* ---- Business Impact ---- */}
+            <TabsContent value="impact" className="space-y-4 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="p-5">
+                  <TrendingUp className="size-5 text-primary mb-2" />
+                  <div className="text-2xl font-semibold">85%</div>
+                  <div className="text-sm font-medium mt-1">Faster Onboarding</div>
+                  <div className="text-xs text-muted-foreground mt-1">From 4–8 weeks to 2–3 days using control-file-driven onboarding.</div>
+                </Card>
+                <Card className="p-5">
+                  <CheckCircle2 className="size-5 text-success mb-2" />
+                  <div className="text-2xl font-semibold">90%+</div>
+                  <div className="text-sm font-medium mt-1">Duplicate Reduction</div>
+                  <div className="text-xs text-muted-foreground mt-1">Automated duplicate detection and Golden Record logic.</div>
+                </Card>
+                <Card className="p-5">
+                  <XCircle className="size-5 text-warning mb-2" />
+                  <div className="text-2xl font-semibold">80%+</div>
+                  <div className="text-sm font-medium mt-1">Faster Incident Resolution</div>
+                  <div className="text-xs text-muted-foreground mt-1">Root cause identified in minutes instead of days.</div>
+                </Card>
+                <Card className="p-5">
+                  <Sparkles className="size-5 text-primary mb-2" />
+                  <div className="text-2xl font-semibold">$5M+</div>
+                  <div className="text-sm font-medium mt-1">Savings Potential</div>
+                  <div className="text-xs text-muted-foreground mt-1">Reduced operational cost from poor data quality incidents.</div>
+                </Card>
+              </div>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Business Metric</TableHead>
-                  <TableHead>Before</TableHead>
-                  <TableHead>After</TableHead>
-                  <TableHead>Improvement</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {IMPACT.map((r) => (
-                  <TableRow key={r.metric}>
-                    <TableCell className="font-medium">{r.metric}</TableCell>
-                    <TableCell className="text-muted-foreground">{r.before}</TableCell>
-                    <TableCell>{r.after}</TableCell>
-                    <TableCell><span className={actionBadge("Passed")}>{r.delta}</span></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Business Metric</TableHead>
+                      <TableHead>Before</TableHead>
+                      <TableHead>After</TableHead>
+                      <TableHead>Improvement</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {IMPACT.map((r) => (
+                      <TableRow key={r.metric}>
+                        <TableCell className="font-medium">{r.metric}</TableCell>
+                        <TableCell className="text-muted-foreground">{r.before}</TableCell>
+                        <TableCell>{r.after}</TableCell>
+                        <TableCell><span className={actionBadge("Passed")}>{r.delta}</span></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
 
-          <Card className="p-5 bg-primary/5 border-primary/20">
-            <p className="text-sm">
-              Data quality is no longer a manual after-the-fact cleanup process. It becomes an embedded governance control
-              that protects downstream analytics, reporting, AI/ML models, compliance processes, and business decisioning.
-            </p>
-          </Card>
-        </TabsContent>
+              <Card className="p-5 bg-primary/5 border-primary/20">
+                <p className="text-sm">
+                  Data quality is no longer a manual after-the-fact cleanup process. It becomes an embedded governance control
+                  that protects downstream analytics, reporting, AI/ML models, compliance processes, and business decisioning.
+                </p>
+              </Card>
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );
