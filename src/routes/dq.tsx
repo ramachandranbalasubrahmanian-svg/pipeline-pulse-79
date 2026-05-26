@@ -342,26 +342,30 @@ function DQPage() {
           </div>
         </TabsContent>
 
-        {/* ---- AI Rule Assistant ---- */}
-        <TabsContent value="ai" className="space-y-4 mt-6">
-          <Card className="p-4 bg-primary/5 border-primary/20">
-            <div className="flex items-start gap-3">
-              <Sparkles className="size-5 text-primary mt-0.5" />
-              <p className="text-sm">
-                AI assists with rule explanation, error classification, and remediation guidance.
-                Final pass/reject decisions are controlled by governed metadata rules.
-              </p>
-            </div>
-          </Card>
-          <Card className="p-4 space-y-3">
-            {REJECTED.concat([{ row: 91, field: "customer", value: "—", rule: "Duplicate", severity: "Medium", action: "Quarantined", ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence." }]).map((r) => (
-              <div key={r.row} className="flex items-start gap-3 text-sm">
-                <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">Row {r.row}</span>
-                <span className="text-muted-foreground">{r.ai}</span>
-              </div>
-            ))}
-          </Card>
-        </TabsContent>
+        {resultsVisible && (
+          <>
+            {/* ---- AI Rule Assistant ---- */}
+            <TabsContent value="ai" className="space-y-4 mt-6">
+              <Card className="p-4 bg-primary/5 border-primary/20">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="size-5 text-primary mt-0.5" />
+                  <p className="text-sm">
+                    AI assists with rule explanation, error classification, and remediation guidance.
+                    Final pass/reject decisions are controlled by governed metadata rules.
+                  </p>
+                </div>
+              </Card>
+              <Card className="p-4 space-y-3">
+                {REJECTED.concat([{ row: 91, field: "customer", value: "—", rule: "Duplicate", severity: "Medium", action: "Quarantined", ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence." }]).map((r) => (
+                  <div key={r.row} className="flex items-start gap-3 text-sm">
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">Row {r.row}</span>
+                    <span className="text-muted-foreground">{r.ai}</span>
+                  </div>
+                ))}
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
