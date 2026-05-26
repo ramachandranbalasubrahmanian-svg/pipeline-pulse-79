@@ -463,48 +463,52 @@ function DQPage() {
           </div>
         </TabsContent>
 
-        {/* ---- Rejected ---- */}
-        <TabsContent value="rejected" className="space-y-4 mt-6">
-          <div className="flex flex-wrap gap-2 items-center">
-            <Input
-              placeholder="Search by row number, field, or error reason"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-sm"
-            />
-            {["All", "Critical", "High", "Medium"].map((s) => (
-              <Button key={s} size="sm" variant={sevFilter === s ? "default" : "outline"} onClick={() => setSevFilter(s)}>{s}</Button>
-            ))}
-          </div>
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Row</TableHead>
-                  <TableHead>Field</TableHead>
-                  <TableHead>Failed Value</TableHead>
-                  <TableHead>Rule Failed</TableHead>
-                  <TableHead>Severity</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>AI Explanation</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRejected.map((r) => (
-                  <TableRow key={r.row}>
-                    <TableCell className="font-mono">{r.row}</TableCell>
-                    <TableCell className="font-mono text-xs">{r.field}</TableCell>
-                    <TableCell className="font-mono text-xs">{r.value}</TableCell>
-                    <TableCell>{r.rule}</TableCell>
-                    <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
-                    <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{r.ai}</TableCell>
-                  </TableRow>
+        {resultsVisible && (
+          <>
+            {/* ---- Rejected ---- */}
+            <TabsContent value="rejected" className="space-y-4 mt-6">
+              <div className="flex flex-wrap gap-2 items-center">
+                <Input
+                  placeholder="Search by row number, field, or error reason"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="max-w-sm"
+                />
+                {["All", "Critical", "High", "Medium"].map((s) => (
+                  <Button key={s} size="sm" variant={sevFilter === s ? "default" : "outline"} onClick={() => setSevFilter(s)}>{s}</Button>
                 ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
+              </div>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Row</TableHead>
+                      <TableHead>Field</TableHead>
+                      <TableHead>Failed Value</TableHead>
+                      <TableHead>Rule Failed</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead>Action</TableHead>
+                      <TableHead>AI Explanation</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredRejected.map((r) => (
+                      <TableRow key={r.row}>
+                        <TableCell className="font-mono">{r.row}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.field}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.value}</TableCell>
+                        <TableCell>{r.rule}</TableCell>
+                        <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
+                        <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{r.ai}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
