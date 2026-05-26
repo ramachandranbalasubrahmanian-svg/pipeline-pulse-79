@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Network, Share2, Database, PlayCircle,
-  CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film,
+  CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film, ShieldCheck,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
@@ -16,6 +16,7 @@ const NAV = [
   { to: "/architecture", label: "Architecture", icon: Share2 },
   { to: "/projects", label: "Projects", icon: Database },
   { to: "/jobs", label: "Job Manager", icon: PlayCircle },
+  { to: "/dq", label: "DQ Control Center", icon: ShieldCheck },
   { to: "/billing", label: "Billing & Usage", icon: CreditCard },
   { to: "/incidents", label: "Incidents", icon: AlertCircle },
   { to: "/audit", label: "Audit Trail", icon: History },

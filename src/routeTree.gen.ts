@@ -15,6 +15,7 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LineageRouteImport } from './routes/lineage'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as IncidentsRouteImport } from './routes/incidents'
+import { Route as DqRouteImport } from './routes/dq'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AuditRouteImport } from './routes/audit'
@@ -51,6 +52,11 @@ const IncidentsRoute = IncidentsRouteImport.update({
   path: '/incidents',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DqRoute = DqRouteImport.update({
+  id: '/dq',
+  path: '/dq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
+  '/dq': typeof DqRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
+  '/dq': typeof DqRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
+  '/dq': typeof DqRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/demo'
+    | '/dq'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/demo'
+    | '/dq'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/demo'
+    | '/dq'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   BillingRoute: typeof BillingRoute
   DemoRoute: typeof DemoRoute
+  DqRoute: typeof DqRoute
   IncidentsRoute: typeof IncidentsRoute
   JobsRoute: typeof JobsRoute
   LineageRoute: typeof LineageRoute
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IncidentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dq': {
+      id: '/dq'
+      path: '/dq'
+      fullPath: '/dq'
+      preLoaderRoute: typeof DqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo': {
       id: '/demo'
       path: '/demo'
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   BillingRoute: BillingRoute,
   DemoRoute: DemoRoute,
+  DqRoute: DqRoute,
   IncidentsRoute: IncidentsRoute,
   JobsRoute: JobsRoute,
   LineageRoute: LineageRoute,
@@ -271,13 +292,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
