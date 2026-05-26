@@ -543,29 +543,33 @@ function DQPage() {
           </Card>
         </TabsContent>
 
-        {/* ---- Analytics ---- */}
-        <TabsContent value="analytics" className="space-y-4 mt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
-            <StatCard label="Pass Rate" value="93%" tone="text-success" />
-            <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
-            <StatCard label="Rules Executed" value="8" />
-          </div>
-          <Card className="p-5">
-            <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
-            <div className="space-y-2">
-              {FAILURE_BREAKDOWN.map((f) => (
-                <div key={f.type} className="flex items-center gap-3">
-                  <div className="w-44 text-xs">{f.type}</div>
-                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${(f.count / 1) * 60}%` }} />
-                  </div>
-                  <div className="w-8 text-right text-xs font-medium">{f.count}</div>
+        {resultsVisible && (
+          <>
+            {/* ---- Analytics ---- */}
+            <TabsContent value="analytics" className="space-y-4 mt-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
+                <StatCard label="Pass Rate" value="93%" tone="text-success" />
+                <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
+                <StatCard label="Rules Executed" value="8" />
+              </div>
+              <Card className="p-5">
+                <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
+                <div className="space-y-2">
+                  {FAILURE_BREAKDOWN.map((f) => (
+                    <div key={f.type} className="flex items-center gap-3">
+                      <div className="w-44 text-xs">{f.type}</div>
+                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: `${(f.count / 1) * 60}%` }} />
+                      </div>
+                      <div className="w-8 text-right text-xs font-medium">{f.count}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
