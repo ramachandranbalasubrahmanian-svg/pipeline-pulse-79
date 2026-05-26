@@ -252,23 +252,27 @@ function DQPage() {
           )}
         </TabsList>
 
-        {/* ---- Overview ---- */}
-        <TabsContent value="overview" className="space-y-6 mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="85% Faster Onboarding" value="2–3 days" sub="From 4–8 weeks" tone="text-primary" />
-            <StatCard label="90%+ Duplicate Reduction" value="Automated" sub="Golden Record logic" tone="text-success" />
-            <StatCard label="80%+ Faster Incidents" value="< 4 hrs" sub="From 20–100+ hours" tone="text-warning" />
-            <StatCard label="Annual Savings Potential" value="$5M+" sub="Reduced DQ incident cost" tone="text-primary" />
-          </div>
-          <FlowDiagram />
-          <Card className="p-4">
-            <div className="text-sm font-medium mb-2">How it works</div>
-            <p className="text-sm text-muted-foreground">
-              Input File + Control File → Metadata Rules Engine → Validation + De-duplication → Reconciliation + Golden Record.
-              AI assists with explanation and remediation guidance. Final pass/reject decisions are controlled by governed metadata rules.
-            </p>
-          </Card>
-        </TabsContent>
+        {resultsVisible && (
+          <>
+            {/* ---- Overview ---- */}
+            <TabsContent value="overview" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard label="85% Faster Onboarding" value="2–3 days" sub="From 4–8 weeks" tone="text-primary" />
+                <StatCard label="90%+ Duplicate Reduction" value="Automated" sub="Golden Record logic" tone="text-success" />
+                <StatCard label="80%+ Faster Incidents" value="< 4 hrs" sub="From 20–100+ hours" tone="text-warning" />
+                <StatCard label="Annual Savings Potential" value="$5M+" sub="Reduced DQ incident cost" tone="text-primary" />
+              </div>
+              <FlowDiagram />
+              <Card className="p-4">
+                <div className="text-sm font-medium mb-2">How it works</div>
+                <p className="text-sm text-muted-foreground">
+                  Input File + Control File → Metadata Rules Engine → Validation + De-duplication → Reconciliation + Golden Record.
+                  AI assists with explanation and remediation guidance. Final pass/reject decisions are controlled by governed metadata rules.
+                </p>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {/* ---- Incoming Feed ---- */}
         <TabsContent value="feed" className="space-y-4 mt-6">
