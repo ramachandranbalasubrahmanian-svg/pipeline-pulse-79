@@ -424,44 +424,48 @@ function DQPage() {
           )}
         </TabsContent>
 
-        {/* ---- Reconciliation ---- */}
-        <TabsContent value="recon" className="space-y-4 mt-6">
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Metric</TableHead><TableHead className="text-right">Value</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Total Records Received", "100"],
-                  ["Records Passed", "93"],
-                  ["Records Rejected", "6"],
-                  ["Records Quarantined", "1"],
-                  ["Pass Rate", "93%"],
-                  ["Reject Rate", "6%"],
-                  ["Quarantine Rate", "1%"],
-                  ["Threshold Limit", "10%"],
-                  ["Pipeline Decision", "Continue Processing"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}>
-                    <TableCell>{k}</TableCell>
-                    <TableCell className="text-right font-medium">{v}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-          <Card className="p-4 text-sm text-muted-foreground">
-            The pipeline is allowed to continue because the current rejection rate is 6%, which is below the configured 10% threshold.
-            Failed records are isolated and valid records continue to the next stage.
-          </Card>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => mockExport("Reconciliation report downloaded")}><Download className="size-4" /> Download Reconciliation Report</Button>
-            <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}><Download className="size-4" /> Export Summary CSV</Button>
-            <Button variant="outline" onClick={() => setTab("rejected")}>View Failed Records</Button>
-            <Button variant="outline" onClick={() => setTab("audit")}>View Audit Evidence</Button>
-          </div>
-        </TabsContent>
+        {resultsVisible && (
+          <>
+            {/* ---- Reconciliation ---- */}
+            <TabsContent value="recon" className="space-y-4 mt-6">
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Metric</TableHead><TableHead className="text-right">Value</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Total Records Received", "100"],
+                      ["Records Passed", "93"],
+                      ["Records Rejected", "6"],
+                      ["Records Quarantined", "1"],
+                      ["Pass Rate", "93%"],
+                      ["Reject Rate", "6%"],
+                      ["Quarantine Rate", "1%"],
+                      ["Threshold Limit", "10%"],
+                      ["Pipeline Decision", "Continue Processing"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}>
+                        <TableCell>{k}</TableCell>
+                        <TableCell className="text-right font-medium">{v}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+              <Card className="p-4 text-sm text-muted-foreground">
+                The pipeline is allowed to continue because the current rejection rate is 6%, which is below the configured 10% threshold.
+                Failed records are isolated and valid records continue to the next stage.
+              </Card>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => mockExport("Reconciliation report downloaded")}><Download className="size-4" /> Download Reconciliation Report</Button>
+                <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}><Download className="size-4" /> Export Summary CSV</Button>
+                <Button variant="outline" onClick={() => setTab("rejected")}>View Failed Records</Button>
+                <Button variant="outline" onClick={() => setTab("audit")}>View Audit Evidence</Button>
+              </div>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
