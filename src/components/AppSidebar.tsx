@@ -12,7 +12,6 @@ import { toast } from "sonner";
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/demo", label: "Demo Video", icon: Film },
-  { to: "/case-study", label: "Case Study", icon: Award },
   { to: "/lineage", label: "Pipeline Maps", icon: Network },
   { to: "/architecture", label: "Architecture", icon: Share2 },
   { to: "/projects", label: "Projects", icon: Database },
