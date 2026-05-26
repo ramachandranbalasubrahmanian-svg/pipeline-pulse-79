@@ -166,11 +166,13 @@ function FlowDiagram() {
 function DQPage() {
   const [runState, setRunState] = useState<"idle" | "running" | "done">("idle");
   const [stepIdx, setStepIdx] = useState(0);
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState("feed");
   const [search, setSearch] = useState("");
   const [sevFilter, setSevFilter] = useState<string>("All");
+  const [resultsVisible, setResultsVisible] = useState(false);
 
   function runValidation() {
+    setResultsVisible(true);
     setRunState("running");
     setStepIdx(0);
     setTab("results");
@@ -232,37 +234,45 @@ function DQPage() {
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="feed">Incoming Feed</TabsTrigger>
           <TabsTrigger value="rules">Metadata Rules</TabsTrigger>
-          <TabsTrigger value="ai">AI Rule Assistant</TabsTrigger>
-          <TabsTrigger value="results">Validation Results</TabsTrigger>
-          <TabsTrigger value="recon">Reconciliation</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
-          <TabsTrigger value="quarantine">Quarantine & Golden</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="audit">Audit</TabsTrigger>
-          <TabsTrigger value="incident">Incident</TabsTrigger>
-          <TabsTrigger value="impact">Business Impact</TabsTrigger>
+          {resultsVisible && (
+            <>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="ai">AI Rule Assistant</TabsTrigger>
+              <TabsTrigger value="results">Validation Results</TabsTrigger>
+              <TabsTrigger value="recon">Reconciliation</TabsTrigger>
+              <TabsTrigger value="rejected">Rejected</TabsTrigger>
+              <TabsTrigger value="quarantine">Quarantine & Golden</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="audit">Audit</TabsTrigger>
+              <TabsTrigger value="incident">Incident</TabsTrigger>
+              <TabsTrigger value="impact">Business Impact</TabsTrigger>
+            </>
+          )}
         </TabsList>
 
-        {/* ---- Overview ---- */}
-        <TabsContent value="overview" className="space-y-6 mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="85% Faster Onboarding" value="2–3 days" sub="From 4–8 weeks" tone="text-primary" />
-            <StatCard label="90%+ Duplicate Reduction" value="Automated" sub="Golden Record logic" tone="text-success" />
-            <StatCard label="80%+ Faster Incidents" value="< 4 hrs" sub="From 20–100+ hours" tone="text-warning" />
-            <StatCard label="Annual Savings Potential" value="$5M+" sub="Reduced DQ incident cost" tone="text-primary" />
-          </div>
-          <FlowDiagram />
-          <Card className="p-4">
-            <div className="text-sm font-medium mb-2">How it works</div>
-            <p className="text-sm text-muted-foreground">
-              Input File + Control File → Metadata Rules Engine → Validation + De-duplication → Reconciliation + Golden Record.
-              AI assists with explanation and remediation guidance. Final pass/reject decisions are controlled by governed metadata rules.
-            </p>
-          </Card>
-        </TabsContent>
+        {resultsVisible && (
+          <>
+            {/* ---- Overview ---- */}
+            <TabsContent value="overview" className="space-y-6 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard label="85% Faster Onboarding" value="2–3 days" sub="From 4–8 weeks" tone="text-primary" />
+                <StatCard label="90%+ Duplicate Reduction" value="Automated" sub="Golden Record logic" tone="text-success" />
+                <StatCard label="80%+ Faster Incidents" value="< 4 hrs" sub="From 20–100+ hours" tone="text-warning" />
+                <StatCard label="Annual Savings Potential" value="$5M+" sub="Reduced DQ incident cost" tone="text-primary" />
+              </div>
+              <FlowDiagram />
+              <Card className="p-4">
+                <div className="text-sm font-medium mb-2">How it works</div>
+                <p className="text-sm text-muted-foreground">
+                  Input File + Control File → Metadata Rules Engine → Validation + De-duplication → Reconciliation + Golden Record.
+                  AI assists with explanation and remediation guidance. Final pass/reject decisions are controlled by governed metadata rules.
+                </p>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {/* ---- Incoming Feed ---- */}
         <TabsContent value="feed" className="space-y-4 mt-6">
@@ -336,379 +346,415 @@ function DQPage() {
           </div>
         </TabsContent>
 
-        {/* ---- AI Rule Assistant ---- */}
-        <TabsContent value="ai" className="space-y-4 mt-6">
-          <Card className="p-4 bg-primary/5 border-primary/20">
-            <div className="flex items-start gap-3">
-              <Sparkles className="size-5 text-primary mt-0.5" />
-              <p className="text-sm">
-                AI assists with rule explanation, error classification, and remediation guidance.
-                Final pass/reject decisions are controlled by governed metadata rules.
-              </p>
-            </div>
-          </Card>
-          <Card className="p-4 space-y-3">
-            {REJECTED.concat([{ row: 91, field: "customer", value: "—", rule: "Duplicate", severity: "Medium", action: "Quarantined", ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence." }]).map((r) => (
-              <div key={r.row} className="flex items-start gap-3 text-sm">
-                <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">Row {r.row}</span>
-                <span className="text-muted-foreground">{r.ai}</span>
-              </div>
-            ))}
-          </Card>
-        </TabsContent>
-
-        {/* ---- Validation Results ---- */}
-        <TabsContent value="results" className="space-y-4 mt-6">
-          {runState === "idle" && (
-            <Card className="p-10 text-center">
-              <Activity className="size-8 text-muted-foreground mx-auto mb-2" />
-              <div className="text-sm text-muted-foreground">
-                No validation results yet. Run Data Quality Validation to generate reconciliation, rejected records, audit evidence, and incident recommendations.
-              </div>
-              <Button className="mt-4" onClick={runValidation}><PlayCircle className="size-4" /> Run Data Quality Validation</Button>
-            </Card>
-          )}
-
-          {runState !== "idle" && (
-            <Card className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-medium">
-                  {runState === "running" ? "Validation in progress…" : "Validation completed"}
+        {resultsVisible && (
+          <>
+            {/* ---- AI Rule Assistant ---- */}
+            <TabsContent value="ai" className="space-y-4 mt-6">
+              <Card className="p-4 bg-primary/5 border-primary/20">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="size-5 text-primary mt-0.5" />
+                  <p className="text-sm">
+                    AI assists with rule explanation, error classification, and remediation guidance.
+                    Final pass/reject decisions are controlled by governed metadata rules.
+                  </p>
                 </div>
-                <div className="text-xs text-muted-foreground">{stepIdx}/{PROGRESS_STEPS.length}</div>
-              </div>
-              <Progress value={(stepIdx / PROGRESS_STEPS.length) * 100} />
-              <div className="mt-4 space-y-1.5">
-                <AnimatePresence initial={false}>
-                  {PROGRESS_STEPS.slice(0, stepIdx).map((s, i) => (
-                    <motion.div
-                      key={s}
-                      initial={{ opacity: 0, x: -4 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-xs"
-                    >
-                      <CheckCircle2 className="size-3.5 text-success" />
-                      <span className="text-muted-foreground">{s}</span>
-                      {i === stepIdx - 1 && runState === "running" && (
-                        <Loader2 className="size-3 animate-spin text-primary ml-1" />
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </Card>
-          )}
-
-          {runState === "done" && (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Records" value="100" />
-                <StatCard label="Passed" value="93" tone="text-success" />
-                <StatCard label="Rejected" value="6" tone="text-destructive" />
-                <StatCard label="Quarantined" value="1" tone="text-warning" />
-              </div>
-              <Card className="p-4 flex flex-wrap items-center gap-3 text-sm">
-                <span>Pipeline Decision:</span>
-                <span className={actionBadge("Continue")}>Continue Processing</span>
-                <span className="text-muted-foreground">
-                  Reject rate 6% is below the configured 10% threshold. Valid records can proceed while failed records are isolated for remediation.
-                </span>
               </Card>
-            </>
-          )}
-        </TabsContent>
-
-        {/* ---- Reconciliation ---- */}
-        <TabsContent value="recon" className="space-y-4 mt-6">
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Metric</TableHead><TableHead className="text-right">Value</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Total Records Received", "100"],
-                  ["Records Passed", "93"],
-                  ["Records Rejected", "6"],
-                  ["Records Quarantined", "1"],
-                  ["Pass Rate", "93%"],
-                  ["Reject Rate", "6%"],
-                  ["Quarantine Rate", "1%"],
-                  ["Threshold Limit", "10%"],
-                  ["Pipeline Decision", "Continue Processing"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}>
-                    <TableCell>{k}</TableCell>
-                    <TableCell className="text-right font-medium">{v}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-          <Card className="p-4 text-sm text-muted-foreground">
-            The pipeline is allowed to continue because the current rejection rate is 6%, which is below the configured 10% threshold.
-            Failed records are isolated and valid records continue to the next stage.
-          </Card>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => mockExport("Reconciliation report downloaded")}><Download className="size-4" /> Download Reconciliation Report</Button>
-            <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}><Download className="size-4" /> Export Summary CSV</Button>
-            <Button variant="outline" onClick={() => setTab("rejected")}>View Failed Records</Button>
-            <Button variant="outline" onClick={() => setTab("audit")}>View Audit Evidence</Button>
-          </div>
-        </TabsContent>
-
-        {/* ---- Rejected ---- */}
-        <TabsContent value="rejected" className="space-y-4 mt-6">
-          <div className="flex flex-wrap gap-2 items-center">
-            <Input
-              placeholder="Search by row number, field, or error reason"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-sm"
-            />
-            {["All", "Critical", "High", "Medium"].map((s) => (
-              <Button key={s} size="sm" variant={sevFilter === s ? "default" : "outline"} onClick={() => setSevFilter(s)}>{s}</Button>
-            ))}
-          </div>
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Row</TableHead>
-                  <TableHead>Field</TableHead>
-                  <TableHead>Failed Value</TableHead>
-                  <TableHead>Rule Failed</TableHead>
-                  <TableHead>Severity</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>AI Explanation</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRejected.map((r) => (
-                  <TableRow key={r.row}>
-                    <TableCell className="font-mono">{r.row}</TableCell>
-                    <TableCell className="font-mono text-xs">{r.field}</TableCell>
-                    <TableCell className="font-mono text-xs">{r.value}</TableCell>
-                    <TableCell>{r.rule}</TableCell>
-                    <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
-                    <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{r.ai}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
-
-        {/* ---- Quarantine & Golden ---- */}
-        <TabsContent value="quarantine" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="size-4 text-warning" />
-              <div className="font-medium">Quarantined Record</div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
-              <div><div className="text-xs text-muted-foreground">Row</div><div className="font-mono">{QUARANTINE.row}</div></div>
-              <div><div className="text-xs text-muted-foreground">Issue</div><div>{QUARANTINE.issue}</div></div>
-              <div><div className="text-xs text-muted-foreground">Match Confidence</div><div className="font-semibold text-warning">{QUARANTINE.confidence}</div></div>
-              <div><div className="text-xs text-muted-foreground">Action</div><span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span></div>
-              <div className="md:col-span-5 text-muted-foreground text-xs">{QUARANTINE.reason}</div>
-            </div>
-          </Card>
-
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <GitMerge className="size-4 text-primary" />
-              <div className="font-medium">Golden Record Recommendation</div>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">
-              Retain most recent verified email, highest quality phone number, and most complete customer profile based on survivorship rules.
-            </p>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Attribute</TableHead><TableHead>Survivorship Rule</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {SURVIVORSHIP.map((s) => (
-                  <TableRow key={s.attr}><TableCell>{s.attr}</TableCell><TableCell className="text-muted-foreground">{s.rule}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
-
-        {/* ---- Analytics ---- */}
-        <TabsContent value="analytics" className="space-y-4 mt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
-            <StatCard label="Pass Rate" value="93%" tone="text-success" />
-            <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
-            <StatCard label="Rules Executed" value="8" />
-          </div>
-          <Card className="p-5">
-            <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
-            <div className="space-y-2">
-              {FAILURE_BREAKDOWN.map((f) => (
-                <div key={f.type} className="flex items-center gap-3">
-                  <div className="w-44 text-xs">{f.type}</div>
-                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${(f.count / 1) * 60}%` }} />
+              <Card className="p-4 space-y-3">
+                {REJECTED.concat([{ row: 91, field: "customer", value: "—", rule: "Duplicate", severity: "Medium", action: "Quarantined", ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence." }]).map((r) => (
+                  <div key={r.row} className="flex items-start gap-3 text-sm">
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">Row {r.row}</span>
+                    <span className="text-muted-foreground">{r.ai}</span>
                   </div>
-                  <div className="w-8 text-right text-xs font-medium">{f.count}</div>
+                ))}
+              </Card>
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Validation Results ---- */}
+            <TabsContent value="results" className="space-y-4 mt-6">
+              {runState === "idle" && (
+                <Card className="p-10 text-center">
+                  <Activity className="size-8 text-muted-foreground mx-auto mb-2" />
+                  <div className="text-sm text-muted-foreground">
+                    No validation results yet. Run Data Quality Validation to generate reconciliation, rejected records, audit evidence, and incident recommendations.
+                  </div>
+                  <Button className="mt-4" onClick={runValidation}><PlayCircle className="size-4" /> Run Data Quality Validation</Button>
+                </Card>
+              )}
+
+              {runState !== "idle" && (
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm font-medium">
+                      {runState === "running" ? "Validation in progress…" : "Validation completed"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{stepIdx}/{PROGRESS_STEPS.length}</div>
+                  </div>
+                  <Progress value={(stepIdx / PROGRESS_STEPS.length) * 100} />
+                  <div className="mt-4 space-y-1.5">
+                    <AnimatePresence initial={false}>
+                      {PROGRESS_STEPS.slice(0, stepIdx).map((s, i) => (
+                        <motion.div
+                          key={s}
+                          initial={{ opacity: 0, x: -4 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          <CheckCircle2 className="size-3.5 text-success" />
+                          <span className="text-muted-foreground">{s}</span>
+                          {i === stepIdx - 1 && runState === "running" && (
+                            <Loader2 className="size-3 animate-spin text-primary ml-1" />
+                          )}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </Card>
+              )}
+
+              {runState === "done" && (
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <StatCard label="Total Records" value="100" />
+                    <StatCard label="Passed" value="93" tone="text-success" />
+                    <StatCard label="Rejected" value="6" tone="text-destructive" />
+                    <StatCard label="Quarantined" value="1" tone="text-warning" />
+                  </div>
+                  <Card className="p-4 flex flex-wrap items-center gap-3 text-sm">
+                    <span>Pipeline Decision:</span>
+                    <span className={actionBadge("Continue")}>Continue Processing</span>
+                    <span className="text-muted-foreground">
+                      Reject rate 6% is below the configured 10% threshold. Valid records can proceed while failed records are isolated for remediation.
+                    </span>
+                  </Card>
+                </>
+              )}
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Reconciliation ---- */}
+            <TabsContent value="recon" className="space-y-4 mt-6">
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Metric</TableHead><TableHead className="text-right">Value</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Total Records Received", "100"],
+                      ["Records Passed", "93"],
+                      ["Records Rejected", "6"],
+                      ["Records Quarantined", "1"],
+                      ["Pass Rate", "93%"],
+                      ["Reject Rate", "6%"],
+                      ["Quarantine Rate", "1%"],
+                      ["Threshold Limit", "10%"],
+                      ["Pipeline Decision", "Continue Processing"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}>
+                        <TableCell>{k}</TableCell>
+                        <TableCell className="text-right font-medium">{v}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+              <Card className="p-4 text-sm text-muted-foreground">
+                The pipeline is allowed to continue because the current rejection rate is 6%, which is below the configured 10% threshold.
+                Failed records are isolated and valid records continue to the next stage.
+              </Card>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => mockExport("Reconciliation report downloaded")}><Download className="size-4" /> Download Reconciliation Report</Button>
+                <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}><Download className="size-4" /> Export Summary CSV</Button>
+                <Button variant="outline" onClick={() => setTab("rejected")}>View Failed Records</Button>
+                <Button variant="outline" onClick={() => setTab("audit")}>View Audit Evidence</Button>
+              </div>
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Rejected ---- */}
+            <TabsContent value="rejected" className="space-y-4 mt-6">
+              <div className="flex flex-wrap gap-2 items-center">
+                <Input
+                  placeholder="Search by row number, field, or error reason"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="max-w-sm"
+                />
+                {["All", "Critical", "High", "Medium"].map((s) => (
+                  <Button key={s} size="sm" variant={sevFilter === s ? "default" : "outline"} onClick={() => setSevFilter(s)}>{s}</Button>
+                ))}
+              </div>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Row</TableHead>
+                      <TableHead>Field</TableHead>
+                      <TableHead>Failed Value</TableHead>
+                      <TableHead>Rule Failed</TableHead>
+                      <TableHead>Severity</TableHead>
+                      <TableHead>Action</TableHead>
+                      <TableHead>AI Explanation</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredRejected.map((r) => (
+                      <TableRow key={r.row}>
+                        <TableCell className="font-mono">{r.row}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.field}</TableCell>
+                        <TableCell className="font-mono text-xs">{r.value}</TableCell>
+                        <TableCell>{r.rule}</TableCell>
+                        <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
+                        <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{r.ai}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Quarantine & Golden ---- */}
+            <TabsContent value="quarantine" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <AlertTriangle className="size-4 text-warning" />
+                  <div className="font-medium">Quarantined Record</div>
                 </div>
-              ))}
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* ---- Audit ---- */}
-        <TabsContent value="audit" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="font-medium mb-4 text-sm">Audit Event Timeline</div>
-            <div className="space-y-3">
-              {AUDIT.map(([t, msg]) => (
-                <div key={t} className="flex items-start gap-3 text-sm">
-                  <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">{t}</div>
-                  <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <div>{msg}</div>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
+                  <div><div className="text-xs text-muted-foreground">Row</div><div className="font-mono">{QUARANTINE.row}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Issue</div><div>{QUARANTINE.issue}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Match Confidence</div><div className="font-semibold text-warning">{QUARANTINE.confidence}</div></div>
+                  <div><div className="text-xs text-muted-foreground">Action</div><span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span></div>
+                  <div className="md:col-span-5 text-muted-foreground text-xs">{QUARANTINE.reason}</div>
                 </div>
-              ))}
-            </div>
-          </Card>
+              </Card>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Audit Attribute</TableHead><TableHead>Value</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Rule Set Version", "DQ_RULESET_V3"],
-                  ["Pipeline Run ID", "RUN-2026-05-DQ-001"],
-                  ["Validation Mode", "Metadata Driven"],
-                  ["AI Explanation Enabled", "Yes"],
-                  ["Decision Policy", "Rule-Based"],
-                  ["Audit Status", "Evidence Generated"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="font-mono text-xs">{v}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <GitMerge className="size-4 text-primary" />
+                  <div className="font-medium">Golden Record Recommendation</div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Retain most recent verified email, highest quality phone number, and most complete customer profile based on survivorship rules.
+                </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Attribute</TableHead><TableHead>Survivorship Rule</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {SURVIVORSHIP.map((s) => (
+                      <TableRow key={s.attr}><TableCell>{s.attr}</TableCell><TableCell className="text-muted-foreground">{s.rule}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}><Download className="size-4" /> Download Audit Log</Button>
-            <Button variant="outline" onClick={() => mockExport("Failed records exported")}><Download className="size-4" /> Export Failed Records</Button>
-            <Button variant="outline" onClick={() => mockExport("Rule execution report downloaded")}><Download className="size-4" /> Rule Execution Report</Button>
-            <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
-          </div>
-        </TabsContent>
+        {resultsVisible && (
+          <>
+            {/* ---- Analytics ---- */}
+            <TabsContent value="analytics" className="space-y-4 mt-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
+                <StatCard label="Pass Rate" value="93%" tone="text-success" />
+                <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
+                <StatCard label="Rules Executed" value="8" />
+              </div>
+              <Card className="p-5">
+                <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
+                <div className="space-y-2">
+                  {FAILURE_BREAKDOWN.map((f) => (
+                    <div key={f.type} className="flex items-center gap-3">
+                      <div className="w-44 text-xs">{f.type}</div>
+                      <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: `${(f.count / 1) * 60}%` }} />
+                      </div>
+                      <div className="w-8 text-right text-xs font-medium">{f.count}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
-        {/* ---- Incident ---- */}
-        <TabsContent value="incident" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Ticket className="size-4 text-destructive" />
-              <div className="font-medium">Mock Incident</div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-              <div><div className="text-xs text-muted-foreground">Incident ID</div><div className="font-mono">INC-DQ-009421</div></div>
-              <div><div className="text-xs text-muted-foreground">Priority</div><span className={sevBadge("High")}>P2 High</span></div>
-              <div><div className="text-xs text-muted-foreground">Category</div><div>Data Quality Validation</div></div>
-              <div><div className="text-xs text-muted-foreground">Assigned Team</div><div>Data Engineering L2</div></div>
-              <div><div className="text-xs text-muted-foreground">Status</div><span className={actionBadge("Quarantine")}>In Progress</span></div>
-            </div>
-            <div className="mt-4 text-sm">
-              <div className="text-xs text-muted-foreground mb-1">Linked failed rows</div>
-              <div className="font-mono">Rows: 12, 43, 68, 97</div>
-            </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              Critical validation failures detected in mandatory customer and financial transaction fields.
-              Failed records isolated. Valid records allowed to continue.
-            </p>
-            <div className="mt-3">
-              <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
-            </div>
-          </Card>
+        {resultsVisible && (
+          <>
+            {/* ---- Audit ---- */}
+            <TabsContent value="audit" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="font-medium mb-4 text-sm">Audit Event Timeline</div>
+                <div className="space-y-3">
+                  {AUDIT.map(([t, msg]) => (
+                    <div key={t} className="flex items-start gap-3 text-sm">
+                      <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">{t}</div>
+                      <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                      <div>{msg}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Error Category</TableHead><TableHead>Assigned Team</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Data Quality Issues", "Data Engineering L2"],
-                  ["Source Data Issues", "Source System Owner"],
-                  ["Reference Data Issues", "Data Governance Team"],
-                  ["Infrastructure Issues", "Platform Team"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="text-muted-foreground">{v}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Audit Attribute</TableHead><TableHead>Value</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Rule Set Version", "DQ_RULESET_V3"],
+                      ["Pipeline Run ID", "RUN-2026-05-DQ-001"],
+                      ["Validation Mode", "Metadata Driven"],
+                      ["AI Explanation Enabled", "Yes"],
+                      ["Decision Policy", "Rule-Based"],
+                      ["Audit Status", "Evidence Generated"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="font-mono text-xs">{v}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
 
-        {/* ---- Business Impact ---- */}
-        <TabsContent value="impact" className="space-y-4 mt-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="p-5">
-              <TrendingUp className="size-5 text-primary mb-2" />
-              <div className="text-2xl font-semibold">85%</div>
-              <div className="text-sm font-medium mt-1">Faster Onboarding</div>
-              <div className="text-xs text-muted-foreground mt-1">From 4–8 weeks to 2–3 days using control-file-driven onboarding.</div>
-            </Card>
-            <Card className="p-5">
-              <CheckCircle2 className="size-5 text-success mb-2" />
-              <div className="text-2xl font-semibold">90%+</div>
-              <div className="text-sm font-medium mt-1">Duplicate Reduction</div>
-              <div className="text-xs text-muted-foreground mt-1">Automated duplicate detection and Golden Record logic.</div>
-            </Card>
-            <Card className="p-5">
-              <XCircle className="size-5 text-warning mb-2" />
-              <div className="text-2xl font-semibold">80%+</div>
-              <div className="text-sm font-medium mt-1">Faster Incident Resolution</div>
-              <div className="text-xs text-muted-foreground mt-1">Root cause identified in minutes instead of days.</div>
-            </Card>
-            <Card className="p-5">
-              <Sparkles className="size-5 text-primary mb-2" />
-              <div className="text-2xl font-semibold">$5M+</div>
-              <div className="text-sm font-medium mt-1">Savings Potential</div>
-              <div className="text-xs text-muted-foreground mt-1">Reduced operational cost from poor data quality incidents.</div>
-            </Card>
-          </div>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}><Download className="size-4" /> Download Audit Log</Button>
+                <Button variant="outline" onClick={() => mockExport("Failed records exported")}><Download className="size-4" /> Export Failed Records</Button>
+                <Button variant="outline" onClick={() => mockExport("Rule execution report downloaded")}><Download className="size-4" /> Rule Execution Report</Button>
+                <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+              </div>
+            </TabsContent>
+          </>
+        )}
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Business Metric</TableHead>
-                  <TableHead>Before</TableHead>
-                  <TableHead>After</TableHead>
-                  <TableHead>Improvement</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {IMPACT.map((r) => (
-                  <TableRow key={r.metric}>
-                    <TableCell className="font-medium">{r.metric}</TableCell>
-                    <TableCell className="text-muted-foreground">{r.before}</TableCell>
-                    <TableCell>{r.after}</TableCell>
-                    <TableCell><span className={actionBadge("Passed")}>{r.delta}</span></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+        {resultsVisible && (
+          <>
+            {/* ---- Incident ---- */}
+            <TabsContent value="incident" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Ticket className="size-4 text-destructive" />
+                  <div className="font-medium">Mock Incident</div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+                  <div><div className="text-xs text-muted-foreground">Incident ID</div><div className="font-mono">INC-DQ-009421</div></div>
+                  <div><div className="text-xs text-muted-foreground">Priority</div><span className={sevBadge("High")}>P2 High</span></div>
+                  <div><div className="text-xs text-muted-foreground">Category</div><div>Data Quality Validation</div></div>
+                  <div><div className="text-xs text-muted-foreground">Assigned Team</div><div>Data Engineering L2</div></div>
+                  <div><div className="text-xs text-muted-foreground">Status</div><span className={actionBadge("Quarantine")}>In Progress</span></div>
+                </div>
+                <div className="mt-4 text-sm">
+                  <div className="text-xs text-muted-foreground mb-1">Linked failed rows</div>
+                  <div className="font-mono">Rows: 12, 43, 68, 97</div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-3">
+                  Critical validation failures detected in mandatory customer and financial transaction fields.
+                  Failed records isolated. Valid records allowed to continue.
+                </p>
+                <div className="mt-3">
+                  <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+                </div>
+              </Card>
 
-          <Card className="p-5 bg-primary/5 border-primary/20">
-            <p className="text-sm">
-              Data quality is no longer a manual after-the-fact cleanup process. It becomes an embedded governance control
-              that protects downstream analytics, reporting, AI/ML models, compliance processes, and business decisioning.
-            </p>
-          </Card>
-        </TabsContent>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Error Category</TableHead><TableHead>Assigned Team</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Data Quality Issues", "Data Engineering L2"],
+                      ["Source Data Issues", "Source System Owner"],
+                      ["Reference Data Issues", "Data Governance Team"],
+                      ["Infrastructure Issues", "Platform Team"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="text-muted-foreground">{v}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Business Impact ---- */}
+            <TabsContent value="impact" className="space-y-4 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="p-5">
+                  <TrendingUp className="size-5 text-primary mb-2" />
+                  <div className="text-2xl font-semibold">85%</div>
+                  <div className="text-sm font-medium mt-1">Faster Onboarding</div>
+                  <div className="text-xs text-muted-foreground mt-1">From 4–8 weeks to 2–3 days using control-file-driven onboarding.</div>
+                </Card>
+                <Card className="p-5">
+                  <CheckCircle2 className="size-5 text-success mb-2" />
+                  <div className="text-2xl font-semibold">90%+</div>
+                  <div className="text-sm font-medium mt-1">Duplicate Reduction</div>
+                  <div className="text-xs text-muted-foreground mt-1">Automated duplicate detection and Golden Record logic.</div>
+                </Card>
+                <Card className="p-5">
+                  <XCircle className="size-5 text-warning mb-2" />
+                  <div className="text-2xl font-semibold">80%+</div>
+                  <div className="text-sm font-medium mt-1">Faster Incident Resolution</div>
+                  <div className="text-xs text-muted-foreground mt-1">Root cause identified in minutes instead of days.</div>
+                </Card>
+                <Card className="p-5">
+                  <Sparkles className="size-5 text-primary mb-2" />
+                  <div className="text-2xl font-semibold">$5M+</div>
+                  <div className="text-sm font-medium mt-1">Savings Potential</div>
+                  <div className="text-xs text-muted-foreground mt-1">Reduced operational cost from poor data quality incidents.</div>
+                </Card>
+              </div>
+
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Business Metric</TableHead>
+                      <TableHead>Before</TableHead>
+                      <TableHead>After</TableHead>
+                      <TableHead>Improvement</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {IMPACT.map((r) => (
+                      <TableRow key={r.metric}>
+                        <TableCell className="font-medium">{r.metric}</TableCell>
+                        <TableCell className="text-muted-foreground">{r.before}</TableCell>
+                        <TableCell>{r.after}</TableCell>
+                        <TableCell><span className={actionBadge("Passed")}>{r.delta}</span></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+
+              <Card className="p-5 bg-primary/5 border-primary/20">
+                <p className="text-sm">
+                  Data quality is no longer a manual after-the-fact cleanup process. It becomes an embedded governance control
+                  that protects downstream analytics, reporting, AI/ML models, compliance processes, and business decisioning.
+                </p>
+              </Card>
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );
