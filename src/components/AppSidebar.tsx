@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Network, Share2, Database, PlayCircle,
-  CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film,
+  CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film, ShieldCheck,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
