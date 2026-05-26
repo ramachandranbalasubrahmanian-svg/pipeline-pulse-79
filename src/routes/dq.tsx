@@ -610,51 +610,55 @@ function DQPage() {
           </div>
         </TabsContent>
 
-        {/* ---- Incident ---- */}
-        <TabsContent value="incident" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Ticket className="size-4 text-destructive" />
-              <div className="font-medium">Mock Incident</div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-              <div><div className="text-xs text-muted-foreground">Incident ID</div><div className="font-mono">INC-DQ-009421</div></div>
-              <div><div className="text-xs text-muted-foreground">Priority</div><span className={sevBadge("High")}>P2 High</span></div>
-              <div><div className="text-xs text-muted-foreground">Category</div><div>Data Quality Validation</div></div>
-              <div><div className="text-xs text-muted-foreground">Assigned Team</div><div>Data Engineering L2</div></div>
-              <div><div className="text-xs text-muted-foreground">Status</div><span className={actionBadge("Quarantine")}>In Progress</span></div>
-            </div>
-            <div className="mt-4 text-sm">
-              <div className="text-xs text-muted-foreground mb-1">Linked failed rows</div>
-              <div className="font-mono">Rows: 12, 43, 68, 97</div>
-            </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              Critical validation failures detected in mandatory customer and financial transaction fields.
-              Failed records isolated. Valid records allowed to continue.
-            </p>
-            <div className="mt-3">
-              <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
-            </div>
-          </Card>
+        {resultsVisible && (
+          <>
+            {/* ---- Incident ---- */}
+            <TabsContent value="incident" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Ticket className="size-4 text-destructive" />
+                  <div className="font-medium">Mock Incident</div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+                  <div><div className="text-xs text-muted-foreground">Incident ID</div><div className="font-mono">INC-DQ-009421</div></div>
+                  <div><div className="text-xs text-muted-foreground">Priority</div><span className={sevBadge("High")}>P2 High</span></div>
+                  <div><div className="text-xs text-muted-foreground">Category</div><div>Data Quality Validation</div></div>
+                  <div><div className="text-xs text-muted-foreground">Assigned Team</div><div>Data Engineering L2</div></div>
+                  <div><div className="text-xs text-muted-foreground">Status</div><span className={actionBadge("Quarantine")}>In Progress</span></div>
+                </div>
+                <div className="mt-4 text-sm">
+                  <div className="text-xs text-muted-foreground mb-1">Linked failed rows</div>
+                  <div className="font-mono">Rows: 12, 43, 68, 97</div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-3">
+                  Critical validation failures detected in mandatory customer and financial transaction fields.
+                  Failed records isolated. Valid records allowed to continue.
+                </p>
+                <div className="mt-3">
+                  <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+                </div>
+              </Card>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Error Category</TableHead><TableHead>Assigned Team</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Data Quality Issues", "Data Engineering L2"],
-                  ["Source Data Issues", "Source System Owner"],
-                  ["Reference Data Issues", "Data Governance Team"],
-                  ["Infrastructure Issues", "Platform Team"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="text-muted-foreground">{v}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
-        </TabsContent>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Error Category</TableHead><TableHead>Assigned Team</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Data Quality Issues", "Data Engineering L2"],
+                      ["Source Data Issues", "Source System Owner"],
+                      ["Reference Data Issues", "Data Governance Team"],
+                      ["Infrastructure Issues", "Platform Team"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="text-muted-foreground">{v}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
