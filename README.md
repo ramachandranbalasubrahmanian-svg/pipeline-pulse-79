@@ -1,8 +1,14 @@
-# Data Pipelines — Enterprise Observability
+# Pipeline Pulse — Enterprise Data Pipeline Observability
+
+[![Built with Lovable](https://img.shields.io/badge/Built%20with-Lovable-ff69b4)](https://lovable.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![TanStack Start](https://img.shields.io/badge/TanStack-Start%20v1-1f6feb)](https://tanstack.com/start)
+[![Cloudflare Workers](https://img.shields.io/badge/Deploy-Cloudflare%20Workers-f38020)](https://workers.cloudflare.com)
 
 > Production-grade control plane for data pipelines. Monitor jobs, trace lineage, detect anomalies, and ship architecture docs — all in one place.
 
 **Live demo:** https://pipeline-pulse-79.lovable.app
+**60-second walkthrough:** [`/demo`](https://pipeline-pulse-79.lovable.app/demo) · [`public/demo.mp4`](./public/demo.mp4)
 
 ![Data Pipelines Overview](./public/og-image.jpg)
 
