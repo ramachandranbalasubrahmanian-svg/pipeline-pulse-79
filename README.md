@@ -42,6 +42,8 @@ bun run dev          # http://localhost:5173
 bun run build        # production build
 ```
 
+> **Putting this in your own GitHub repo?** Follow the step-by-step guide in [GIT_SETUP.md](./GIT_SETUP.md).
+
 ## 🗺 Pages
 
 | Route             | Purpose                                            |
