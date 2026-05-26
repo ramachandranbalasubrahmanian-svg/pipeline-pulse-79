@@ -234,18 +234,22 @@ function DQPage() {
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="feed">Incoming Feed</TabsTrigger>
           <TabsTrigger value="rules">Metadata Rules</TabsTrigger>
-          <TabsTrigger value="ai">AI Rule Assistant</TabsTrigger>
-          <TabsTrigger value="results">Validation Results</TabsTrigger>
-          <TabsTrigger value="recon">Reconciliation</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
-          <TabsTrigger value="quarantine">Quarantine & Golden</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="audit">Audit</TabsTrigger>
-          <TabsTrigger value="incident">Incident</TabsTrigger>
-          <TabsTrigger value="impact">Business Impact</TabsTrigger>
+          {resultsVisible && (
+            <>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="ai">AI Rule Assistant</TabsTrigger>
+              <TabsTrigger value="results">Validation Results</TabsTrigger>
+              <TabsTrigger value="recon">Reconciliation</TabsTrigger>
+              <TabsTrigger value="rejected">Rejected</TabsTrigger>
+              <TabsTrigger value="quarantine">Quarantine & Golden</TabsTrigger>
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="audit">Audit</TabsTrigger>
+              <TabsTrigger value="incident">Incident</TabsTrigger>
+              <TabsTrigger value="impact">Business Impact</TabsTrigger>
+            </>
+          )}
         </TabsList>
 
         {/* ---- Overview ---- */}
