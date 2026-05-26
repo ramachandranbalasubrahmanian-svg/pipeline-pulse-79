@@ -363,66 +363,70 @@ function DQPage() {
           </Card>
         </TabsContent>
 
-        {/* ---- Validation Results ---- */}
-        <TabsContent value="results" className="space-y-4 mt-6">
-          {runState === "idle" && (
-            <Card className="p-10 text-center">
-              <Activity className="size-8 text-muted-foreground mx-auto mb-2" />
-              <div className="text-sm text-muted-foreground">
-                No validation results yet. Run Data Quality Validation to generate reconciliation, rejected records, audit evidence, and incident recommendations.
-              </div>
-              <Button className="mt-4" onClick={runValidation}><PlayCircle className="size-4" /> Run Data Quality Validation</Button>
-            </Card>
-          )}
+        {resultsVisible && (
+          <>
+            {/* ---- Validation Results ---- */}
+            <TabsContent value="results" className="space-y-4 mt-6">
+              {runState === "idle" && (
+                <Card className="p-10 text-center">
+                  <Activity className="size-8 text-muted-foreground mx-auto mb-2" />
+                  <div className="text-sm text-muted-foreground">
+                    No validation results yet. Run Data Quality Validation to generate reconciliation, rejected records, audit evidence, and incident recommendations.
+                  </div>
+                  <Button className="mt-4" onClick={runValidation}><PlayCircle className="size-4" /> Run Data Quality Validation</Button>
+                </Card>
+              )}
 
-          {runState !== "idle" && (
-            <Card className="p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-medium">
-                  {runState === "running" ? "Validation in progress…" : "Validation completed"}
-                </div>
-                <div className="text-xs text-muted-foreground">{stepIdx}/{PROGRESS_STEPS.length}</div>
-              </div>
-              <Progress value={(stepIdx / PROGRESS_STEPS.length) * 100} />
-              <div className="mt-4 space-y-1.5">
-                <AnimatePresence initial={false}>
-                  {PROGRESS_STEPS.slice(0, stepIdx).map((s, i) => (
-                    <motion.div
-                      key={s}
-                      initial={{ opacity: 0, x: -4 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center gap-2 text-xs"
-                    >
-                      <CheckCircle2 className="size-3.5 text-success" />
-                      <span className="text-muted-foreground">{s}</span>
-                      {i === stepIdx - 1 && runState === "running" && (
-                        <Loader2 className="size-3 animate-spin text-primary ml-1" />
-                      )}
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </Card>
-          )}
+              {runState !== "idle" && (
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-sm font-medium">
+                      {runState === "running" ? "Validation in progress…" : "Validation completed"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{stepIdx}/{PROGRESS_STEPS.length}</div>
+                  </div>
+                  <Progress value={(stepIdx / PROGRESS_STEPS.length) * 100} />
+                  <div className="mt-4 space-y-1.5">
+                    <AnimatePresence initial={false}>
+                      {PROGRESS_STEPS.slice(0, stepIdx).map((s, i) => (
+                        <motion.div
+                          key={s}
+                          initial={{ opacity: 0, x: -4 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="flex items-center gap-2 text-xs"
+                        >
+                          <CheckCircle2 className="size-3.5 text-success" />
+                          <span className="text-muted-foreground">{s}</span>
+                          {i === stepIdx - 1 && runState === "running" && (
+                            <Loader2 className="size-3 animate-spin text-primary ml-1" />
+                          )}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </Card>
+              )}
 
-          {runState === "done" && (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Records" value="100" />
-                <StatCard label="Passed" value="93" tone="text-success" />
-                <StatCard label="Rejected" value="6" tone="text-destructive" />
-                <StatCard label="Quarantined" value="1" tone="text-warning" />
-              </div>
-              <Card className="p-4 flex flex-wrap items-center gap-3 text-sm">
-                <span>Pipeline Decision:</span>
-                <span className={actionBadge("Continue")}>Continue Processing</span>
-                <span className="text-muted-foreground">
-                  Reject rate 6% is below the configured 10% threshold. Valid records can proceed while failed records are isolated for remediation.
-                </span>
-              </Card>
-            </>
-          )}
-        </TabsContent>
+              {runState === "done" && (
+                <>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <StatCard label="Total Records" value="100" />
+                    <StatCard label="Passed" value="93" tone="text-success" />
+                    <StatCard label="Rejected" value="6" tone="text-destructive" />
+                    <StatCard label="Quarantined" value="1" tone="text-warning" />
+                  </div>
+                  <Card className="p-4 flex flex-wrap items-center gap-3 text-sm">
+                    <span>Pipeline Decision:</span>
+                    <span className={actionBadge("Continue")}>Continue Processing</span>
+                    <span className="text-muted-foreground">
+                      Reject rate 6% is below the configured 10% threshold. Valid records can proceed while failed records are isolated for remediation.
+                    </span>
+                  </Card>
+                </>
+              )}
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
