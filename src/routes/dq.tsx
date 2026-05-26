@@ -567,48 +567,52 @@ function DQPage() {
           </Card>
         </TabsContent>
 
-        {/* ---- Audit ---- */}
-        <TabsContent value="audit" className="space-y-4 mt-6">
-          <Card className="p-5">
-            <div className="font-medium mb-4 text-sm">Audit Event Timeline</div>
-            <div className="space-y-3">
-              {AUDIT.map(([t, msg]) => (
-                <div key={t} className="flex items-start gap-3 text-sm">
-                  <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">{t}</div>
-                  <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <div>{msg}</div>
+        {resultsVisible && (
+          <>
+            {/* ---- Audit ---- */}
+            <TabsContent value="audit" className="space-y-4 mt-6">
+              <Card className="p-5">
+                <div className="font-medium mb-4 text-sm">Audit Event Timeline</div>
+                <div className="space-y-3">
+                  {AUDIT.map(([t, msg]) => (
+                    <div key={t} className="flex items-start gap-3 text-sm">
+                      <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">{t}</div>
+                      <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                      <div>{msg}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Card>
+              </Card>
 
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow><TableHead>Audit Attribute</TableHead><TableHead>Value</TableHead></TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  ["Rule Set Version", "DQ_RULESET_V3"],
-                  ["Pipeline Run ID", "RUN-2026-05-DQ-001"],
-                  ["Validation Mode", "Metadata Driven"],
-                  ["AI Explanation Enabled", "Yes"],
-                  ["Decision Policy", "Rule-Based"],
-                  ["Audit Status", "Evidence Generated"],
-                ].map(([k, v]) => (
-                  <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="font-mono text-xs">{v}</TableCell></TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Card>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow><TableHead>Audit Attribute</TableHead><TableHead>Value</TableHead></TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ["Rule Set Version", "DQ_RULESET_V3"],
+                      ["Pipeline Run ID", "RUN-2026-05-DQ-001"],
+                      ["Validation Mode", "Metadata Driven"],
+                      ["AI Explanation Enabled", "Yes"],
+                      ["Decision Policy", "Rule-Based"],
+                      ["Audit Status", "Evidence Generated"],
+                    ].map(([k, v]) => (
+                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="font-mono text-xs">{v}</TableCell></TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
 
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}><Download className="size-4" /> Download Audit Log</Button>
-            <Button variant="outline" onClick={() => mockExport("Failed records exported")}><Download className="size-4" /> Export Failed Records</Button>
-            <Button variant="outline" onClick={() => mockExport("Rule execution report downloaded")}><Download className="size-4" /> Rule Execution Report</Button>
-            <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
-          </div>
-        </TabsContent>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}><Download className="size-4" /> Download Audit Log</Button>
+                <Button variant="outline" onClick={() => mockExport("Failed records exported")}><Download className="size-4" /> Export Failed Records</Button>
+                <Button variant="outline" onClick={() => mockExport("Rule execution report downloaded")}><Download className="size-4" /> Rule Execution Report</Button>
+                <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+              </div>
+            </TabsContent>
+          </>
+        )}
 
         {resultsVisible && (
           <>
