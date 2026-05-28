@@ -15,6 +15,7 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LineageRouteImport } from './routes/lineage'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as IncidentsRouteImport } from './routes/incidents'
+import { Route as GovernanceRouteImport } from './routes/governance'
 import { Route as DqRouteImport } from './routes/dq'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as BillingRouteImport } from './routes/billing'
@@ -50,6 +51,11 @@ const JobsRoute = JobsRouteImport.update({
 const IncidentsRoute = IncidentsRouteImport.update({
   id: '/incidents',
   path: '/incidents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GovernanceRoute = GovernanceRouteImport.update({
+  id: '/governance',
+  path: '/governance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DqRoute = DqRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
   '/dq': typeof DqRoute
+  '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
   '/dq': typeof DqRoute
+  '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -119,6 +127,7 @@ export interface FileRoutesById {
   '/billing': typeof BillingRoute
   '/demo': typeof DemoRoute
   '/dq': typeof DqRoute
+  '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
   '/lineage': typeof LineageRoute
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/billing'
     | '/demo'
     | '/dq'
+    | '/governance'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/billing'
     | '/demo'
     | '/dq'
+    | '/governance'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/billing'
     | '/demo'
     | '/dq'
+    | '/governance'
     | '/incidents'
     | '/jobs'
     | '/lineage'
@@ -178,6 +190,7 @@ export interface RootRouteChildren {
   BillingRoute: typeof BillingRoute
   DemoRoute: typeof DemoRoute
   DqRoute: typeof DqRoute
+  GovernanceRoute: typeof GovernanceRoute
   IncidentsRoute: typeof IncidentsRoute
   JobsRoute: typeof JobsRoute
   LineageRoute: typeof LineageRoute
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/incidents'
       fullPath: '/incidents'
       preLoaderRoute: typeof IncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/governance': {
+      id: '/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof GovernanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dq': {
@@ -282,6 +302,7 @@ const rootRouteChildren: RootRouteChildren = {
   BillingRoute: BillingRoute,
   DemoRoute: DemoRoute,
   DqRoute: DqRoute,
+  GovernanceRoute: GovernanceRoute,
   IncidentsRoute: IncidentsRoute,
   JobsRoute: JobsRoute,
   LineageRoute: LineageRoute,
