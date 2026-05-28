@@ -24,43 +24,69 @@ import { Route as ArchitectureRouteImport } from './routes/architecture'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TenantsRoute = TenantsRouteImport.update({
-  id: '/tenants', path: '/tenants', getParentRoute: () => rootRouteImport,
+  id: '/tenants',
+  path: '/tenants',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings', path: '/settings', getParentRoute: () => rootRouteImport,
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects', path: '/projects', getParentRoute: () => rootRouteImport,
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LineageRoute = LineageRouteImport.update({
-  id: '/lineage', path: '/lineage', getParentRoute: () => rootRouteImport,
+  id: '/lineage',
+  path: '/lineage',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const JobsRoute = JobsRouteImport.update({
-  id: '/jobs', path: '/jobs', getParentRoute: () => rootRouteImport,
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IncidentsRoute = IncidentsRouteImport.update({
-  id: '/incidents', path: '/incidents', getParentRoute: () => rootRouteImport,
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const GovernanceRoute = GovernanceRouteImport.update({
-  id: '/governance', path: '/governance', getParentRoute: () => rootRouteImport,
+  id: '/governance',
+  path: '/governance',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DqRoute = DqRouteImport.update({
-  id: '/dq', path: '/dq', getParentRoute: () => rootRouteImport,
+  id: '/dq',
+  path: '/dq',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DemoRoute = DemoRouteImport.update({
-  id: '/demo', path: '/demo', getParentRoute: () => rootRouteImport,
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BillingRoute = BillingRouteImport.update({
-  id: '/billing', path: '/billing', getParentRoute: () => rootRouteImport,
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuditRoute = AuditRouteImport.update({
-  id: '/audit', path: '/audit', getParentRoute: () => rootRouteImport,
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ArchitectureRoute = ArchitectureRouteImport.update({
-  id: '/architecture', path: '/architecture', getParentRoute: () => rootRouteImport,
+  id: '/architecture',
+  path: '/architecture',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
-  id: '/', path: '/', getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -112,18 +138,49 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/' | '/architecture' | '/audit' | '/billing' | '/demo' | '/dq'
-    | '/governance' | '/incidents' | '/jobs' | '/lineage' | '/projects'
-    | '/settings' | '/tenants'
+    | '/'
+    | '/architecture'
+    | '/audit'
+    | '/billing'
+    | '/demo'
+    | '/dq'
+    | '/governance'
+    | '/incidents'
+    | '/jobs'
+    | '/lineage'
+    | '/projects'
+    | '/settings'
+    | '/tenants'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/' | '/architecture' | '/audit' | '/billing' | '/demo' | '/dq'
-    | '/governance' | '/incidents' | '/jobs' | '/lineage' | '/projects'
-    | '/settings' | '/tenants'
+    | '/'
+    | '/architecture'
+    | '/audit'
+    | '/billing'
+    | '/demo'
+    | '/dq'
+    | '/governance'
+    | '/incidents'
+    | '/jobs'
+    | '/lineage'
+    | '/projects'
+    | '/settings'
+    | '/tenants'
   id:
-    | '__root__' | '/' | '/architecture' | '/audit' | '/billing' | '/demo' | '/dq'
-    | '/governance' | '/incidents' | '/jobs' | '/lineage' | '/projects'
-    | '/settings' | '/tenants'
+    | '__root__'
+    | '/'
+    | '/architecture'
+    | '/audit'
+    | '/billing'
+    | '/demo'
+    | '/dq'
+    | '/governance'
+    | '/incidents'
+    | '/jobs'
+    | '/lineage'
+    | '/projects'
+    | '/settings'
+    | '/tenants'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,26 +201,114 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tenants': { id: '/tenants'; path: '/tenants'; fullPath: '/tenants'; preLoaderRoute: typeof TenantsRouteImport; parentRoute: typeof rootRouteImport }
-    '/settings': { id: '/settings'; path: '/settings'; fullPath: '/settings'; preLoaderRoute: typeof SettingsRouteImport; parentRoute: typeof rootRouteImport }
-    '/projects': { id: '/projects'; path: '/projects'; fullPath: '/projects'; preLoaderRoute: typeof ProjectsRouteImport; parentRoute: typeof rootRouteImport }
-    '/lineage': { id: '/lineage'; path: '/lineage'; fullPath: '/lineage'; preLoaderRoute: typeof LineageRouteImport; parentRoute: typeof rootRouteImport }
-    '/jobs': { id: '/jobs'; path: '/jobs'; fullPath: '/jobs'; preLoaderRoute: typeof JobsRouteImport; parentRoute: typeof rootRouteImport }
-    '/incidents': { id: '/incidents'; path: '/incidents'; fullPath: '/incidents'; preLoaderRoute: typeof IncidentsRouteImport; parentRoute: typeof rootRouteImport }
-    '/governance': { id: '/governance'; path: '/governance'; fullPath: '/governance'; preLoaderRoute: typeof GovernanceRouteImport; parentRoute: typeof rootRouteImport }
-    '/dq': { id: '/dq'; path: '/dq'; fullPath: '/dq'; preLoaderRoute: typeof DqRouteImport; parentRoute: typeof rootRouteImport }
-    '/demo': { id: '/demo'; path: '/demo'; fullPath: '/demo'; preLoaderRoute: typeof DemoRouteImport; parentRoute: typeof rootRouteImport }
-    '/billing': { id: '/billing'; path: '/billing'; fullPath: '/billing'; preLoaderRoute: typeof BillingRouteImport; parentRoute: typeof rootRouteImport }
-    '/audit': { id: '/audit'; path: '/audit'; fullPath: '/audit'; preLoaderRoute: typeof AuditRouteImport; parentRoute: typeof rootRouteImport }
-    '/architecture': { id: '/architecture'; path: '/architecture'; fullPath: '/architecture'; preLoaderRoute: typeof ArchitectureRouteImport; parentRoute: typeof rootRouteImport }
-    '/': { id: '/'; path: '/'; fullPath: '/'; preLoaderRoute: typeof IndexRouteImport; parentRoute: typeof rootRouteImport }
+    '/tenants': {
+      id: '/tenants'
+      path: '/tenants'
+      fullPath: '/tenants'
+      preLoaderRoute: typeof TenantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lineage': {
+      id: '/lineage'
+      path: '/lineage'
+      fullPath: '/lineage'
+      preLoaderRoute: typeof LineageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jobs': {
+      id: '/jobs'
+      path: '/jobs'
+      fullPath: '/jobs'
+      preLoaderRoute: typeof JobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/incidents': {
+      id: '/incidents'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof IncidentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/governance': {
+      id: '/governance'
+      path: '/governance'
+      fullPath: '/governance'
+      preLoaderRoute: typeof GovernanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dq': {
+      id: '/dq'
+      path: '/dq'
+      fullPath: '/dq'
+      preLoaderRoute: typeof DqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/architecture': {
+      id: '/architecture'
+      path: '/architecture'
+      fullPath: '/architecture'
+      preLoaderRoute: typeof ArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute, ArchitectureRoute, AuditRoute, BillingRoute, DemoRoute, DqRoute,
-  GovernanceRoute, IncidentsRoute, JobsRoute, LineageRoute, ProjectsRoute,
-  SettingsRoute, TenantsRoute,
+  IndexRoute: IndexRoute,
+  ArchitectureRoute: ArchitectureRoute,
+  AuditRoute: AuditRoute,
+  BillingRoute: BillingRoute,
+  DemoRoute: DemoRoute,
+  DqRoute: DqRoute,
+  GovernanceRoute: GovernanceRoute,
+  IncidentsRoute: IncidentsRoute,
+  JobsRoute: JobsRoute,
+  LineageRoute: LineageRoute,
+  ProjectsRoute: ProjectsRoute,
+  SettingsRoute: SettingsRoute,
+  TenantsRoute: TenantsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
