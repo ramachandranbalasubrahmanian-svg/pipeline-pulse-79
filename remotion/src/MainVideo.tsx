@@ -10,7 +10,9 @@ import { SceneKPIs } from "./scenes/SceneKPIs";
 import { SceneJobs } from "./scenes/SceneJobs";
 import { SceneAI } from "./scenes/SceneAI";
 import { SceneLineage } from "./scenes/SceneLineage";
+import { SceneDQ } from "./scenes/SceneDQ";
 import { SceneIncidents } from "./scenes/SceneIncidents";
+import { SceneGovernance } from "./scenes/SceneGovernance";
 import { SceneTenants } from "./scenes/SceneTenants";
 import { SceneBilling } from "./scenes/SceneBilling";
 import { SceneAudit } from "./scenes/SceneAudit";
@@ -61,36 +63,38 @@ const slideT = () => (
   />
 );
 
-// Sequence durations chosen so total ≈ 1800 frames (60s) accounting for transition overlaps.
-// 11 sequences × ~170 avg = 1870; minus 10 transitions × ~20 = 200 → ~1670 effective.
-// We size individual scenes generously below and target ~1800 total.
+// 13 scenes, target ~110-116s at 30fps.
 export const MainVideo: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#070a18" }}>
       <Backdrop />
       <Grid />
       <TransitionSeries>
-        <TransitionSeries.Sequence durationInFrames={160}><SceneHero /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={260}><SceneHero /></TransitionSeries.Sequence>
         {fadeT()}
-        <TransitionSeries.Sequence durationInFrames={170}><SceneKPIs /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={260}><SceneKPIs /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={190}><SceneJobs /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={270}><SceneJobs /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={200}><SceneAI /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={280}><SceneAI /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={190}><SceneLineage /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={270}><SceneLineage /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={190}><SceneIncidents /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={310}><SceneDQ /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={180}><SceneTenants /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={270}><SceneIncidents /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={190}><SceneBilling /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={310}><SceneGovernance /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={180}><SceneAudit /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={260}><SceneTenants /></TransitionSeries.Sequence>
         {slideT()}
-        <TransitionSeries.Sequence durationInFrames={190}><SceneArchitecture /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={270}><SceneBilling /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={270}><SceneAudit /></TransitionSeries.Sequence>
+        {slideT()}
+        <TransitionSeries.Sequence durationInFrames={270}><SceneArchitecture /></TransitionSeries.Sequence>
         {fadeT()}
-        <TransitionSeries.Sequence durationInFrames={170}><SceneOutro /></TransitionSeries.Sequence>
+        <TransitionSeries.Sequence durationInFrames={260}><SceneOutro /></TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>
   );
