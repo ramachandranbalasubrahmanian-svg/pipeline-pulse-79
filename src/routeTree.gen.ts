@@ -9,10 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ValueRouteImport } from './routes/value'
 import { Route as TenantsRouteImport } from './routes/tenants'
 import { Route as StewardshipRouteImport } from './routes/stewardship'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ReliabilityRouteImport } from './routes/reliability'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ModelingRouteImport } from './routes/modeling'
 import { Route as MdmRouteImport } from './routes/mdm'
 import { Route as LineageRouteImport } from './routes/lineage'
@@ -21,9 +24,13 @@ import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as GovernanceRouteImport } from './routes/governance'
 import { Route as ExecutiveRouteImport } from './routes/executive'
+import { Route as EvidenceRouteImport } from './routes/evidence'
+import { Route as EthicsRouteImport } from './routes/ethics'
 import { Route as DqRouteImport } from './routes/dq'
+import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as DamaRouteImport } from './routes/dama'
+import { Route as ContractsRouteImport } from './routes/contracts'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AuditRouteImport } from './routes/audit'
@@ -32,6 +39,11 @@ import { Route as AiGovernanceRouteImport } from './routes/ai-governance'
 import { Route as AccessRouteImport } from './routes/access'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ValueRoute = ValueRouteImport.update({
+  id: '/value',
+  path: '/value',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantsRoute = TenantsRouteImport.update({
   id: '/tenants',
   path: '/tenants',
@@ -47,9 +59,19 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReliabilityRoute = ReliabilityRouteImport.update({
+  id: '/reliability',
+  path: '/reliability',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModelingRoute = ModelingRouteImport.update({
@@ -92,9 +114,24 @@ const ExecutiveRoute = ExecutiveRouteImport.update({
   path: '/executive',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EvidenceRoute = EvidenceRouteImport.update({
+  id: '/evidence',
+  path: '/evidence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EthicsRoute = EthicsRouteImport.update({
+  id: '/ethics',
+  path: '/ethics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DqRoute = DqRouteImport.update({
   id: '/dq',
   path: '/dq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsRoute = DocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoRoute = DemoRouteImport.update({
@@ -105,6 +142,11 @@ const DemoRoute = DemoRouteImport.update({
 const DamaRoute = DamaRouteImport.update({
   id: '/dama',
   path: '/dama',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractsRoute = ContractsRouteImport.update({
+  id: '/contracts',
+  path: '/contracts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -151,9 +193,13 @@ export interface FileRoutesByFullPath {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/catalog': typeof CatalogRoute
+  '/contracts': typeof ContractsRoute
   '/dama': typeof DamaRoute
   '/demo': typeof DemoRoute
+  '/documents': typeof DocumentsRoute
   '/dq': typeof DqRoute
+  '/ethics': typeof EthicsRoute
+  '/evidence': typeof EvidenceRoute
   '/executive': typeof ExecutiveRoute
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
@@ -162,10 +208,13 @@ export interface FileRoutesByFullPath {
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
+  '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/value': typeof ValueRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -175,9 +224,13 @@ export interface FileRoutesByTo {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/catalog': typeof CatalogRoute
+  '/contracts': typeof ContractsRoute
   '/dama': typeof DamaRoute
   '/demo': typeof DemoRoute
+  '/documents': typeof DocumentsRoute
   '/dq': typeof DqRoute
+  '/ethics': typeof EthicsRoute
+  '/evidence': typeof EvidenceRoute
   '/executive': typeof ExecutiveRoute
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
@@ -186,10 +239,13 @@ export interface FileRoutesByTo {
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
+  '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/value': typeof ValueRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -200,9 +256,13 @@ export interface FileRoutesById {
   '/audit': typeof AuditRoute
   '/billing': typeof BillingRoute
   '/catalog': typeof CatalogRoute
+  '/contracts': typeof ContractsRoute
   '/dama': typeof DamaRoute
   '/demo': typeof DemoRoute
+  '/documents': typeof DocumentsRoute
   '/dq': typeof DqRoute
+  '/ethics': typeof EthicsRoute
+  '/evidence': typeof EvidenceRoute
   '/executive': typeof ExecutiveRoute
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
@@ -211,10 +271,13 @@ export interface FileRoutesById {
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
+  '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/value': typeof ValueRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -226,9 +289,13 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/catalog'
+    | '/contracts'
     | '/dama'
     | '/demo'
+    | '/documents'
     | '/dq'
+    | '/ethics'
+    | '/evidence'
     | '/executive'
     | '/governance'
     | '/incidents'
@@ -237,10 +304,13 @@ export interface FileRouteTypes {
     | '/lineage'
     | '/mdm'
     | '/modeling'
+    | '/products'
     | '/projects'
+    | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/value'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -250,9 +320,13 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/catalog'
+    | '/contracts'
     | '/dama'
     | '/demo'
+    | '/documents'
     | '/dq'
+    | '/ethics'
+    | '/evidence'
     | '/executive'
     | '/governance'
     | '/incidents'
@@ -261,10 +335,13 @@ export interface FileRouteTypes {
     | '/lineage'
     | '/mdm'
     | '/modeling'
+    | '/products'
     | '/projects'
+    | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/value'
   id:
     | '__root__'
     | '/'
@@ -274,9 +351,13 @@ export interface FileRouteTypes {
     | '/audit'
     | '/billing'
     | '/catalog'
+    | '/contracts'
     | '/dama'
     | '/demo'
+    | '/documents'
     | '/dq'
+    | '/ethics'
+    | '/evidence'
     | '/executive'
     | '/governance'
     | '/incidents'
@@ -285,10 +366,13 @@ export interface FileRouteTypes {
     | '/lineage'
     | '/mdm'
     | '/modeling'
+    | '/products'
     | '/projects'
+    | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/value'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -299,9 +383,13 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   BillingRoute: typeof BillingRoute
   CatalogRoute: typeof CatalogRoute
+  ContractsRoute: typeof ContractsRoute
   DamaRoute: typeof DamaRoute
   DemoRoute: typeof DemoRoute
+  DocumentsRoute: typeof DocumentsRoute
   DqRoute: typeof DqRoute
+  EthicsRoute: typeof EthicsRoute
+  EvidenceRoute: typeof EvidenceRoute
   ExecutiveRoute: typeof ExecutiveRoute
   GovernanceRoute: typeof GovernanceRoute
   IncidentsRoute: typeof IncidentsRoute
@@ -310,14 +398,24 @@ export interface RootRouteChildren {
   LineageRoute: typeof LineageRoute
   MdmRoute: typeof MdmRoute
   ModelingRoute: typeof ModelingRoute
+  ProductsRoute: typeof ProductsRoute
   ProjectsRoute: typeof ProjectsRoute
+  ReliabilityRoute: typeof ReliabilityRoute
   SettingsRoute: typeof SettingsRoute
   StewardshipRoute: typeof StewardshipRoute
   TenantsRoute: typeof TenantsRoute
+  ValueRoute: typeof ValueRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/value': {
+      id: '/value'
+      path: '/value'
+      fullPath: '/value'
+      preLoaderRoute: typeof ValueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tenants': {
       id: '/tenants'
       path: '/tenants'
@@ -339,11 +437,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reliability': {
+      id: '/reliability'
+      path: '/reliability'
+      fullPath: '/reliability'
+      preLoaderRoute: typeof ReliabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projects': {
       id: '/projects'
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/modeling': {
@@ -402,11 +514,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExecutiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evidence': {
+      id: '/evidence'
+      path: '/evidence'
+      fullPath: '/evidence'
+      preLoaderRoute: typeof EvidenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ethics': {
+      id: '/ethics'
+      path: '/ethics'
+      fullPath: '/ethics'
+      preLoaderRoute: typeof EthicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dq': {
       id: '/dq'
       path: '/dq'
       fullPath: '/dq'
       preLoaderRoute: typeof DqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents': {
+      id: '/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo': {
@@ -421,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/dama'
       fullPath: '/dama'
       preLoaderRoute: typeof DamaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contracts': {
+      id: '/contracts'
+      path: '/contracts'
+      fullPath: '/contracts'
+      preLoaderRoute: typeof ContractsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -483,9 +623,13 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   BillingRoute: BillingRoute,
   CatalogRoute: CatalogRoute,
+  ContractsRoute: ContractsRoute,
   DamaRoute: DamaRoute,
   DemoRoute: DemoRoute,
+  DocumentsRoute: DocumentsRoute,
   DqRoute: DqRoute,
+  EthicsRoute: EthicsRoute,
+  EvidenceRoute: EvidenceRoute,
   ExecutiveRoute: ExecutiveRoute,
   GovernanceRoute: GovernanceRoute,
   IncidentsRoute: IncidentsRoute,
@@ -494,21 +638,14 @@ const rootRouteChildren: RootRouteChildren = {
   LineageRoute: LineageRoute,
   MdmRoute: MdmRoute,
   ModelingRoute: ModelingRoute,
+  ProductsRoute: ProductsRoute,
   ProjectsRoute: ProjectsRoute,
+  ReliabilityRoute: ReliabilityRoute,
   SettingsRoute: SettingsRoute,
   StewardshipRoute: StewardshipRoute,
   TenantsRoute: TenantsRoute,
+  ValueRoute: ValueRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
