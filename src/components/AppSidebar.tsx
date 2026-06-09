@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Network, Share2, Database, PlayCircle,
   CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film, ShieldCheck, LockKeyhole,
+  Compass, BookOpen, Boxes, GitMerge, BrainCircuit, Archive, UserCheck, Crown,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
@@ -11,13 +12,21 @@ import { toast } from "sonner";
 
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
+  { to: "/executive", label: "Executive Governance", icon: Crown },
+  { to: "/dama", label: "DAMA Control Tower", icon: Compass },
   { to: "/demo", label: "Demo Video", icon: Film },
   { to: "/lineage", label: "Pipeline Maps", icon: Network },
   { to: "/architecture", label: "Architecture", icon: Share2 },
   { to: "/projects", label: "Projects", icon: Database },
   { to: "/jobs", label: "Job Manager", icon: PlayCircle },
+  { to: "/catalog", label: "Catalog & Glossary", icon: BookOpen },
+  { to: "/modeling", label: "Modeling Studio", icon: Boxes },
+  { to: "/mdm", label: "MDM & Reference", icon: GitMerge },
   { to: "/dq", label: "DQ Control Center", icon: ShieldCheck },
   { to: "/governance", label: "Data Governance", icon: LockKeyhole },
+  { to: "/ai-governance", label: "AI Governance", icon: BrainCircuit },
+  { to: "/lifecycle", label: "Lifecycle & Retention", icon: Archive },
+  { to: "/stewardship", label: "Stewardship", icon: UserCheck },
   { to: "/billing", label: "Billing & Usage", icon: CreditCard },
   { to: "/incidents", label: "Incidents", icon: AlertCircle },
   { to: "/audit", label: "Audit Trail", icon: History },
