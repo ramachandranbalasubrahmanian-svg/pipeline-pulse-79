@@ -60,13 +60,16 @@ export const JOBS: Job[] = [
   { id: "JOB-0965", name: "Customer_360_Enrich", status: "Completed", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 80, duration: "18m 04s", started: "Jan 14, 2026", project: "Customer 360 Enrichment" },
   { id: "JOB-0964", name: "Snowflake_DW_Refresh", status: "Completed", tenant: "TechStart Inc", hardware: "8 CPU / 32GB", threads: 50, duration: "7m 33s", started: "Jan 08, 2026", project: "Customer 360 Enrichment" },
   { id: "JOB-0963", name: "NewYear_Baseline_Backfill", status: "Completed", tenant: "Apex Financial", hardware: "16 CPU / 64GB", threads: 200, duration: "2h 14m", started: "Jan 01, 2026", project: "SAP Financial Consolidation" },
+  { id: "JOB-0962", name: "YearEnd_Closure_Run", status: "Completed", tenant: "Apex Financial", hardware: "16 CPU / 64GB", threads: 200, duration: "1h 47m", started: "Dec 31, 2025", project: "SAP Financial Consolidation" },
+  { id: "JOB-0961", name: "Holiday_Inventory_Sync", status: "Completed", tenant: "RetailCo Global", hardware: "16 CPU / 64GB", threads: 180, duration: "44m 12s", started: "Dec 26, 2025", project: "Real-time Inventory Sync" },
+  { id: "JOB-0960", name: "Platform_Bootstrap", status: "Completed", tenant: "Apex Financial", hardware: "8 CPU / 32GB", threads: 80, duration: "3h 22m", started: "Dec 19, 2025", project: "SAP Financial Consolidation" },
 ];
 
 export const TENANTS = [
-  { id: "apex-fin-001", name: "Apex Financial", email: "ops@apex-fin.com", hours: 500, used: 612, rate: 48000, status: "Active", since: "Jan 2023" },
-  { id: "retailco-002", name: "RetailCo Global", email: "data@retailco.com", hours: 300, used: 271, rate: 28000, status: "Active", since: "Mar 2023" },
-  { id: "techstart-003", name: "TechStart Inc", email: "eng@techstart.io", hours: 200, used: 124, rate: 18000, status: "Active", since: "Aug 2024" },
-  { id: "healthsys-004", name: "HealthSys Corp", email: "platform@healthsys.org", hours: 400, used: 489, rate: 38000, status: "Active", since: "Nov 2022" },
+  { id: "apex-fin-001", name: "Apex Financial", email: "ops@apex-fin.com", hours: 500, used: 612, rate: 48000, status: "Active", since: "Dec 2025" },
+  { id: "retailco-002", name: "RetailCo Global", email: "data@retailco.com", hours: 300, used: 271, rate: 28000, status: "Active", since: "Jan 2026" },
+  { id: "techstart-003", name: "TechStart Inc", email: "eng@techstart.io", hours: 200, used: 124, rate: 18000, status: "Active", since: "Feb 2026" },
+  { id: "healthsys-004", name: "HealthSys Corp", email: "platform@healthsys.org", hours: 400, used: 489, rate: 38000, status: "Active", since: "Dec 2025" },
 ];
 
 export const PROJECTS = [
