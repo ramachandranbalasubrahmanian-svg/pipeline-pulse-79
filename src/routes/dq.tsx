@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/dq")({
-  head: () => ({ meta: [{ title: "DQ Control Center — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "DQ Control Center — Enterprise Data Platform" }] }),
   component: DQPage,
 });
 

@@ -20,7 +20,7 @@ import {
 export const Route = createFileRoute("/governance")({
   head: () => ({
     meta: [
-      { title: "Data Governance Control Center — Data Pipelines" },
+      { title: "Data Governance Control Center — Enterprise Data Platform" },
       { name: "description", content: "Synthetic governance demo: classification, salt-based tokenization, masking, policy enforcement, audit evidence." },
     ],
   }),

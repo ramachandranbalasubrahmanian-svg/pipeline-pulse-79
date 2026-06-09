@@ -12,7 +12,7 @@ import { downloadCSV } from "@/lib/csv";
 import { Archive, Trash2, Gavel, Download, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/lifecycle")({
-  head: () => ({ meta: [{ title: "Lifecycle & Retention — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Lifecycle & Retention — Enterprise Data Platform" }] }),
   component: LifecyclePage,
 });
 

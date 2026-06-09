@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/demo")({
-  head: () => ({ meta: [{ title: "Demo Video — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Demo Video — Enterprise Data Platform" }] }),
   component: DemoVideo,
 });
 

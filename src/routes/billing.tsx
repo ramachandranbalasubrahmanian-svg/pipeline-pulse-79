@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 type Tenant = (typeof TENANTS)[number];
 
 export const Route = createFileRoute("/billing")({
-  head: () => ({ meta: [{ title: "Billing & Usage — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Billing & Usage — Enterprise Data Platform" }] }),
   component: Billing,
 });
 

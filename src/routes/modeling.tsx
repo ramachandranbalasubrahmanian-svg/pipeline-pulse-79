@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Boxes, Sparkles, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/modeling")({
-  head: () => ({ meta: [{ title: "Modeling Studio — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Modeling Studio — Enterprise Data Platform" }] }),
   component: ModelingPage,
 });
 

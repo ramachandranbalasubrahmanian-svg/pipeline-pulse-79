@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "Overview — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Overview — Enterprise Data Platform" }] }),
   component: Overview,
 });
 

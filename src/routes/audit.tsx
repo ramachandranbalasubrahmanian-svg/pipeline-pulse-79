@@ -23,7 +23,7 @@ function detectAnomaly(a: { ts: string; ip: string; action: string; resource: st
 
 
 export const Route = createFileRoute("/audit")({
-  head: () => ({ meta: [{ title: "Audit Trail — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Audit Trail — Enterprise Data Platform" }] }),
   component: Audit,
 });
 

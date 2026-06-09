@@ -1,4 +1,4 @@
-# Data Pipelines — Enterprise Observability
+# Enterprise Data Platform
 
 > A demo enterprise-grade observability platform for data pipelines: real-time job monitoring, multi-tenant management, lineage maps, audit trails with AI anomaly detection, AI incident analysis, and narrated architecture reports.
 

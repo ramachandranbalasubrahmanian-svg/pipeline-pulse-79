@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { BrainCircuit, FileText, Activity, ShieldAlert } from "lucide-react";
 
 export const Route = createFileRoute("/ai-governance")({
-  head: () => ({ meta: [{ title: "AI Governance — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "AI Governance — Enterprise Data Platform" }] }),
   component: AIGovernancePage,
 });
 

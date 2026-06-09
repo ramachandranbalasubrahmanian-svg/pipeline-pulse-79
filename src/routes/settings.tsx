@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Settings — Enterprise Data Platform" }] }),
   component: Settings,
 });
 

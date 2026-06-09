@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/dama")({
-  head: () => ({ meta: [{ title: "DAMA Control Tower — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "DAMA Control Tower — Enterprise Data Platform" }] }),
   component: DamaPage,
 });
 

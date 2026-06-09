@@ -11,7 +11,7 @@ import { Plus, Building2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/tenants")({
-  head: () => ({ meta: [{ title: "Tenants — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Tenants — Enterprise Data Platform" }] }),
   component: Tenants,
 });
 
