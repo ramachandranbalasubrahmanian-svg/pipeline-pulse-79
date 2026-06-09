@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { Sparkles, AlertTriangle, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/lineage")({
-  head: () => ({ meta: [{ title: "Pipeline Maps — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Pipeline Maps — Enterprise Data Platform" }] }),
   component: Lineage,
 });
 

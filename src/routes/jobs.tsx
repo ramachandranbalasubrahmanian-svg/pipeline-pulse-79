@@ -17,7 +17,7 @@ import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/jobs")({
-  head: () => ({ meta: [{ title: "Job Manager — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Job Manager — Enterprise Data Platform" }] }),
   component: JobsPage,
 });
 

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import jsPDF from "jspdf";
 
 export const Route = createFileRoute("/architecture")({
-  head: () => ({ meta: [{ title: "Architecture — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Architecture — Enterprise Data Platform" }] }),
   component: Architecture,
 });
 
@@ -147,7 +147,7 @@ async function generateArchitecturePDF(): Promise<void> {
   doc.text("Architecture Report", M, 90);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
-  doc.text("Data Pipelines Platform — System Design Overview", M, 115);
+  doc.text("Enterprise Data Platform — System Design Overview", M, 115);
   doc.setFontSize(10);
   doc.text(`Generated: ${new Date().toLocaleString()}`, M, 138);
   doc.text("Audience: Lead Architects, Security Reviewers", M, 154);

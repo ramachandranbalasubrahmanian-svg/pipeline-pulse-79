@@ -11,7 +11,7 @@ import { downloadCSV } from "@/lib/csv";
 import { Users, Download, CheckCircle2, XCircle, ArrowUpRight, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/stewardship")({
-  head: () => ({ meta: [{ title: "Stewardship Workbench — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Stewardship Workbench — Enterprise Data Platform" }] }),
   component: StewardshipPage,
 });
 

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/executive")({
-  head: () => ({ meta: [{ title: "Executive Governance — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Executive Governance — Enterprise Data Platform" }] }),
   component: ExecutivePage,
 });
 

@@ -49,10 +49,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Data Pipelines — Enterprise Observability" },
+      { title: "Enterprise Data Platform" },
       { name: "description", content: "Monitor, manage, and troubleshoot enterprise data pipelines in real time." },
-      { property: "og:title", content: "Data Pipelines — Enterprise Observability" },
-      { name: "twitter:title", content: "Data Pipelines — Enterprise Observability" },
+      { property: "og:title", content: "Enterprise Data Platform" },
+      { name: "twitter:title", content: "Enterprise Data Platform" },
       { property: "og:description", content: "Monitor, manage, and troubleshoot enterprise data pipelines in real time." },
       { name: "twitter:description", content: "Monitor, manage, and troubleshoot enterprise data pipelines in real time." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/800f25fd-27d8-4652-8a13-37278eaf8e20/id-preview-d57f350b--268a8940-8737-4e40-b81a-daad2eb7020e.lovable.app-1779560493938.png" },

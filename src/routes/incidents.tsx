@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 
 export const Route = createFileRoute("/incidents")({
-  head: () => ({ meta: [{ title: "Incidents — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Incidents — Enterprise Data Platform" }] }),
   component: Incidents,
 });
 

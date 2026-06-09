@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { GitMerge, Crown, ListTree, CheckCircle2, XCircle, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/mdm")({
-  head: () => ({ meta: [{ title: "MDM & Reference Data — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "MDM & Reference Data — Enterprise Data Platform" }] }),
   component: MDMPage,
 });
 

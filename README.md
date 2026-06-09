@@ -10,7 +10,7 @@
 **Live demo:** https://pipeline-pulse-79.lovable.app
 **60-second walkthrough:** [`/demo`](https://pipeline-pulse-79.lovable.app/demo) · [`public/demo.mp4`](./public/demo.mp4)
 
-![Data Pipelines Overview](./public/og-image.jpg)
+![Enterprise Data Platform Overview](./public/og-image.jpg)
 
 ---
 

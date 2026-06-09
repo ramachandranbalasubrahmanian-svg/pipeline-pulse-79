@@ -13,7 +13,7 @@ import { Database, Plus, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/projects")({
-  head: () => ({ meta: [{ title: "Projects — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Projects — Enterprise Data Platform" }] }),
   component: Projects,
 });
 

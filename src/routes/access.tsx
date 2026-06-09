@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/access")({
-  head: () => ({ meta: [{ title: "Access Control (RBAC / ABAC) — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Access Control (RBAC / ABAC) — Enterprise Data Platform" }] }),
   component: AccessPage,
 });
 

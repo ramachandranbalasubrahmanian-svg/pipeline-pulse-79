@@ -46,8 +46,7 @@ export function AppSidebar() {
             <Network className="size-4 text-primary-foreground" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-white">Data Pipelines</div>
-            <div className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider">Enterprise</div>
+            <div className="text-sm font-semibold text-white">Enterprise Data Platform</div>
           </div>
         </div>
       </div>

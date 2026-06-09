@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { BookOpen, Search, Download, CheckCircle2, FileText, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/catalog")({
-  head: () => ({ meta: [{ title: "Data Catalog & Glossary — Data Pipelines" }] }),
+  head: () => ({ meta: [{ title: "Data Catalog & Glossary — Enterprise Data Platform" }] }),
   component: CatalogPage,
 });
 
