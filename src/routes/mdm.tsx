@@ -54,10 +54,10 @@ const REF = [
   { set: "Consent Type", values: 7, owner: "Privacy", updated: "2026-05-12", standard: "GDPR-aligned" },
 ];
 
-const QUEUE = [
-  { id: "MDM-3041", type: "Merge Approval", customer: "CUST-000981", steward: "J. Tan", sla: "12h", status: "Awaiting" },
-  { id: "MDM-3042", type: "Hierarchy Change", entity: "Product → Cards", steward: "MDM", sla: "24h", status: "In Review" },
-  { id: "MDM-3043", type: "Reference Update", entity: "Risk Rating", steward: "N. Osei", sla: "48h", status: "Awaiting" },
+const QUEUE: { id: string; type: string; subject: string; steward: string; sla: string; status: string }[] = [
+  { id: "MDM-3041", type: "Merge Approval", subject: "CUST-000981", steward: "J. Tan", sla: "12h", status: "Awaiting" },
+  { id: "MDM-3042", type: "Hierarchy Change", subject: "Product → Cards", steward: "MDM", sla: "24h", status: "In Review" },
+  { id: "MDM-3043", type: "Reference Update", subject: "Risk Rating", steward: "N. Osei", sla: "48h", status: "Awaiting" },
 ];
 
 function MDMPage() {
@@ -147,7 +147,7 @@ function MDMPage() {
           <Card className="overflow-hidden">
             <Table>
               <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Type</TableHead><TableHead>Entity</TableHead><TableHead>Steward</TableHead><TableHead>SLA</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
-              <TableBody>{QUEUE.map(q => <TableRow key={q.id}><TableCell className="font-mono text-xs">{q.id}</TableCell><TableCell>{q.type}</TableCell><TableCell className="text-xs">{q.customer ?? q.entity}</TableCell><TableCell className="text-xs">{q.steward}</TableCell><TableCell>{q.sla}</TableCell><TableCell><Badge variant="secondary">{q.status}</Badge></TableCell></TableRow>)}</TableBody>
+              <TableBody>{QUEUE.map(q => <TableRow key={q.id}><TableCell className="font-mono text-xs">{q.id}</TableCell><TableCell>{q.type}</TableCell><TableCell className="text-xs">{q.subject}</TableCell><TableCell className="text-xs">{q.steward}</TableCell><TableCell>{q.sla}</TableCell><TableCell><Badge variant="secondary">{q.status}</Badge></TableCell></TableRow>)}</TableBody>
             </Table>
           </Card>
         </TabsContent>
