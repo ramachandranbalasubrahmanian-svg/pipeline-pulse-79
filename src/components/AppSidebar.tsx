@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Network, Share2, Database, PlayCircle,
   CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film, ShieldCheck, LockKeyhole,
-  Compass, BookOpen, Boxes, GitMerge, BrainCircuit, Archive, UserCheck, Crown,
+  Compass, BookOpen, Boxes, GitMerge, BrainCircuit, Archive, UserCheck, Crown, KeyRound,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
@@ -27,6 +27,7 @@ const NAV = [
   { to: "/ai-governance", label: "AI Governance", icon: BrainCircuit },
   { to: "/lifecycle", label: "Lifecycle & Retention", icon: Archive },
   { to: "/stewardship", label: "Stewardship", icon: UserCheck },
+  { to: "/access", label: "Access (RBAC/ABAC)", icon: KeyRound },
   { to: "/billing", label: "Billing & Usage", icon: CreditCard },
   { to: "/incidents", label: "Incidents", icon: AlertCircle },
   { to: "/audit", label: "Audit Trail", icon: History },
@@ -74,15 +75,15 @@ export function AppSidebar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors">
-              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold">AD</div>
+              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold">RB</div>
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-sm text-white truncate">Alex Doe</div>
-                <div className="text-xs text-sidebar-foreground/60 truncate">admin@company.com</div>
+                <div className="text-sm text-white truncate">Ram Balasubrahmanian</div>
+                <div className="text-xs text-sidebar-foreground/60 truncate">jvpramu@gmail.com</div>
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" className="w-56">
-            <DropdownMenuLabel>Signed in as Alex Doe</DropdownMenuLabel>
+            <DropdownMenuLabel>Signed in as Ram Balasubrahmanian</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
               <UserCog className="size-4" />Account settings

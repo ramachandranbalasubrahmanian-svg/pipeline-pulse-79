@@ -19,7 +19,7 @@ function Settings() {
   const [org, setOrg] = useState({
     name: "Global-Enterprise-01",
     region: "us-east-1",
-    email: "admin@company.com",
+    email: "jvpramu@gmail.com",
     sla: "Enterprise 24/7",
   });
 
