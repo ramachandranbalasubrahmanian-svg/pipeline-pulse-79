@@ -17,11 +17,16 @@
 ## ✨ Highlights
 
 - **Real-time Overview** — KPIs, execution trend, system pulse, freshness scoreboard
+- **DAMA Guided Demo Mode** — global 1-minute and 10-minute walkthroughs for portfolio, interview, and executive review flows
 - **Job Manager** — Lifecycle controls, log viewer, and an **AI Job Config Generator** (`"ETL from Salesforce to Snowflake nightly, retry 3x"` → filled form)
-- **Pipeline Maps (Lineage)** — End-to-end DAG with **AI Impact Analysis** on every node (plain-English blast radius)
+- **Pipeline Maps (Lineage)** — End-to-end DAG with asset search, metadata panels, and **AI Impact Analysis** on every node (plain-English blast radius)
 - **Architecture Viewer** — System diagrams with **one-click narrated PDF export**
 - **Audit Trail** — Full event log with **AI Anomaly Detection** (off-hours access, foreign IPs, sensitive changes)
-- **Metadata-Driven Data Quality Control Center** — Governed, auditable validation: incoming feed, metadata rule catalog, AI rule assistant, on-demand validation run, reconciliation, rejected/quarantine/golden datasets, analytics, audit evidence, incident workflow, and business impact view
+- **Metadata-Driven Data Quality Control Center** — Governed, auditable validation with editable rule catalog, domain scorecards, trend analytics, reconciliation, audit evidence, incident workflow, and business impact view
+- **Document & Content Governance** — Unstructured PII scan simulation, OCR extraction examples, legal hold queue, and exportable synthetic evidence
+- **MDM & Reference Data** — Golden record view plus side-by-side duplicate merge review with survivorship recommendation and steward escalation
+- **AI Governance Model Cards** — Training lineage, evaluation metrics, fairness checks, approval history, and decommission triggers
+- **Catalog & Glossary Adoption** — Search/filter, tag cloud, completeness formula, harvesting simulation, and glossary approval flow
 - **Multi-tenant** — Tenants, contracted hours, billing rates, usage alerts
 - **Incidents & Projects** — Severity tracking, ownership, cross-tenant pipeline projects
 - **Live visitor counter** on the homepage
@@ -47,19 +52,19 @@ bun run build        # production build
 
 ## 🗺 Pages
 
-| Route             | Purpose                                                          |
-| ----------------- | ---------------------------------------------------------------- |
-| `/`               | Overview — KPIs, trends, system pulse                            |
-| `/jobs`           | Job Manager + AI config generator                                |
-| `/lineage`        | Pipeline Maps with AI impact analysis                            |
-| `/architecture`   | System diagrams + narrated PDF export                            |
-| `/audit`          | Audit log with AI anomaly detection                              |
-| `/dq`             | Metadata-Driven Data Quality Control Center                      |
-| `/incidents`      | Active incidents                                                 |
-| `/projects`       | Cross-tenant pipeline projects                                   |
-| `/tenants`        | Tenant management, contracts, billing rates                      |
-| `/billing`        | Usage & alerts                                                   |
-| `/settings`       | Org preferences & integrations                                   |
+| Route           | Purpose                                     |
+| --------------- | ------------------------------------------- |
+| `/`             | Overview — KPIs, trends, system pulse       |
+| `/jobs`         | Job Manager + AI config generator           |
+| `/lineage`      | Pipeline Maps with AI impact analysis       |
+| `/architecture` | System diagrams + narrated PDF export       |
+| `/audit`        | Audit log with AI anomaly detection         |
+| `/dq`           | Metadata-Driven Data Quality Control Center |
+| `/incidents`    | Active incidents                            |
+| `/projects`     | Cross-tenant pipeline projects              |
+| `/tenants`      | Tenant management, contracts, billing rates |
+| `/billing`      | Usage & alerts                              |
+| `/settings`     | Org preferences & integrations              |
 
 ## 🛡 Data Quality Control Center (`/dq`)
 
@@ -77,6 +82,15 @@ into an auditable enterprise capability.
 - **Positions the platform** for data governance, DataOps maturity, and
   converting fragmented manual validation into a scalable, auditable
   capability with clear business impact.
+
+## 🧭 DAMA DM-BOK2 Demo Flow
+
+Use the floating **Demo Guide** button on any page for:
+
+- **1-Minute Overview:** Overview → DAMA Control Tower → Governance → DQ Control Center → AI Governance
+- **10-Minute Deep Dive:** Adds Lineage, MDM, Document & Content, Catalog, and Executive Governance
+
+The app remains a client-side synthetic portfolio simulation. All DAMA improvements preserve the existing Lovable visual system and use local React state only.
 
 ## 🔒 Security & Best Practices
 

@@ -1,14 +1,47 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
-  LayoutDashboard, Network, Share2, Database, PlayCircle,
-  CreditCard, AlertCircle, History, Users, Settings, LogOut, UserCog, Film, ShieldCheck, LockKeyhole,
-  Compass, BookOpen, Boxes, GitMerge, BrainCircuit, Archive, UserCheck, Crown, KeyRound,
-  FileCheck, Package, FileText, Activity, Scale, TrendingUp,
+  LayoutDashboard,
+  Network,
+  Share2,
+  Database,
+  PlayCircle,
+  CreditCard,
+  AlertCircle,
+  History,
+  Users,
+  Settings,
+  LogOut,
+  UserCog,
+  Film,
+  ShieldCheck,
+  LockKeyhole,
+  Compass,
+  BookOpen,
+  Boxes,
+  GitMerge,
+  BrainCircuit,
+  Archive,
+  UserCheck,
+  Crown,
+  KeyRound,
+  FileCheck,
+  Package,
+  FileText,
+  Activity,
+  Scale,
+  TrendingUp,
+  ChevronDown,
 } from "lucide-react";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 
 const NAV = [
@@ -43,9 +76,40 @@ const NAV = [
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
+const NAV_GROUPS = [
+  { id: "executive", label: "Executive Layer", items: NAV.slice(0, 6) },
+  { id: "platform", label: "Data Platform", items: NAV.slice(6, 12) },
+  { id: "governance", label: "Data Governance & Quality", items: NAV.slice(12, 18) },
+  { id: "ai", label: "AI, Ethics & Compliance", items: NAV.slice(18, 23) },
+  { id: "ops", label: "Operations & Admin", items: NAV.slice(23) },
+] as const;
+
+const STORAGE_KEY = "pipelinePulse.sidebar.collapsedSections";
+
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setCollapsed(JSON.parse(saved));
+      } catch {
+        setCollapsed({});
+      }
+    }
+  }, []);
+
+  function setGroupOpen(id: string, open: boolean) {
+    setCollapsed((current) => {
+      const next = { ...current, [id]: !open };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
   return (
     <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
       <div className="px-5 py-5 border-b border-sidebar-border">
@@ -58,23 +122,42 @@ export function AppSidebar() {
           </div>
         </div>
       </div>
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {NAV.map((item) => {
-          const active = pathname === item.to;
-          const Icon = item.icon;
+      <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+        {NAV_GROUPS.map((group) => {
+          const open = !collapsed[group.id];
           return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
-                active
-                  ? "bg-primary text-primary-foreground font-medium"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white"
-              }`}
+            <Collapsible
+              key={group.id}
+              open={open}
+              onOpenChange={(next) => setGroupOpen(group.id, next)}
             >
-              <Icon className="size-4" />
-              <span>{item.label}</span>
-            </Link>
+              <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-sidebar-foreground/50 hover:text-sidebar-foreground">
+                <span>{group.label}</span>
+                <ChevronDown
+                  className={`size-3 transition-transform ${open ? "rotate-180" : ""}`}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-0.5">
+                {group.items.map((item) => {
+                  const active = pathname === item.to;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+                        active
+                          ? "bg-primary text-primary-foreground font-medium"
+                          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white"
+                      }`}
+                    >
+                      <Icon className="size-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </CollapsibleContent>
+            </Collapsible>
           );
         })}
       </nav>
@@ -82,7 +165,9 @@ export function AppSidebar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors">
-              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold">RB</div>
+              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+                RB
+              </div>
               <div className="flex-1 min-w-0 text-left">
                 <div className="text-sm text-white truncate">Ram Balasubrahmanian</div>
                 <div className="text-xs text-sidebar-foreground/60 truncate">jvpramu@gmail.com</div>
@@ -93,17 +178,22 @@ export function AppSidebar() {
             <DropdownMenuLabel>Signed in as Ram Balasubrahmanian</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
-              <UserCog className="size-4" />Account settings
+              <UserCog className="size-4" />
+              Account settings
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate({ to: "/tenants" })}>
-              <Users className="size-4" />Switch tenant
+              <Users className="size-4" />
+              Switch tenant
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => toast.success("Signed out", { description: "Demo: no real auth wired." })}
+              onClick={() =>
+                toast.success("Signed out", { description: "Demo: no real auth wired." })
+              }
             >
-              <LogOut className="size-4" />Sign out
+              <LogOut className="size-4" />
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

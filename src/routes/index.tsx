@@ -1,11 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { VisitorCounter } from "@/components/VisitorCounter";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FRESHNESS, JOB_TREND } from "@/lib/mock";
-import { TrendingUp, TrendingDown, Activity, CheckCircle2, AlertTriangle, Clock, Cpu, Layers, Wifi } from "lucide-react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Cpu,
+  Layers,
+  Wifi,
+  Compass,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 import { motion } from "framer-motion";
 
@@ -27,18 +47,44 @@ const PULSE = [
   { label: "Network I/O", value: "2.4 GB/s", icon: Wifi, color: "text-primary" },
 ];
 
-function slaStyle(s: typeof FRESHNESS[number]["sla"]) {
+function slaStyle(s: (typeof FRESHNESS)[number]["sla"]) {
   if (s === "Healthy") return { row: "", badge: "bg-success/10 text-success", label: "✓ Healthy" };
   if (s === "Warning") return { row: "", badge: "bg-warning/10 text-warning", label: "⚠ Warning" };
-  return { row: "bg-destructive/5", badge: "bg-destructive/10 text-destructive", label: "● Breached" };
+  return {
+    row: "bg-destructive/5",
+    badge: "bg-destructive/10 text-destructive",
+    label: "● Breached",
+  };
 }
 
 function Overview() {
+  const navigate = useNavigate();
+
   return (
     <div>
-      <PageHeader title="Overview" description="Real-time command center across all tenants and pipelines." />
+      <PageHeader
+        title="Overview"
+        description="Real-time command center across all tenants and pipelines."
+      />
+      <Card className="p-6 mb-6 bg-primary/5 border-primary/20 overflow-hidden">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-primary">
+              Synthetic Demo Data · Portfolio Simulation
+            </div>
+            <h1 className="text-3xl font-semibold tracking-tight mt-2">Enterprise Data Platform</h1>
+            <p className="text-sm text-muted-foreground mt-2 max-w-3xl">
+              DAMA DM-BOK2 aligned control plane for governance, quality, lineage, AI risk,
+              reliability, stewardship, and executive evidence.
+            </p>
+          </div>
+          <Button onClick={() => navigate({ to: "/dama" })}>
+            <Compass className="size-4" />
+            Start Demo
+          </Button>
+        </div>
+      </Card>
       <VisitorCounter />
-
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {KPIS.map((k, i) => {
@@ -53,14 +99,18 @@ function Overview() {
               <Card className="p-5 border-border shadow-sm">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{k.label}</div>
+                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      {k.label}
+                    </div>
                     <div className="text-2xl font-semibold mt-2 tracking-tight">{k.value}</div>
                   </div>
                   <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Icon className="size-4 text-primary" />
                   </div>
                 </div>
-                <div className={`flex items-center gap-1 mt-3 text-xs ${k.up ? "text-success" : "text-warning"}`}>
+                <div
+                  className={`flex items-center gap-1 mt-3 text-xs ${k.up ? "text-success" : "text-warning"}`}
+                >
                   {k.up ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
                   {k.trend}
                 </div>
@@ -82,12 +132,41 @@ function Overview() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={JOB_TREND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
-                <XAxis dataKey="d" tick={{ fontSize: 11 }} stroke="currentColor" className="text-muted-foreground" />
-                <YAxis tick={{ fontSize: 11 }} stroke="currentColor" className="text-muted-foreground" />
-                <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12, border: "1px solid var(--border)" }} />
+                <XAxis
+                  dataKey="d"
+                  tick={{ fontSize: 11 }}
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  tick={{ fontSize: 11 }}
+                  stroke="currentColor"
+                  className="text-muted-foreground"
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 8,
+                    fontSize: 12,
+                    border: "1px solid var(--border)",
+                  }}
+                />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="completed" stroke="#16A34A" strokeWidth={2} dot={false} name="Completed" />
-                <Line type="monotone" dataKey="failed" stroke="#DC2626" strokeWidth={2} dot={false} name="Failed" />
+                <Line
+                  type="monotone"
+                  dataKey="completed"
+                  stroke="#16A34A"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Completed"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="failed"
+                  stroke="#DC2626"
+                  strokeWidth={2}
+                  dot={false}
+                  name="Failed"
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -99,8 +178,13 @@ function Overview() {
             {PULSE.map((p) => {
               const Icon = p.icon;
               return (
-                <div key={p.label} className="flex items-center gap-3 p-3 rounded-lg bg-muted/40 border border-border">
-                  <div className={`size-9 rounded-lg bg-background flex items-center justify-center ${p.color}`}>
+                <div
+                  key={p.label}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-muted/40 border border-border"
+                >
+                  <div
+                    className={`size-9 rounded-lg bg-background flex items-center justify-center ${p.color}`}
+                  >
                     <Icon className="size-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -151,7 +235,11 @@ function Overview() {
                       </div>
                     </td>
                     <td className="py-3">
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${s.badge}`}>{s.label}</span>
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${s.badge}`}
+                      >
+                        {s.label}
+                      </span>
                     </td>
                   </tr>
                 );

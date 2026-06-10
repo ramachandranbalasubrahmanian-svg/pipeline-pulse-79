@@ -5,44 +5,191 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
-  ShieldCheck, FileSpreadsheet, Settings2, Sparkles, PlayCircle,
-  CheckCircle2, XCircle, AlertTriangle, GitMerge, ScrollText, Ticket,
-  TrendingUp, Download, Loader2, ArrowRight, Database, Activity,
+  ShieldCheck,
+  FileSpreadsheet,
+  Settings2,
+  Sparkles,
+  PlayCircle,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  GitMerge,
+  ScrollText,
+  Ticket,
+  TrendingUp,
+  Download,
+  Loader2,
+  ArrowRight,
+  Database,
+  Activity,
+  Trash2,
+  Plus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dq")({
-  head: () => ({ meta: [{ title: "DQ Control Center — Enterprise Data Platform" }] }),
+  head: () => ({
+    meta: [
+      { title: "DQ Control Center — Enterprise Data Platform" },
+      {
+        name: "description",
+        content:
+          "Metadata-driven data quality validation, rule management, scorecards, and audit evidence.",
+      },
+    ],
+  }),
   component: DQPage,
 });
 
 // ---------------- Mock data ----------------
 const RULES = [
-  { id: "DQ-001", field: "customer_id", type: "Mandatory", condition: "Must not be null", severity: "Critical", action: "Reject" },
-  { id: "DQ-002", field: "date_of_birth", type: "Date Format", condition: "Must be valid YYYY-MM-DD", severity: "High", action: "Reject" },
-  { id: "DQ-003", field: "phone_number", type: "Regex Format", condition: "Country-specific phone format", severity: "Medium", action: "Reject" },
-  { id: "DQ-004", field: "zip_code", type: "Reference Check", condition: "Must exist in valid ZIP reference table", severity: "High", action: "Reject" },
-  { id: "DQ-005", field: "transfer_amount", type: "Range Check", condition: "Must be >= 0", severity: "Critical", action: "Reject" },
-  { id: "DQ-006", field: "email_address", type: "Email Format", condition: "Must be valid email syntax", severity: "Medium", action: "Reject" },
-  { id: "DQ-007", field: "customer_id + email", type: "Duplicate Check", condition: "Detect exact or fuzzy duplicates", severity: "Medium", action: "Quarantine" },
-  { id: "DQ-008", field: "account_status", type: "Domain Check", condition: "Must be Active, Inactive, Suspended, Closed", severity: "Medium", action: "Reject" },
+  {
+    id: "DQ-001",
+    field: "customer_id",
+    type: "Mandatory",
+    condition: "Must not be null",
+    severity: "Critical",
+    action: "Reject",
+  },
+  {
+    id: "DQ-002",
+    field: "date_of_birth",
+    type: "Date Format",
+    condition: "Must be valid YYYY-MM-DD",
+    severity: "High",
+    action: "Reject",
+  },
+  {
+    id: "DQ-003",
+    field: "phone_number",
+    type: "Regex Format",
+    condition: "Country-specific phone format",
+    severity: "Medium",
+    action: "Reject",
+  },
+  {
+    id: "DQ-004",
+    field: "zip_code",
+    type: "Reference Check",
+    condition: "Must exist in valid ZIP reference table",
+    severity: "High",
+    action: "Reject",
+  },
+  {
+    id: "DQ-005",
+    field: "transfer_amount",
+    type: "Range Check",
+    condition: "Must be >= 0",
+    severity: "Critical",
+    action: "Reject",
+  },
+  {
+    id: "DQ-006",
+    field: "email_address",
+    type: "Email Format",
+    condition: "Must be valid email syntax",
+    severity: "Medium",
+    action: "Reject",
+  },
+  {
+    id: "DQ-007",
+    field: "customer_id + email",
+    type: "Duplicate Check",
+    condition: "Detect exact or fuzzy duplicates",
+    severity: "Medium",
+    action: "Quarantine",
+  },
+  {
+    id: "DQ-008",
+    field: "account_status",
+    type: "Domain Check",
+    condition: "Must be Active, Inactive, Suspended, Closed",
+    severity: "Medium",
+    action: "Reject",
+  },
 ];
 
 const REJECTED = [
-  { row: 12, field: "date_of_birth", value: "32-15-2020", rule: "Invalid Date Format", severity: "High", action: "Rejected", ai: "Date does not represent a valid calendar date." },
-  { row: 27, field: "phone_number", value: "12345", rule: "Invalid Phone Format", severity: "Medium", action: "Rejected", ai: "Phone number does not match required format." },
-  { row: 43, field: "zip_code", value: "999999", rule: "ZIP Reference Check Failed", severity: "High", action: "Rejected", ai: "ZIP code not found in approved reference data." },
-  { row: 68, field: "transfer_amount", value: "-4500", rule: "Negative Amount", severity: "Critical", action: "Rejected", ai: "Transfer amount cannot be negative." },
-  { row: 84, field: "email_address", value: "john@@mail", rule: "Invalid Email Format", severity: "Medium", action: "Rejected", ai: "Email contains invalid syntax." },
-  { row: 97, field: "customer_id", value: "null", rule: "Mandatory Field Missing", severity: "Critical", action: "Rejected", ai: "Customer ID is required for downstream processing." },
+  {
+    row: 12,
+    field: "date_of_birth",
+    value: "32-15-2020",
+    rule: "Invalid Date Format",
+    severity: "High",
+    action: "Rejected",
+    ai: "Date does not represent a valid calendar date.",
+  },
+  {
+    row: 27,
+    field: "phone_number",
+    value: "12345",
+    rule: "Invalid Phone Format",
+    severity: "Medium",
+    action: "Rejected",
+    ai: "Phone number does not match required format.",
+  },
+  {
+    row: 43,
+    field: "zip_code",
+    value: "999999",
+    rule: "ZIP Reference Check Failed",
+    severity: "High",
+    action: "Rejected",
+    ai: "ZIP code not found in approved reference data.",
+  },
+  {
+    row: 68,
+    field: "transfer_amount",
+    value: "-4500",
+    rule: "Negative Amount",
+    severity: "Critical",
+    action: "Rejected",
+    ai: "Transfer amount cannot be negative.",
+  },
+  {
+    row: 84,
+    field: "email_address",
+    value: "john@@mail",
+    rule: "Invalid Email Format",
+    severity: "Medium",
+    action: "Rejected",
+    ai: "Email contains invalid syntax.",
+  },
+  {
+    row: 97,
+    field: "customer_id",
+    value: "null",
+    rule: "Mandatory Field Missing",
+    severity: "Critical",
+    action: "Rejected",
+    ai: "Customer ID is required for downstream processing.",
+  },
 ];
 
 const QUARANTINE = {
-  row: 91, issue: "Probable Duplicate", confidence: "92%", action: "Quarantined",
+  row: 91,
+  issue: "Probable Duplicate",
+  confidence: "92%",
+  action: "Quarantined",
   reason: "Customer name, email, and phone are highly similar to an existing record.",
 };
 
@@ -78,11 +225,46 @@ const AUDIT = [
 
 const IMPACT = [
   { metric: "Client Onboarding", before: "4–8 weeks", after: "2–3 days", delta: "85% faster" },
-  { metric: "Duplicate Resolution", before: "Manual, weeks-long", after: "Automated", delta: "90%+ reduction" },
-  { metric: "Incident Resolution", before: "20–100+ hours", after: "< 4 hours", delta: "80%+ reduction" },
+  {
+    metric: "Duplicate Resolution",
+    before: "Manual, weeks-long",
+    after: "Automated",
+    delta: "90%+ reduction",
+  },
+  {
+    metric: "Incident Resolution",
+    before: "20–100+ hours",
+    after: "< 4 hours",
+    delta: "80%+ reduction",
+  },
   { metric: "Debug Effort", before: "Days / weeks", after: "Minutes", delta: "80%+ reduction" },
-  { metric: "Client Code Changes", before: "Per-client custom code", after: "Control-file only", delta: "100% reusable engine" },
-  { metric: "Annual Incident Cost", before: "Multi-million exposure", after: "Substantially lower", delta: "$5M+ savings potential" },
+  {
+    metric: "Client Code Changes",
+    before: "Per-client custom code",
+    after: "Control-file only",
+    delta: "100% reusable engine",
+  },
+  {
+    metric: "Annual Incident Cost",
+    before: "Multi-million exposure",
+    after: "Substantially lower",
+    delta: "$5M+ savings potential",
+  },
+];
+
+const DOMAIN_SCORECARD = [
+  { domain: "Customer", score: 94, trend: "+3 pts", rules: 21 },
+  { domain: "Finance", score: 91, trend: "+1 pt", rules: 18 },
+  { domain: "Claims", score: 87, trend: "-2 pts", rules: 22 },
+  { domain: "Privacy", score: 96, trend: "+4 pts", rules: 11 },
+  { domain: "Reference", score: 99, trend: "flat", rules: 8 },
+];
+
+const DQ_TREND = [
+  { week: "W1", Customer: 91, Finance: 89, Claims: 85 },
+  { week: "W2", Customer: 92, Finance: 90, Claims: 86 },
+  { week: "W3", Customer: 93, Finance: 91, Claims: 84 },
+  { week: "W4", Customer: 94, Finance: 91, Claims: 87 },
 ];
 
 const PROGRESS_STEPS = [
@@ -121,7 +303,17 @@ function actionBadge(a: string) {
 }
 
 // ---------------- Components ----------------
-function StatCard({ label, value, sub, tone = "text-foreground" }: { label: string; value: string; sub?: string; tone?: string }) {
+function StatCard({
+  label,
+  value,
+  sub,
+  tone = "text-foreground",
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: string;
+}) {
   return (
     <Card className="p-4">
       <div className="text-xs text-muted-foreground">{label}</div>
@@ -154,7 +346,9 @@ function FlowDiagram() {
                 </div>
                 <div className="text-xs text-center text-muted-foreground">{s.label}</div>
               </div>
-              {i < steps.length - 1 && <ArrowRight className="size-4 text-muted-foreground shrink-0" />}
+              {i < steps.length - 1 && (
+                <ArrowRight className="size-4 text-muted-foreground shrink-0" />
+              )}
             </div>
           );
         })}
@@ -170,6 +364,7 @@ function DQPage() {
   const [search, setSearch] = useState("");
   const [sevFilter, setSevFilter] = useState<string>("All");
   const [resultsVisible, setResultsVisible] = useState(false);
+  const [rules, setRules] = useState(RULES);
 
   function runValidation() {
     setResultsVisible(true);
@@ -184,21 +379,61 @@ function DQPage() {
         setTimeout(tick, 280);
       } else {
         setRunState("done");
-        toast.success("Validation completed", { description: "93 passed, 6 rejected, 1 quarantined." });
+        toast.success("Validation completed", {
+          description: "93 passed, 6 rejected, 1 quarantined.",
+        });
       }
     };
     setTimeout(tick, 280);
   }
 
   function mockExport(label: string) {
-    toast.success(label, { description: "Mock export generated successfully. Backend export service can be connected in the next iteration." });
+    toast.success(label, {
+      description:
+        "Mock export generated successfully. Backend export service can be connected in the next iteration.",
+    });
   }
   function mockIncident() {
-    toast.success("Mock incident created: INC-DQ-009421", { description: "ServiceNow/Jira integration can be connected in the next iteration." });
+    toast.success("Mock incident created: INC-DQ-009421", {
+      description: "ServiceNow/Jira integration can be connected in the next iteration.",
+    });
+  }
+
+  function updateRule(id: string, key: keyof (typeof RULES)[number], value: string) {
+    setRules((current) =>
+      current.map((rule) => (rule.id === id ? { ...rule, [key]: value } : rule)),
+    );
+  }
+
+  function addRule() {
+    const nextId = `DQ-${String(rules.length + 1).padStart(3, "0")}`;
+    setRules((current) => [
+      ...current,
+      {
+        id: nextId,
+        field: "",
+        type: "Mandatory",
+        condition: "",
+        severity: "Medium",
+        action: "Review",
+      },
+    ]);
+    toast.success("Rule added", {
+      description: "Rule changes apply to the next real-time validation run.",
+    });
+  }
+
+  function deleteRule(id: string) {
+    setRules((current) => current.filter((rule) => rule.id !== id));
+    toast.message("Rule deleted", {
+      description: "Demo validation output remains fixed at 93/6/1.",
+    });
   }
 
   const filteredRejected = REJECTED.filter((r) => {
-    const matchesSearch = !search || `${r.row} ${r.field} ${r.rule} ${r.ai}`.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch =
+      !search ||
+      `${r.row} ${r.field} ${r.rule} ${r.ai}`.toLowerCase().includes(search.toLowerCase());
     const matchesSev = sevFilter === "All" || r.severity === sevFilter;
     return matchesSearch && matchesSev;
   });
@@ -211,9 +446,13 @@ function DQPage() {
         actions={
           <Button onClick={runValidation} disabled={runState === "running"}>
             {runState === "running" ? (
-              <><Loader2 className="size-4 animate-spin" /> Running…</>
+              <>
+                <Loader2 className="size-4 animate-spin" /> Running…
+              </>
             ) : (
-              <><PlayCircle className="size-4" /> Run Data Quality Validation</>
+              <>
+                <PlayCircle className="size-4" /> Run Data Quality Validation
+              </>
             )}
           </Button>
         }
@@ -223,10 +462,13 @@ function DQPage() {
         <div className="flex items-start gap-3">
           <ShieldCheck className="size-5 text-primary mt-0.5" />
           <div>
-            <div className="text-sm font-medium">Configure once. Govern every feed. Prove every decision.</div>
+            <div className="text-sm font-medium">
+              Configure once. Govern every feed. Prove every decision.
+            </div>
             <div className="text-xs text-muted-foreground mt-1">
-              This feature demonstrates how enterprise data pipelines can move from manual validation and fragmented quality checks
-              to a reusable metadata-driven governance engine.
+              This feature demonstrates how enterprise data pipelines can move from manual
+              validation and fragmented quality checks to a reusable metadata-driven governance
+              engine.
             </div>
           </div>
         </div>
@@ -236,6 +478,7 @@ function DQPage() {
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="feed">Incoming Feed</TabsTrigger>
           <TabsTrigger value="rules">Metadata Rules</TabsTrigger>
+          <TabsTrigger value="manage">Manage Rules</TabsTrigger>
           {resultsVisible && (
             <>
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -257,17 +500,38 @@ function DQPage() {
             {/* ---- Overview ---- */}
             <TabsContent value="overview" className="space-y-6 mt-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard label="85% Faster Onboarding" value="2–3 days" sub="From 4–8 weeks" tone="text-primary" />
-                <StatCard label="90%+ Duplicate Reduction" value="Automated" sub="Golden Record logic" tone="text-success" />
-                <StatCard label="80%+ Faster Incidents" value="< 4 hrs" sub="From 20–100+ hours" tone="text-warning" />
-                <StatCard label="Annual Savings Potential" value="$5M+" sub="Reduced DQ incident cost" tone="text-primary" />
+                <StatCard
+                  label="85% Faster Onboarding"
+                  value="2–3 days"
+                  sub="From 4–8 weeks"
+                  tone="text-primary"
+                />
+                <StatCard
+                  label="90%+ Duplicate Reduction"
+                  value="Automated"
+                  sub="Golden Record logic"
+                  tone="text-success"
+                />
+                <StatCard
+                  label="80%+ Faster Incidents"
+                  value="< 4 hrs"
+                  sub="From 20–100+ hours"
+                  tone="text-warning"
+                />
+                <StatCard
+                  label="Annual Savings Potential"
+                  value="$5M+"
+                  sub="Reduced DQ incident cost"
+                  tone="text-primary"
+                />
               </div>
               <FlowDiagram />
               <Card className="p-4">
                 <div className="text-sm font-medium mb-2">How it works</div>
                 <p className="text-sm text-muted-foreground">
-                  Input File + Control File → Metadata Rules Engine → Validation + De-duplication → Reconciliation + Golden Record.
-                  AI assists with explanation and remediation guidance. Final pass/reject decisions are controlled by governed metadata rules.
+                  Input File + Control File → Metadata Rules Engine → Validation + De-duplication →
+                  Reconciliation + Golden Record. AI assists with explanation and remediation
+                  guidance. Final pass/reject decisions are controlled by governed metadata rules.
                 </p>
               </Card>
             </TabsContent>
@@ -319,14 +583,18 @@ function DQPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {RULES.map((r) => (
+                {rules.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell className="font-mono text-xs">{r.id}</TableCell>
                     <TableCell className="font-mono text-xs">{r.field}</TableCell>
                     <TableCell>{r.type}</TableCell>
                     <TableCell className="text-muted-foreground">{r.condition}</TableCell>
-                    <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
-                    <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
+                    <TableCell>
+                      <span className={sevBadge(r.severity)}>{r.severity}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={actionBadge(r.action)}>{r.action}</span>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -335,15 +603,158 @@ function DQPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { field: "date_of_birth", type: "date", format: "YYYY-MM-DD", required: true, severity: "HIGH", action: "REJECT_RECORD" },
-              { field: "transfer_amount", type: "decimal", min_value: 0, required: true, severity: "CRITICAL", action: "REJECT_RECORD" },
+              {
+                field: "date_of_birth",
+                type: "date",
+                format: "YYYY-MM-DD",
+                required: true,
+                severity: "HIGH",
+                action: "REJECT_RECORD",
+              },
+              {
+                field: "transfer_amount",
+                type: "decimal",
+                min_value: 0,
+                required: true,
+                severity: "CRITICAL",
+                action: "REJECT_RECORD",
+              },
             ].map((j, i) => (
               <Card key={i} className="p-4">
                 <div className="text-xs text-muted-foreground mb-2">Metadata JSON preview</div>
-                <pre className="text-xs bg-muted rounded-md p-3 overflow-x-auto">{JSON.stringify(j, null, 2)}</pre>
+                <pre className="text-xs bg-muted rounded-md p-3 overflow-x-auto">
+                  {JSON.stringify(j, null, 2)}
+                </pre>
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="manage" className="space-y-4 mt-6">
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <div className="text-sm font-medium">Editable DQ Rule Builder</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              Rules are stored in local React state for the demo. The synthetic validation
+              simulation intentionally continues to produce 93 passed, 6 rejected, and 1 quarantined
+              record.
+            </div>
+          </Card>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={addRule}>
+              <Plus className="size-4" />
+              Add Rule
+            </Button>
+            <Button variant="outline" onClick={() => mockExport("Rule catalog JSON exported")}>
+              <Download className="size-4" />
+              Export Rules
+            </Button>
+          </div>
+          <Card className="overflow-x-auto">
+            <Table className="min-w-[1100px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Rule</TableHead>
+                  <TableHead>Field</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Condition</TableHead>
+                  <TableHead>Severity</TableHead>
+                  <TableHead>Action</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rules.map((rule) => (
+                  <TableRow key={rule.id}>
+                    <TableCell className="font-mono text-xs">{rule.id}</TableCell>
+                    <TableCell>
+                      <Input
+                        value={rule.field}
+                        onChange={(e) => updateRule(rule.id, "field", e.target.value)}
+                        className="h-8 min-w-40"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={rule.type}
+                        onValueChange={(value) => updateRule(rule.id, "type", value)}
+                      >
+                        <SelectTrigger className="h-8 min-w-44">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[
+                            "Mandatory",
+                            "Date Format",
+                            "Regex Format",
+                            "Reference Check",
+                            "Range Check",
+                            "Email Format",
+                            "Duplicate Check",
+                            "Domain Check",
+                          ].map((x) => (
+                            <SelectItem key={x} value={x}>
+                              {x}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        value={rule.condition}
+                        onChange={(e) => updateRule(rule.id, "condition", e.target.value)}
+                        className="h-8 min-w-64"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={rule.severity}
+                        onValueChange={(value) => updateRule(rule.id, "severity", value)}
+                      >
+                        <SelectTrigger className="h-8 min-w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["Critical", "High", "Medium", "Low"].map((x) => (
+                            <SelectItem key={x} value={x}>
+                              {x}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={rule.action}
+                        onValueChange={(value) => updateRule(rule.id, "action", value)}
+                      >
+                        <SelectTrigger className="h-8 min-w-36">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["Reject", "Quarantine", "Review"].map((x) => (
+                            <SelectItem key={x} value={x}>
+                              {x}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => deleteRule(rule.id)}
+                        aria-label={`Delete ${rule.id}`}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </TabsContent>
 
         {resultsVisible && (
@@ -354,15 +765,27 @@ function DQPage() {
                 <div className="flex items-start gap-3">
                   <Sparkles className="size-5 text-primary mt-0.5" />
                   <p className="text-sm">
-                    AI assists with rule explanation, error classification, and remediation guidance.
-                    Final pass/reject decisions are controlled by governed metadata rules.
+                    AI assists with rule explanation, error classification, and remediation
+                    guidance. Final pass/reject decisions are controlled by governed metadata rules.
                   </p>
                 </div>
               </Card>
               <Card className="p-4 space-y-3">
-                {REJECTED.concat([{ row: 91, field: "customer", value: "—", rule: "Duplicate", severity: "Medium", action: "Quarantined", ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence." }]).map((r) => (
+                {REJECTED.concat([
+                  {
+                    row: 91,
+                    field: "customer",
+                    value: "—",
+                    rule: "Duplicate",
+                    severity: "Medium",
+                    action: "Quarantined",
+                    ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence.",
+                  },
+                ]).map((r) => (
                   <div key={r.row} className="flex items-start gap-3 text-sm">
-                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">Row {r.row}</span>
+                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">
+                      Row {r.row}
+                    </span>
                     <span className="text-muted-foreground">{r.ai}</span>
                   </div>
                 ))}
@@ -379,9 +802,12 @@ function DQPage() {
                 <Card className="p-10 text-center">
                   <Activity className="size-8 text-muted-foreground mx-auto mb-2" />
                   <div className="text-sm text-muted-foreground">
-                    No validation results yet. Run Data Quality Validation to generate reconciliation, rejected records, audit evidence, and incident recommendations.
+                    No validation results yet. Run Data Quality Validation to generate
+                    reconciliation, rejected records, audit evidence, and incident recommendations.
                   </div>
-                  <Button className="mt-4" onClick={runValidation}><PlayCircle className="size-4" /> Run Data Quality Validation</Button>
+                  <Button className="mt-4" onClick={runValidation}>
+                    <PlayCircle className="size-4" /> Run Data Quality Validation
+                  </Button>
                 </Card>
               )}
 
@@ -391,7 +817,9 @@ function DQPage() {
                     <div className="text-sm font-medium">
                       {runState === "running" ? "Validation in progress…" : "Validation completed"}
                     </div>
-                    <div className="text-xs text-muted-foreground">{stepIdx}/{PROGRESS_STEPS.length}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {stepIdx}/{PROGRESS_STEPS.length}
+                    </div>
                   </div>
                   <Progress value={(stepIdx / PROGRESS_STEPS.length) * 100} />
                   <div className="mt-4 space-y-1.5">
@@ -427,7 +855,8 @@ function DQPage() {
                     <span>Pipeline Decision:</span>
                     <span className={actionBadge("Continue")}>Continue Processing</span>
                     <span className="text-muted-foreground">
-                      Reject rate 6% is below the configured 10% threshold. Valid records can proceed while failed records are isolated for remediation.
+                      Reject rate 6% is below the configured 10% threshold. Valid records can
+                      proceed while failed records are isolated for remediation.
                     </span>
                   </Card>
                 </>
@@ -443,7 +872,10 @@ function DQPage() {
               <Card>
                 <Table>
                   <TableHeader>
-                    <TableRow><TableHead>Metric</TableHead><TableHead className="text-right">Value</TableHead></TableRow>
+                    <TableRow>
+                      <TableHead>Metric</TableHead>
+                      <TableHead className="text-right">Value</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[
@@ -466,14 +898,26 @@ function DQPage() {
                 </Table>
               </Card>
               <Card className="p-4 text-sm text-muted-foreground">
-                The pipeline is allowed to continue because the current rejection rate is 6%, which is below the configured 10% threshold.
-                Failed records are isolated and valid records continue to the next stage.
+                The pipeline is allowed to continue because the current rejection rate is 6%, which
+                is below the configured 10% threshold. Failed records are isolated and valid records
+                continue to the next stage.
               </Card>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={() => mockExport("Reconciliation report downloaded")}><Download className="size-4" /> Download Reconciliation Report</Button>
-                <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}><Download className="size-4" /> Export Summary CSV</Button>
-                <Button variant="outline" onClick={() => setTab("rejected")}>View Failed Records</Button>
-                <Button variant="outline" onClick={() => setTab("audit")}>View Audit Evidence</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => mockExport("Reconciliation report downloaded")}
+                >
+                  <Download className="size-4" /> Download Reconciliation Report
+                </Button>
+                <Button variant="outline" onClick={() => mockExport("Summary CSV exported")}>
+                  <Download className="size-4" /> Export Summary CSV
+                </Button>
+                <Button variant="outline" onClick={() => setTab("rejected")}>
+                  View Failed Records
+                </Button>
+                <Button variant="outline" onClick={() => setTab("audit")}>
+                  View Audit Evidence
+                </Button>
               </div>
             </TabsContent>
           </>
@@ -491,7 +935,14 @@ function DQPage() {
                   className="max-w-sm"
                 />
                 {["All", "Critical", "High", "Medium"].map((s) => (
-                  <Button key={s} size="sm" variant={sevFilter === s ? "default" : "outline"} onClick={() => setSevFilter(s)}>{s}</Button>
+                  <Button
+                    key={s}
+                    size="sm"
+                    variant={sevFilter === s ? "default" : "outline"}
+                    onClick={() => setSevFilter(s)}
+                  >
+                    {s}
+                  </Button>
                 ))}
               </div>
               <Card>
@@ -514,8 +965,12 @@ function DQPage() {
                         <TableCell className="font-mono text-xs">{r.field}</TableCell>
                         <TableCell className="font-mono text-xs">{r.value}</TableCell>
                         <TableCell>{r.rule}</TableCell>
-                        <TableCell><span className={sevBadge(r.severity)}>{r.severity}</span></TableCell>
-                        <TableCell><span className={actionBadge(r.action)}>{r.action}</span></TableCell>
+                        <TableCell>
+                          <span className={sevBadge(r.severity)}>{r.severity}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className={actionBadge(r.action)}>{r.action}</span>
+                        </TableCell>
                         <TableCell className="text-xs text-muted-foreground">{r.ai}</TableCell>
                       </TableRow>
                     ))}
@@ -536,11 +991,25 @@ function DQPage() {
                   <div className="font-medium">Quarantined Record</div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm">
-                  <div><div className="text-xs text-muted-foreground">Row</div><div className="font-mono">{QUARANTINE.row}</div></div>
-                  <div><div className="text-xs text-muted-foreground">Issue</div><div>{QUARANTINE.issue}</div></div>
-                  <div><div className="text-xs text-muted-foreground">Match Confidence</div><div className="font-semibold text-warning">{QUARANTINE.confidence}</div></div>
-                  <div><div className="text-xs text-muted-foreground">Action</div><span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span></div>
-                  <div className="md:col-span-5 text-muted-foreground text-xs">{QUARANTINE.reason}</div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Row</div>
+                    <div className="font-mono">{QUARANTINE.row}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Issue</div>
+                    <div>{QUARANTINE.issue}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Match Confidence</div>
+                    <div className="font-semibold text-warning">{QUARANTINE.confidence}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Action</div>
+                    <span className={actionBadge(QUARANTINE.action)}>{QUARANTINE.action}</span>
+                  </div>
+                  <div className="md:col-span-5 text-muted-foreground text-xs">
+                    {QUARANTINE.reason}
+                  </div>
                 </div>
               </Card>
 
@@ -550,15 +1019,22 @@ function DQPage() {
                   <div className="font-medium">Golden Record Recommendation</div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Retain most recent verified email, highest quality phone number, and most complete customer profile based on survivorship rules.
+                  Retain most recent verified email, highest quality phone number, and most complete
+                  customer profile based on survivorship rules.
                 </p>
                 <Table>
                   <TableHeader>
-                    <TableRow><TableHead>Attribute</TableHead><TableHead>Survivorship Rule</TableHead></TableRow>
+                    <TableRow>
+                      <TableHead>Attribute</TableHead>
+                      <TableHead>Survivorship Rule</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
                     {SURVIVORSHIP.map((s) => (
-                      <TableRow key={s.attr}><TableCell>{s.attr}</TableCell><TableCell className="text-muted-foreground">{s.rule}</TableCell></TableRow>
+                      <TableRow key={s.attr}>
+                        <TableCell>{s.attr}</TableCell>
+                        <TableCell className="text-muted-foreground">{s.rule}</TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -575,7 +1051,54 @@ function DQPage() {
                 <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
                 <StatCard label="Pass Rate" value="93%" tone="text-success" />
                 <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
-                <StatCard label="Rules Executed" value="8" />
+                <StatCard label="Rules Executed" value={String(rules.length)} />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Card className="p-5">
+                  <div className="font-medium mb-3 text-sm">DQ Scorecard by Domain</div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Domain</TableHead>
+                        <TableHead>Score</TableHead>
+                        <TableHead>Trend</TableHead>
+                        <TableHead>Rules</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {DOMAIN_SCORECARD.map((row) => (
+                        <TableRow key={row.domain}>
+                          <TableCell>{row.domain}</TableCell>
+                          <TableCell className="font-semibold">{row.score}%</TableCell>
+                          <TableCell
+                            className={
+                              row.trend.startsWith("-") ? "text-destructive" : "text-success"
+                            }
+                          >
+                            {row.trend}
+                          </TableCell>
+                          <TableCell>{row.rules}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
+                <Card className="p-5">
+                  <div className="font-medium mb-3 text-sm">Four-Week Quality Trend</div>
+                  <div className="h-56">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={DQ_TREND}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.35} />
+                        <XAxis dataKey="week" tick={{ fontSize: 11 }} />
+                        <YAxis domain={[80, 100]} tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Bar dataKey="Customer" fill="#2563EB" />
+                        <Bar dataKey="Finance" fill="#16A34A" />
+                        <Bar dataKey="Claims" fill="#D97706" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
               </div>
               <Card className="p-5">
                 <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
@@ -584,7 +1107,10 @@ function DQPage() {
                     <div key={f.type} className="flex items-center gap-3">
                       <div className="w-44 text-xs">{f.type}</div>
                       <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${(f.count / 1) * 60}%` }} />
+                        <div
+                          className="h-full bg-primary"
+                          style={{ width: `${(f.count / 1) * 60}%` }}
+                        />
                       </div>
                       <div className="w-8 text-right text-xs font-medium">{f.count}</div>
                     </div>
@@ -604,7 +1130,9 @@ function DQPage() {
                 <div className="space-y-3">
                   {AUDIT.map(([t, msg]) => (
                     <div key={t} className="flex items-start gap-3 text-sm">
-                      <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">{t}</div>
+                      <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">
+                        {t}
+                      </div>
                       <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
                       <div>{msg}</div>
                     </div>
@@ -615,7 +1143,10 @@ function DQPage() {
               <Card>
                 <Table>
                   <TableHeader>
-                    <TableRow><TableHead>Audit Attribute</TableHead><TableHead>Value</TableHead></TableRow>
+                    <TableRow>
+                      <TableHead>Audit Attribute</TableHead>
+                      <TableHead>Value</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[
@@ -626,17 +1157,31 @@ function DQPage() {
                       ["Decision Policy", "Rule-Based"],
                       ["Audit Status", "Evidence Generated"],
                     ].map(([k, v]) => (
-                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="font-mono text-xs">{v}</TableCell></TableRow>
+                      <TableRow key={k}>
+                        <TableCell>{k}</TableCell>
+                        <TableCell className="font-mono text-xs">{v}</TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </Card>
 
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}><Download className="size-4" /> Download Audit Log</Button>
-                <Button variant="outline" onClick={() => mockExport("Failed records exported")}><Download className="size-4" /> Export Failed Records</Button>
-                <Button variant="outline" onClick={() => mockExport("Rule execution report downloaded")}><Download className="size-4" /> Rule Execution Report</Button>
-                <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+                <Button variant="outline" onClick={() => mockExport("Audit log downloaded")}>
+                  <Download className="size-4" /> Download Audit Log
+                </Button>
+                <Button variant="outline" onClick={() => mockExport("Failed records exported")}>
+                  <Download className="size-4" /> Export Failed Records
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => mockExport("Rule execution report downloaded")}
+                >
+                  <Download className="size-4" /> Rule Execution Report
+                </Button>
+                <Button onClick={mockIncident}>
+                  <Ticket className="size-4" /> Create Incident
+                </Button>
               </div>
             </TabsContent>
           </>
@@ -652,29 +1197,49 @@ function DQPage() {
                   <div className="font-medium">Mock Incident</div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-                  <div><div className="text-xs text-muted-foreground">Incident ID</div><div className="font-mono">INC-DQ-009421</div></div>
-                  <div><div className="text-xs text-muted-foreground">Priority</div><span className={sevBadge("High")}>P2 High</span></div>
-                  <div><div className="text-xs text-muted-foreground">Category</div><div>Data Quality Validation</div></div>
-                  <div><div className="text-xs text-muted-foreground">Assigned Team</div><div>Data Engineering L2</div></div>
-                  <div><div className="text-xs text-muted-foreground">Status</div><span className={actionBadge("Quarantine")}>In Progress</span></div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Incident ID</div>
+                    <div className="font-mono">INC-DQ-009421</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Priority</div>
+                    <span className={sevBadge("High")}>P2 High</span>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Category</div>
+                    <div>Data Quality Validation</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Assigned Team</div>
+                    <div>Data Engineering L2</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Status</div>
+                    <span className={actionBadge("Quarantine")}>In Progress</span>
+                  </div>
                 </div>
                 <div className="mt-4 text-sm">
                   <div className="text-xs text-muted-foreground mb-1">Linked failed rows</div>
                   <div className="font-mono">Rows: 12, 43, 68, 97</div>
                 </div>
                 <p className="text-sm text-muted-foreground mt-3">
-                  Critical validation failures detected in mandatory customer and financial transaction fields.
-                  Failed records isolated. Valid records allowed to continue.
+                  Critical validation failures detected in mandatory customer and financial
+                  transaction fields. Failed records isolated. Valid records allowed to continue.
                 </p>
                 <div className="mt-3">
-                  <Button onClick={mockIncident}><Ticket className="size-4" /> Create Incident</Button>
+                  <Button onClick={mockIncident}>
+                    <Ticket className="size-4" /> Create Incident
+                  </Button>
                 </div>
               </Card>
 
               <Card>
                 <Table>
                   <TableHeader>
-                    <TableRow><TableHead>Error Category</TableHead><TableHead>Assigned Team</TableHead></TableRow>
+                    <TableRow>
+                      <TableHead>Error Category</TableHead>
+                      <TableHead>Assigned Team</TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[
@@ -683,7 +1248,10 @@ function DQPage() {
                       ["Reference Data Issues", "Data Governance Team"],
                       ["Infrastructure Issues", "Platform Team"],
                     ].map(([k, v]) => (
-                      <TableRow key={k}><TableCell>{k}</TableCell><TableCell className="text-muted-foreground">{v}</TableCell></TableRow>
+                      <TableRow key={k}>
+                        <TableCell>{k}</TableCell>
+                        <TableCell className="text-muted-foreground">{v}</TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
@@ -701,25 +1269,33 @@ function DQPage() {
                   <TrendingUp className="size-5 text-primary mb-2" />
                   <div className="text-2xl font-semibold">85%</div>
                   <div className="text-sm font-medium mt-1">Faster Onboarding</div>
-                  <div className="text-xs text-muted-foreground mt-1">From 4–8 weeks to 2–3 days using control-file-driven onboarding.</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    From 4–8 weeks to 2–3 days using control-file-driven onboarding.
+                  </div>
                 </Card>
                 <Card className="p-5">
                   <CheckCircle2 className="size-5 text-success mb-2" />
                   <div className="text-2xl font-semibold">90%+</div>
                   <div className="text-sm font-medium mt-1">Duplicate Reduction</div>
-                  <div className="text-xs text-muted-foreground mt-1">Automated duplicate detection and Golden Record logic.</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Automated duplicate detection and Golden Record logic.
+                  </div>
                 </Card>
                 <Card className="p-5">
                   <XCircle className="size-5 text-warning mb-2" />
                   <div className="text-2xl font-semibold">80%+</div>
                   <div className="text-sm font-medium mt-1">Faster Incident Resolution</div>
-                  <div className="text-xs text-muted-foreground mt-1">Root cause identified in minutes instead of days.</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Root cause identified in minutes instead of days.
+                  </div>
                 </Card>
                 <Card className="p-5">
                   <Sparkles className="size-5 text-primary mb-2" />
                   <div className="text-2xl font-semibold">$5M+</div>
                   <div className="text-sm font-medium mt-1">Savings Potential</div>
-                  <div className="text-xs text-muted-foreground mt-1">Reduced operational cost from poor data quality incidents.</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Reduced operational cost from poor data quality incidents.
+                  </div>
                 </Card>
               </div>
 
@@ -739,7 +1315,9 @@ function DQPage() {
                         <TableCell className="font-medium">{r.metric}</TableCell>
                         <TableCell className="text-muted-foreground">{r.before}</TableCell>
                         <TableCell>{r.after}</TableCell>
-                        <TableCell><span className={actionBadge("Passed")}>{r.delta}</span></TableCell>
+                        <TableCell>
+                          <span className={actionBadge("Passed")}>{r.delta}</span>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -748,8 +1326,9 @@ function DQPage() {
 
               <Card className="p-5 bg-primary/5 border-primary/20">
                 <p className="text-sm">
-                  Data quality is no longer a manual after-the-fact cleanup process. It becomes an embedded governance control
-                  that protects downstream analytics, reporting, AI/ML models, compliance processes, and business decisioning.
+                  Data quality is no longer a manual after-the-fact cleanup process. It becomes an
+                  embedded governance control that protects downstream analytics, reporting, AI/ML
+                  models, compliance processes, and business decisioning.
                 </p>
               </Card>
             </TabsContent>
