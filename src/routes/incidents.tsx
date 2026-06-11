@@ -9,8 +9,6 @@ import { Sparkles, Loader2, Ticket, BookOpen, CheckCircle2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
-
-
 export const Route = createFileRoute("/incidents")({
   head: () => ({ meta: [{ title: "Incidents — Enterprise Data Platform" }] }),
   component: Incidents,
@@ -25,7 +23,6 @@ const STATS = [
   { label: "Incidents This Week", value: "totalCount", tone: "text-foreground" },
 ];
 
-
 const SEV_STYLE = {
   P1: "bg-destructive/10 text-destructive",
   P2: "bg-orange-100 text-orange-700",
@@ -38,6 +35,40 @@ const STACK = `java.lang.NullPointerException
     at com.dpipe.pipeline.SalesforceExtractor.process(SalesforceExtractor.java:198)
     at com.dpipe.engine.JobRunner.execute(JobRunner.java:74)
     at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)`;
+
+const LIFECYCLE = [
+  { stage: "Detected", owner: "Observability", sla: "3 min", status: "Complete" },
+  { stage: "Triaged", owner: "Platform Ops", sla: "10 min", status: "Complete" },
+  { stage: "Assigned", owner: "Data Eng", sla: "15 min", status: "Complete" },
+  { stage: "Mitigated", owner: "Data Eng", sla: "30 min", status: "In Progress" },
+  { stage: "RCA", owner: "Reliability Lead", sla: "24 hrs", status: "Pending" },
+  { stage: "Action Items", owner: "DQ Lead", sla: "3 days", status: "Pending" },
+  { stage: "Closure Evidence", owner: "Auditor", sla: "5 days", status: "Pending" },
+];
+
+const ACTION_ITEMS = [
+  {
+    id: "AI-0041-1",
+    action: "Add null AccountId DQ source check",
+    owner: "DQ Lead",
+    due: "2026-06-13",
+    evidence: "DQ_RULESET_V4_EXECUTABLE",
+  },
+  {
+    id: "AI-0041-2",
+    action: "Patch SchemaValidator null guard",
+    owner: "Platform Ops",
+    due: "2026-06-14",
+    evidence: "PR required",
+  },
+  {
+    id: "AI-0041-3",
+    action: "Publish post-incident review and KB article",
+    owner: "Reliability Lead",
+    due: "2026-06-15",
+    evidence: "KB-2847",
+  },
+];
 
 function Incidents() {
   const [incidents, setIncidents] = useState<Incident[]>(INCIDENTS as Incident[]);
@@ -68,21 +99,49 @@ function Incidents() {
     toast.success(`${inc.id} marked as resolved`);
   }
 
-
-
   return (
     <div>
-      <PageHeader title="Incidents" description="AI-assisted root cause analysis and remediation." />
+      <PageHeader
+        title="Incidents"
+        description="AI-assisted root cause analysis and remediation."
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {STATS.map((s) => (
           <Card key={s.label} className="p-5">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{s.label}</div>
-            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>{computed[s.value] ?? s.value}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
+              {s.label}
+            </div>
+            <div className={`text-2xl font-semibold mt-2 tabular-nums ${s.tone}`}>
+              {computed[s.value] ?? s.value}
+            </div>
           </Card>
         ))}
-
       </div>
+
+      <Card className="p-5 mb-6">
+        <div className="font-semibold mb-3">Incident Lifecycle & Closure Evidence</div>
+        <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
+          {LIFECYCLE.map((item) => (
+            <div key={item.stage} className="rounded-md border p-3">
+              <div className="text-sm font-medium">{item.stage}</div>
+              <div className="text-xs text-muted-foreground mt-1">{item.owner}</div>
+              <div className="text-xs text-muted-foreground">SLA: {item.sla}</div>
+              <span
+                className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                  item.status === "Complete"
+                    ? "bg-success/10 text-success"
+                    : item.status === "In Progress"
+                      ? "bg-warning/10 text-warning"
+                      : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {item.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <Card className="overflow-hidden">
         <table className="w-full text-sm">
@@ -99,15 +158,27 @@ function Incidents() {
           </thead>
           <tbody>
             {incidents.map((inc) => (
-              <tr key={inc.id} onClick={() => openIncident(inc)} className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer">
+              <tr
+                key={inc.id}
+                onClick={() => openIncident(inc)}
+                className="border-b border-border last:border-0 hover:bg-muted/50 cursor-pointer"
+              >
                 <td className="py-3 px-4 font-mono text-xs">{inc.id}</td>
                 <td className="py-3 px-4 font-medium">{inc.job}</td>
                 <td className="py-3 px-4 text-muted-foreground max-w-md truncate">{inc.error}</td>
                 <td className="py-3 px-4">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${SEV_STYLE[inc.severity]}`}>{inc.severity}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${SEV_STYLE[inc.severity]}`}
+                  >
+                    {inc.severity}
+                  </span>
                 </td>
                 <td className="py-3 px-4">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${inc.status === "Open" ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}>{inc.status}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${inc.status === "Open" ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}
+                  >
+                    {inc.status}
+                  </span>
                 </td>
                 <td className="py-3 px-4 text-xs text-muted-foreground">{inc.owner}</td>
                 <td className="py-3 px-4 text-muted-foreground">{inc.created}</td>
@@ -124,19 +195,31 @@ function Incidents() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-3">
                   {selected.id} · {selected.job}
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${SEV_STYLE[selected.severity]}`}>{selected.severity}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${SEV_STYLE[selected.severity]}`}
+                  >
+                    {selected.severity}
+                  </span>
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-5">
                 <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-1.5">Error Message</div>
-                  <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-3 text-sm text-destructive font-mono">{selected.error}</div>
+                  <div className="text-xs font-medium text-muted-foreground mb-1.5">
+                    Error Message
+                  </div>
+                  <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-3 text-sm text-destructive font-mono">
+                    {selected.error}
+                  </div>
                 </div>
 
                 <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-1.5">Stack Trace</div>
-                  <pre className="rounded-lg bg-[#0d0f12] text-red-300 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto">{STACK}</pre>
+                  <div className="text-xs font-medium text-muted-foreground mb-1.5">
+                    Stack Trace
+                  </div>
+                  <pre className="rounded-lg bg-[#0d0f12] text-red-300 p-4 font-mono text-[11px] leading-relaxed overflow-x-auto">
+                    {STACK}
+                  </pre>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
@@ -160,7 +243,9 @@ function Incidents() {
                       ["14:29:05", "Owner notified via PagerDuty"],
                     ].map(([t, e, err]) => (
                       <div key={String(t)} className="flex items-center gap-3">
-                        <div className={`size-2 rounded-full ${err ? "bg-destructive" : "bg-muted-foreground/40"}`} />
+                        <div
+                          className={`size-2 rounded-full ${err ? "bg-destructive" : "bg-muted-foreground/40"}`}
+                        />
                         <span className="font-mono text-xs text-muted-foreground">{t}</span>
                         <span>{e}</span>
                       </div>
@@ -174,7 +259,8 @@ function Incidents() {
                     className="w-full bg-gradient-to-r from-purple-600 to-primary hover:from-purple-700 hover:to-primary text-white"
                     size="lg"
                   >
-                    <Sparkles className="size-4" />Analyze with Gemini AI
+                    <Sparkles className="size-4" />
+                    Analyze with Gemini AI
                   </Button>
                 )}
 
@@ -182,7 +268,9 @@ function Incidents() {
                   <div className="rounded-lg border border-purple-300 bg-gradient-to-br from-purple-50 to-blue-50 p-6 text-center">
                     <Loader2 className="size-6 text-purple-600 mx-auto animate-spin" />
                     <div className="mt-3 font-medium text-purple-900">AI Analyzing...</div>
-                    <div className="text-xs text-purple-700 mt-1">Reviewing logs, stack trace, and historical incidents</div>
+                    <div className="text-xs text-purple-700 mt-1">
+                      Reviewing logs, stack trace, and historical incidents
+                    </div>
                   </div>
                 )}
 
@@ -192,29 +280,63 @@ function Incidents() {
                       <div className="rounded-lg border border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50 p-5">
                         <div className="flex items-center gap-2 mb-4">
                           <Sparkles className="size-4 text-purple-600" />
-                          <div className="font-semibold text-purple-900">Root Cause Analysis — Powered by Gemini AI</div>
+                          <div className="font-semibold text-purple-900">
+                            Root Cause Analysis — Powered by Gemini AI
+                          </div>
                         </div>
 
                         <Section title="ROOT CAUSE">
-                          The NullPointerException was triggered because the Salesforce API returned a null value for the
-                          <strong> 'AccountId'</strong> field on <strong>847 records</strong> during the daily extract.
-                          The schema validator at line 847 does not handle null foreign key references.
+                          The NullPointerException was triggered because the Salesforce API returned
+                          a null value for the
+                          <strong> 'AccountId'</strong> field on <strong>847 records</strong> during
+                          the daily extract. The schema validator at line 847 does not handle null
+                          foreign key references.
                         </Section>
 
                         <Section title="IMPACT ASSESSMENT">
                           <ul className="list-disc ml-5 space-y-1">
                             <li>847 records failed to load into BigQuery staging table</li>
                             <li>Downstream 'Customer 360' pipeline blocked</li>
-                            <li>SLA breach risk: <strong className="text-destructive">HIGH</strong> (15 min until breach)</li>
+                            <li>
+                              SLA breach risk: <strong className="text-destructive">HIGH</strong>{" "}
+                              (15 min until breach)
+                            </li>
                           </ul>
                         </Section>
 
                         <Section title="REMEDIATION PLAN">
                           <ol className="list-decimal ml-5 space-y-1">
-                            <li><strong>Immediate:</strong> Add null-check guard in SchemaValidator.java:847</li>
-                            <li><strong>Short-term:</strong> Add data quality rule — reject null AccountIds at source</li>
-                            <li><strong>Long-term:</strong> Implement Salesforce API retry with exponential backoff</li>
+                            <li>
+                              <strong>Immediate:</strong> Add null-check guard in
+                              SchemaValidator.java:847
+                            </li>
+                            <li>
+                              <strong>Short-term:</strong> Add data quality rule — reject null
+                              AccountIds at source
+                            </li>
+                            <li>
+                              <strong>Long-term:</strong> Implement Salesforce API retry with
+                              exponential backoff
+                            </li>
                           </ol>
+                        </Section>
+
+                        <Section title="POST-INCIDENT ACTION ITEMS">
+                          <div className="space-y-2">
+                            {ACTION_ITEMS.map((item) => (
+                              <div
+                                key={item.id}
+                                className="rounded-md bg-white/70 p-3 text-xs text-purple-950"
+                              >
+                                <div className="font-semibold">
+                                  {item.id} · {item.action}
+                                </div>
+                                <div className="text-purple-700">
+                                  Owner: {item.owner} · Due: {item.due} · Evidence: {item.evidence}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </Section>
 
                         <div className="grid grid-cols-2 gap-3 mt-4">
@@ -224,24 +346,37 @@ function Incidents() {
                           </div>
                           <div className="rounded-md bg-white/70 px-3 py-2 text-xs">
                             <div className="text-purple-700 font-medium">Suggested KB Article</div>
-                            <div className="font-semibold mt-0.5">KB-2847 — Handling Salesforce Null FK References</div>
+                            <div className="font-semibold mt-0.5">
+                              KB-2847 — Handling Salesforce Null FK References
+                            </div>
                           </div>
                         </div>
 
                         <div className="flex gap-2 mt-5 flex-wrap">
-                          <Button variant="outline" onClick={() => toast.success("ServiceNow ticket INC-SN-2891 created")}>
-                            <Ticket className="size-4" />Create ServiceNow Ticket
+                          <Button
+                            variant="outline"
+                            onClick={() => toast.success("ServiceNow ticket INC-SN-2891 created")}
+                          >
+                            <Ticket className="size-4" />
+                            Create ServiceNow Ticket
                           </Button>
-                          <Button variant="outline" onClick={() => toast.success("Draft KB article generated")}>
-                            <BookOpen className="size-4" />Generate KB Article
+                          <Button
+                            variant="outline"
+                            onClick={() => toast.success("Draft KB article generated")}
+                          >
+                            <BookOpen className="size-4" />
+                            Generate KB Article
                           </Button>
                           {selected.status === "Open" && (
-                            <Button className="bg-success text-white hover:bg-success/90" onClick={() => resolve(selected)}>
-                              <CheckCircle2 className="size-4" />Mark Resolved
+                            <Button
+                              className="bg-success text-white hover:bg-success/90"
+                              onClick={() => resolve(selected)}
+                            >
+                              <CheckCircle2 className="size-4" />
+                              Mark Resolved
                             </Button>
                           )}
                         </div>
-
                       </div>
                     </motion.div>
                   )}

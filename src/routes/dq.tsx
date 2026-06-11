@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,12 @@ import {
   Trash2,
   Plus,
 } from "lucide-react";
+import {
+  dqRunRepository,
+  runDQValidation,
+  type DQRule,
+  type DQRun,
+} from "@/lib/demo-backend/dq-engine";
 
 export const Route = createFileRoute("/dq")({
   head: () => ({
@@ -61,7 +67,7 @@ export const Route = createFileRoute("/dq")({
 });
 
 // ---------------- Mock data ----------------
-const RULES = [
+const RULES: DQRule[] = [
   {
     id: "DQ-001",
     field: "customer_id",
@@ -365,6 +371,18 @@ function DQPage() {
   const [sevFilter, setSevFilter] = useState<string>("All");
   const [resultsVisible, setResultsVisible] = useState(false);
   const [rules, setRules] = useState(RULES);
+  const [currentRun, setCurrentRun] = useState<DQRun | null>(null);
+  const [runHistory, setRunHistory] = useState<DQRun[]>([]);
+
+  useEffect(() => {
+    const history = dqRunRepository.list();
+    setRunHistory(history);
+    if (history[0]) {
+      setCurrentRun(history[0]);
+      setResultsVisible(true);
+      setRunState("done");
+    }
+  }, []);
 
   function runValidation() {
     setResultsVisible(true);
@@ -378,9 +396,12 @@ function DQPage() {
       if (i < PROGRESS_STEPS.length) {
         setTimeout(tick, 280);
       } else {
+        const run = runDQValidation(1000, rules);
+        setCurrentRun(run);
+        setRunHistory(dqRunRepository.list());
         setRunState("done");
         toast.success("Validation completed", {
-          description: "93 passed, 6 rejected, 1 quarantined.",
+          description: `${run.passed} passed, ${run.rejected} rejected, ${run.quarantined} quarantined. Evidence ${run.evidenceId}.`,
         });
       }
     };
@@ -426,17 +447,37 @@ function DQPage() {
   function deleteRule(id: string) {
     setRules((current) => current.filter((rule) => rule.id !== id));
     toast.message("Rule deleted", {
-      description: "Demo validation output remains fixed at 93/6/1.",
+      description: "The next executable validation run will use the updated rule catalog.",
     });
   }
 
-  const filteredRejected = REJECTED.filter((r) => {
+  const filteredRejected = (currentRun?.failures ?? REJECTED).filter((r) => {
     const matchesSearch =
       !search ||
       `${r.row} ${r.field} ${r.rule} ${r.ai}`.toLowerCase().includes(search.toLowerCase());
     const matchesSev = sevFilter === "All" || r.severity === sevFilter;
     return matchesSearch && matchesSev;
   });
+
+  const totalRecords = currentRun?.total ?? 1000;
+  const passedRecords = currentRun?.passed ?? 0;
+  const rejectedRecords = currentRun?.rejected ?? 0;
+  const quarantinedRecords = currentRun?.quarantined ?? 0;
+  const passRate = currentRun?.passRate ?? 0;
+  const pipelineDecision = currentRun?.decision ?? "Continue Processing";
+  const rejectRate = totalRecords ? Math.round((rejectedRecords / totalRecords) * 1000) / 10 : 0;
+  const quarantineRate = totalRecords
+    ? Math.round((quarantinedRecords / totalRecords) * 1000) / 10
+    : 0;
+  const failureBreakdown =
+    currentRun?.failures.reduce<Record<string, number>>((acc, failure) => {
+      acc[failure.rule] = (acc[failure.rule] ?? 0) + 1;
+      return acc;
+    }, {}) ?? Object.fromEntries(FAILURE_BREAKDOWN.map((item) => [item.type, item.count]));
+  const failureBreakdownRows = Object.entries(failureBreakdown).map(([type, count]) => ({
+    type,
+    count,
+  }));
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
@@ -489,6 +530,7 @@ function DQPage() {
               <TabsTrigger value="quarantine">Quarantine & Golden</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="audit">Audit</TabsTrigger>
+              <TabsTrigger value="history">Run History</TabsTrigger>
               <TabsTrigger value="incident">Incident</TabsTrigger>
               <TabsTrigger value="impact">Business Impact</TabsTrigger>
             </>
@@ -547,12 +589,15 @@ function DQPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-sm">
               {[
-                ["File Name", "customer_transactions_may.csv"],
+                ["File Name", currentRun?.inputFile ?? "customer_transactions_1000_records.csv"],
                 ["Source System", "CRM-Core"],
                 ["Pipeline", "Customer Transaction Ingestion"],
-                ["Records Received", "100"],
-                ["Rule Set", "DQ_RULESET_V3"],
-                ["Status", "Ready for Validation"],
+                ["Records Received", totalRecords.toLocaleString()],
+                ["Rule Set", currentRun?.ruleSet ?? "DQ_RULESET_V4_EXECUTABLE"],
+                [
+                  "Status",
+                  currentRun ? `Last run: ${currentRun.evidenceId}` : "Ready for Validation",
+                ],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between border-b py-2">
                   <span className="text-muted-foreground">{k}</span>
@@ -634,9 +679,9 @@ function DQPage() {
           <Card className="p-4 bg-primary/5 border-primary/20">
             <div className="text-sm font-medium">Editable DQ Rule Builder</div>
             <div className="text-xs text-muted-foreground mt-1">
-              Rules are stored in local React state for the demo. The synthetic validation
-              simulation intentionally continues to produce 93 passed, 6 rejected, and 1 quarantined
-              record.
+              Rules are executed against a generated 1,000-record demo feed. Each validation run is
+              persisted to the local demo backend with a run ID, rule version, failure details,
+              reconciliation summary, and evidence ID.
             </div>
           </Card>
           <div className="flex flex-wrap gap-2">
@@ -771,17 +816,7 @@ function DQPage() {
                 </div>
               </Card>
               <Card className="p-4 space-y-3">
-                {REJECTED.concat([
-                  {
-                    row: 91,
-                    field: "customer",
-                    value: "—",
-                    rule: "Duplicate",
-                    severity: "Medium",
-                    action: "Quarantined",
-                    ai: "Row 91 was quarantined because a probable duplicate customer already exists with 92% match confidence.",
-                  },
-                ]).map((r) => (
+                {(currentRun?.failures ?? REJECTED).slice(0, 12).map((r) => (
                   <div key={r.row} className="flex items-start gap-3 text-sm">
                     <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted shrink-0">
                       Row {r.row}
@@ -846,17 +881,36 @@ function DQPage() {
               {runState === "done" && (
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <StatCard label="Total Records" value="100" />
-                    <StatCard label="Passed" value="93" tone="text-success" />
-                    <StatCard label="Rejected" value="6" tone="text-destructive" />
-                    <StatCard label="Quarantined" value="1" tone="text-warning" />
+                    <StatCard label="Total Records" value={totalRecords.toLocaleString()} />
+                    <StatCard
+                      label="Passed"
+                      value={passedRecords.toLocaleString()}
+                      tone="text-success"
+                    />
+                    <StatCard
+                      label="Rejected"
+                      value={rejectedRecords.toLocaleString()}
+                      tone="text-destructive"
+                    />
+                    <StatCard
+                      label="Quarantined"
+                      value={quarantinedRecords.toLocaleString()}
+                      tone="text-warning"
+                    />
                   </div>
                   <Card className="p-4 flex flex-wrap items-center gap-3 text-sm">
                     <span>Pipeline Decision:</span>
-                    <span className={actionBadge("Continue")}>Continue Processing</span>
+                    <span
+                      className={actionBadge(
+                        pipelineDecision === "Continue Processing" ? "Continue" : "Reject",
+                      )}
+                    >
+                      {pipelineDecision}
+                    </span>
                     <span className="text-muted-foreground">
-                      Reject rate 6% is below the configured 10% threshold. Valid records can
-                      proceed while failed records are isolated for remediation.
+                      Reject rate {rejectRate}% is {rejectRate > 10 ? "above" : "below"} the
+                      configured 10% threshold. Valid records can proceed while failed records are
+                      isolated for remediation.
                     </span>
                   </Card>
                 </>
@@ -879,15 +933,15 @@ function DQPage() {
                   </TableHeader>
                   <TableBody>
                     {[
-                      ["Total Records Received", "100"],
-                      ["Records Passed", "93"],
-                      ["Records Rejected", "6"],
-                      ["Records Quarantined", "1"],
-                      ["Pass Rate", "93%"],
-                      ["Reject Rate", "6%"],
-                      ["Quarantine Rate", "1%"],
+                      ["Total Records Received", totalRecords.toLocaleString()],
+                      ["Records Passed", passedRecords.toLocaleString()],
+                      ["Records Rejected", rejectedRecords.toLocaleString()],
+                      ["Records Quarantined", quarantinedRecords.toLocaleString()],
+                      ["Pass Rate", `${passRate}%`],
+                      ["Reject Rate", `${rejectRate}%`],
+                      ["Quarantine Rate", `${quarantineRate}%`],
                       ["Threshold Limit", "10%"],
-                      ["Pipeline Decision", "Continue Processing"],
+                      ["Pipeline Decision", pipelineDecision],
                     ].map(([k, v]) => (
                       <TableRow key={k}>
                         <TableCell>{k}</TableCell>
@@ -898,8 +952,8 @@ function DQPage() {
                 </Table>
               </Card>
               <Card className="p-4 text-sm text-muted-foreground">
-                The pipeline is allowed to continue because the current rejection rate is 6%, which
-                is below the configured 10% threshold. Failed records are isolated and valid records
+                The pipeline decision is <strong>{pipelineDecision}</strong> because the current
+                rejection rate is {rejectRate}%. Failed records are isolated and valid records
                 continue to the next stage.
               </Card>
               <div className="flex flex-wrap gap-2">
@@ -1048,8 +1102,13 @@ function DQPage() {
             {/* ---- Analytics ---- */}
             <TabsContent value="analytics" className="space-y-4 mt-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Error Rate" value="6%" sub="Threshold 10%" tone="text-warning" />
-                <StatCard label="Pass Rate" value="93%" tone="text-success" />
+                <StatCard
+                  label="Error Rate"
+                  value={`${rejectRate}%`}
+                  sub="Threshold 10%"
+                  tone="text-warning"
+                />
+                <StatCard label="Pass Rate" value={`${passRate}%`} tone="text-success" />
                 <StatCard label="Duplicate Confidence" value="92%" tone="text-primary" />
                 <StatCard label="Rules Executed" value={String(rules.length)} />
               </div>
@@ -1103,13 +1162,15 @@ function DQPage() {
               <Card className="p-5">
                 <div className="font-medium mb-3 text-sm">Failures by Rule Type</div>
                 <div className="space-y-2">
-                  {FAILURE_BREAKDOWN.map((f) => (
+                  {failureBreakdownRows.map((f) => (
                     <div key={f.type} className="flex items-center gap-3">
                       <div className="w-44 text-xs">{f.type}</div>
                       <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                         <div
                           className="h-full bg-primary"
-                          style={{ width: `${(f.count / 1) * 60}%` }}
+                          style={{
+                            width: `${Math.min(100, (f.count / Math.max(1, rejectedRecords + quarantinedRecords)) * 100)}%`,
+                          }}
                         />
                       </div>
                       <div className="w-8 text-right text-xs font-medium">{f.count}</div>
@@ -1128,13 +1189,13 @@ function DQPage() {
               <Card className="p-5">
                 <div className="font-medium mb-4 text-sm">Audit Event Timeline</div>
                 <div className="space-y-3">
-                  {AUDIT.map(([t, msg]) => (
-                    <div key={t} className="flex items-start gap-3 text-sm">
+                  {(currentRun?.audit ?? AUDIT.map(([t, msg]) => `${t} ${msg}`)).map((event) => (
+                    <div key={event} className="flex items-start gap-3 text-sm">
                       <div className="font-mono text-xs text-muted-foreground w-20 shrink-0">
-                        {t}
+                        {event.slice(0, 19)}
                       </div>
                       <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                      <div>{msg}</div>
+                      <div>{event.slice(20)}</div>
                     </div>
                   ))}
                 </div>
@@ -1150,12 +1211,13 @@ function DQPage() {
                   </TableHeader>
                   <TableBody>
                     {[
-                      ["Rule Set Version", "DQ_RULESET_V3"],
-                      ["Pipeline Run ID", "RUN-2026-05-DQ-001"],
-                      ["Validation Mode", "Metadata Driven"],
+                      ["Rule Set Version", currentRun?.ruleVersion ?? "DQ_RULESET_V4_EXECUTABLE"],
+                      ["Pipeline Run ID", currentRun?.id ?? "No run yet"],
+                      ["Evidence ID", currentRun?.evidenceId ?? "Pending"],
+                      ["Validation Mode", "Executable Metadata Driven"],
                       ["AI Explanation Enabled", "Yes"],
                       ["Decision Policy", "Rule-Based"],
-                      ["Audit Status", "Evidence Generated"],
+                      ["Audit Status", currentRun ? "Persistent Evidence Generated" : "Pending"],
                     ].map(([k, v]) => (
                       <TableRow key={k}>
                         <TableCell>{k}</TableCell>
@@ -1183,6 +1245,67 @@ function DQPage() {
                   <Ticket className="size-4" /> Create Incident
                 </Button>
               </div>
+            </TabsContent>
+          </>
+        )}
+
+        {resultsVisible && (
+          <>
+            {/* ---- Run History ---- */}
+            <TabsContent value="history" className="space-y-4 mt-6">
+              <Card className="p-4 bg-primary/5 border-primary/20">
+                <div className="text-sm font-medium">Persistent Local Demo Backend</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Run history is stored in browser localStorage through a typed repository adapter.
+                  Supabase can replace this adapter later without changing the DQ workflow contract.
+                </div>
+              </Card>
+              <Card className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Run ID</TableHead>
+                      <TableHead>Evidence</TableHead>
+                      <TableHead>Input</TableHead>
+                      <TableHead>Rule Version</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead>Passed</TableHead>
+                      <TableHead>Rejected</TableHead>
+                      <TableHead>Quarantined</TableHead>
+                      <TableHead>Decision</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {runHistory.map((run) => (
+                      <TableRow key={run.id}>
+                        <TableCell className="font-mono text-xs">{run.id}</TableCell>
+                        <TableCell className="font-mono text-xs">{run.evidenceId}</TableCell>
+                        <TableCell className="text-xs">{run.inputFile}</TableCell>
+                        <TableCell className="text-xs">{run.ruleVersion}</TableCell>
+                        <TableCell>{run.total.toLocaleString()}</TableCell>
+                        <TableCell className="text-success">
+                          {run.passed.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-destructive">
+                          {run.rejected.toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-warning">
+                          {run.quarantined.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={actionBadge(
+                              run.decision === "Continue Processing" ? "Continue" : "Reject",
+                            )}
+                          >
+                            {run.decision}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
             </TabsContent>
           </>
         )}

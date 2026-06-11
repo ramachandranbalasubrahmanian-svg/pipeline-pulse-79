@@ -4,24 +4,53 @@ import { PageHeader } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { downloadCSV } from "@/lib/csv";
 import {
-  LockKeyhole, ShieldCheck, BrainCircuit, FileCheck, DatabaseZap,
-  FileBarChart, KeyRound, Sparkles, Download, RefreshCw, PlayCircle,
-  ArrowRight, ScrollText, AlertCircle, Network, Eye,
+  LockKeyhole,
+  ShieldCheck,
+  BrainCircuit,
+  FileCheck,
+  DatabaseZap,
+  FileBarChart,
+  KeyRound,
+  Sparkles,
+  Download,
+  RefreshCw,
+  PlayCircle,
+  ArrowRight,
+  ScrollText,
+  AlertCircle,
+  Network,
+  Eye,
 } from "lucide-react";
+import { advancePolicy, policyRepository } from "@/lib/demo-backend/policy-workflow";
 
 export const Route = createFileRoute("/governance")({
   head: () => ({
     meta: [
       { title: "Data Governance Control Center — Enterprise Data Platform" },
-      { name: "description", content: "Synthetic governance demo: classification, salt-based tokenization, masking, policy enforcement, audit evidence." },
+      {
+        name: "description",
+        content:
+          "Synthetic governance demo: classification, salt-based tokenization, masking, policy enforcement, audit evidence.",
+      },
     ],
   }),
   component: GovernancePage,
@@ -62,8 +91,34 @@ const BATCHES = [
   { id: "BATCH-LON-005", name: "Loan Application Feed", src: "Loan-Origination", region: "EMEA" },
 ];
 
-const FIRST = ["Ava", "Liam", "Noah", "Maya", "Aria", "Ethan", "Zara", "Kian", "Mira", "Rohan", "Isla", "Dev"];
-const LAST = ["Patel", "Sharma", "Iyer", "Nair", "Khan", "Singh", "Mehta", "Rao", "Bose", "Joshi", "Verma", "Reddy"];
+const FIRST = [
+  "Ava",
+  "Liam",
+  "Noah",
+  "Maya",
+  "Aria",
+  "Ethan",
+  "Zara",
+  "Kian",
+  "Mira",
+  "Rohan",
+  "Isla",
+  "Dev",
+];
+const LAST = [
+  "Patel",
+  "Sharma",
+  "Iyer",
+  "Nair",
+  "Khan",
+  "Singh",
+  "Mehta",
+  "Rao",
+  "Bose",
+  "Joshi",
+  "Verma",
+  "Reddy",
+];
 const SENS: Sensitivity[] = ["Critical", "High", "Medium", "Low"];
 
 function buildSynthetic(): Raw[] {
@@ -96,10 +151,13 @@ function buildSynthetic(): Raw[] {
         sensitivityLevel: sens,
         status,
         policyAction:
-          status === "Quarantined" ? "Quarantine"
-          : status === "Review Required" ? "Steward Review"
-          : sens === "Critical" || sens === "High" ? "Tokenize + Mask"
-          : "Mask",
+          status === "Quarantined"
+            ? "Quarantine"
+            : status === "Review Required"
+              ? "Steward Review"
+              : sens === "Critical" || sens === "High"
+                ? "Tokenize + Mask"
+                : "Mask",
       });
       n++;
     }
@@ -125,7 +183,11 @@ function maskProtectedToken(token: string): string {
   return "*".repeat(Math.min(34, token.length - 2)) + token.slice(-2);
 }
 
-async function hashToBase64(value: string, salt: string, algorithm: "SHA-256" | "SHA-512"): Promise<string> {
+async function hashToBase64(
+  value: string,
+  salt: string,
+  algorithm: "SHA-256" | "SHA-512",
+): Promise<string> {
   const enc = new TextEncoder().encode(value + salt);
   const digest = await crypto.subtle.digest(algorithm, enc);
   return arrayBufferToBase64(digest);
@@ -173,7 +235,10 @@ interface Protected {
 }
 
 async function protectRecords(
-  records: Raw[], salt: string, algorithm: "SHA-256" | "SHA-512", includeFull: boolean,
+  records: Raw[],
+  salt: string,
+  algorithm: "SHA-256" | "SHA-512",
+  includeFull: boolean,
 ): Promise<Protected[]> {
   const out: Protected[] = [];
   for (const r of records) {
@@ -208,7 +273,16 @@ async function protectRecords(
       protectedCustomerId: maskProtectedToken(c),
       protectedAccountNumber: maskProtectedToken(ac),
       ...(includeFull
-        ? { fullName: n, fullEmail: e, fullPhone: p, fullSSN: s, fullDOB: d, fullAddress: a, fullCustomerId: c, fullAccountNumber: ac }
+        ? {
+            fullName: n,
+            fullEmail: e,
+            fullPhone: p,
+            fullSSN: s,
+            fullDOB: d,
+            fullAddress: a,
+            fullCustomerId: c,
+            fullAccountNumber: ac,
+          }
         : {}),
       tokenizationMethod: `Base64(${algorithm}(value+salt))`,
       visibleCharacters: 2,
@@ -233,6 +307,7 @@ function GovernancePage() {
   const [processed, setProcessed] = useState<Protected[]>([]);
   const [processing, setProcessing] = useState(false);
   const [lastProcessedAt, setLastProcessedAt] = useState<string | null>(null);
+  const [policies, setPolicies] = useState(() => policyRepository.list());
 
   const handleGenerateSalt = () => {
     setSalt(generateSalt());
@@ -257,7 +332,9 @@ function GovernancePage() {
       const result = await protectRecords(SYNTHETIC, salt, algorithm, includeFullTokens);
       setProcessed(result);
       setLastProcessedAt(new Date().toISOString());
-      toast.success(`Processed ${result.length} synthetic records across ${BATCHES.length} batches.`);
+      toast.success(
+        `Processed ${result.length} synthetic records across ${BATCHES.length} batches.`,
+      );
     } catch {
       toast.error("Tokenization failed for one or more fields. Try switching algorithm.");
     } finally {
@@ -278,8 +355,18 @@ function GovernancePage() {
       if (selectedStatus !== "ALL" && r.maskingStatus !== selectedStatus) return false;
       if (selectedSensitivity !== "ALL" && r.sensitivityLevel !== selectedSensitivity) return false;
       if (q) {
-        const hay = [r.recordId, r.batchId, r.batchName, r.sourceSystem, r.region, r.protectedCustomerId, r.maskingStatus, r.policyAction]
-          .join(" ").toLowerCase();
+        const hay = [
+          r.recordId,
+          r.batchId,
+          r.batchName,
+          r.sourceSystem,
+          r.region,
+          r.protectedCustomerId,
+          r.maskingStatus,
+          r.policyAction,
+        ]
+          .join(" ")
+          .toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
@@ -319,19 +406,40 @@ function GovernancePage() {
   const handleExportMasked = () => {
     if (!processed.length) return toast.error("Process a batch first.");
     const rows = processed.map((r) => ({
-      recordId: r.recordId, batchId: r.batchId, sourceSystem: r.sourceSystem, region: r.region,
-      protectedCustomerId: r.protectedCustomerId, protectedName: r.protectedName, protectedEmail: r.protectedEmail,
-      protectedPhone: r.protectedPhone, protectedSSN: r.protectedSSN, protectedDOB: r.protectedDOB,
-      protectedAddress: r.protectedAddress, protectedAccountNumber: r.protectedAccountNumber,
-      ...(includeFullTokens ? {
-        fullProtectedName: r.fullName, fullProtectedEmail: r.fullEmail, fullProtectedPhone: r.fullPhone,
-        fullProtectedSSN: r.fullSSN, fullProtectedDOB: r.fullDOB, fullProtectedAddress: r.fullAddress,
-        fullProtectedCustomerId: r.fullCustomerId, fullProtectedAccountNumber: r.fullAccountNumber,
-      } : {}),
-      sensitivityLevel: r.sensitivityLevel, policyAction: r.policyAction, maskingStatus: r.maskingStatus,
-      hashingAlgorithm: algorithm, encoding: "Base64",
+      recordId: r.recordId,
+      batchId: r.batchId,
+      sourceSystem: r.sourceSystem,
+      region: r.region,
+      protectedCustomerId: r.protectedCustomerId,
+      protectedName: r.protectedName,
+      protectedEmail: r.protectedEmail,
+      protectedPhone: r.protectedPhone,
+      protectedSSN: r.protectedSSN,
+      protectedDOB: r.protectedDOB,
+      protectedAddress: r.protectedAddress,
+      protectedAccountNumber: r.protectedAccountNumber,
+      ...(includeFullTokens
+        ? {
+            fullProtectedName: r.fullName,
+            fullProtectedEmail: r.fullEmail,
+            fullProtectedPhone: r.fullPhone,
+            fullProtectedSSN: r.fullSSN,
+            fullProtectedDOB: r.fullDOB,
+            fullProtectedAddress: r.fullAddress,
+            fullProtectedCustomerId: r.fullCustomerId,
+            fullProtectedAccountNumber: r.fullAccountNumber,
+          }
+        : {}),
+      sensitivityLevel: r.sensitivityLevel,
+      policyAction: r.policyAction,
+      maskingStatus: r.maskingStatus,
+      hashingAlgorithm: algorithm,
+      encoding: "Base64",
       protectionMethod: `Base64(${algorithm}(value+salt))`,
-      visibleCharacters: 2, rawDataStored: false, saltExported: false, fullTokenIncluded: includeFullTokens,
+      visibleCharacters: 2,
+      rawDataStored: false,
+      saltExported: false,
+      fullTokenIncluded: includeFullTokens,
     }));
     downloadCSV("pipeline-pulse-protected-governance-report.csv", rows);
   };
@@ -369,9 +477,13 @@ function GovernancePage() {
       policiesApplied: ["Tokenize + Mask", "Steward Review", "Quarantine"],
       batchSummary,
       protectedRecordSample: processed.slice(0, 5).map((r) => ({
-        recordId: r.recordId, batchId: r.batchId, protectedCustomerId: r.protectedCustomerId,
-        protectedEmail: r.protectedEmail, protectedSSN: r.protectedSSN,
-        sensitivityLevel: r.sensitivityLevel, maskingStatus: r.maskingStatus,
+        recordId: r.recordId,
+        batchId: r.batchId,
+        protectedCustomerId: r.protectedCustomerId,
+        protectedEmail: r.protectedEmail,
+        protectedSSN: r.protectedSSN,
+        sensitivityLevel: r.sensitivityLevel,
+        maskingStatus: r.maskingStatus,
       })),
     };
     const blob = new Blob([JSON.stringify(evidence, null, 2)], { type: "application/json" });
@@ -379,8 +491,18 @@ function GovernancePage() {
     const a = document.createElement("a");
     a.href = url;
     a.download = "pipeline-pulse-governance-evidence.json";
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const handleAdvancePolicy = (id: string) => {
+    const policy = policies.find((item) => item.id === id);
+    if (!policy) return;
+    const updated = advancePolicy(policy);
+    setPolicies(policyRepository.list());
+    toast.success(`${updated.id} moved to ${updated.status}`);
   };
 
   // ============================================================
@@ -391,13 +513,87 @@ function GovernancePage() {
         description="Enterprise controls for synthetic classification, tokenization, masking, policy enforcement, audit evidence, and compliance readiness."
         actions={
           <>
-            <Button variant="outline" onClick={handleReset}><RefreshCw className="size-4" />Reset Demo</Button>
+            <Button variant="outline" onClick={handleReset}>
+              <RefreshCw className="size-4" />
+              Reset Demo
+            </Button>
             <Button onClick={handleProcess} disabled={processing}>
-              <PlayCircle className="size-4" />{processing ? "Processing…" : "Process Demo Batch"}
+              <PlayCircle className="size-4" />
+              {processing ? "Processing…" : "Process Demo Batch"}
             </Button>
           </>
         }
       />
+
+      <Card className="p-5 border-primary/20 bg-primary/5">
+        <div className="flex items-center gap-2 mb-4">
+          <ShieldCheck className="size-4 text-primary" />
+          <h2 className="font-semibold">Policy Lifecycle Workflow</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-2 mb-4">
+          {["Draft", "Under Review", "Approved", "Active", "Exception", "Retired"].map(
+            (status, idx, arr) => (
+              <div key={status} className="flex items-center gap-2">
+                <div className="rounded-md border bg-background px-3 py-2 text-xs font-medium text-center flex-1">
+                  {status}
+                </div>
+                {idx < arr.length - 1 && (
+                  <ArrowRight className="size-3 text-muted-foreground hidden md:block" />
+                )}
+              </div>
+            ),
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Policy</TableHead>
+                <TableHead>Domain</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Steward</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Control</TableHead>
+                <TableHead>Evidence</TableHead>
+                <TableHead>Next Review</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {policies.map((policy) => (
+                <TableRow key={policy.id}>
+                  <TableCell>
+                    <div className="font-medium text-sm">{policy.name}</div>
+                    <div className="font-mono text-[11px] text-muted-foreground">{policy.id}</div>
+                  </TableCell>
+                  <TableCell className="text-xs">{policy.domain}</TableCell>
+                  <TableCell className="text-xs">{policy.owner}</TableCell>
+                  <TableCell className="text-xs">{policy.steward}</TableCell>
+                  <TableCell>
+                    <span className="inline-flex rounded-full bg-background border px-2 py-0.5 text-xs">
+                      {policy.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground max-w-sm">
+                    {policy.control}
+                  </TableCell>
+                  <TableCell className="text-xs">{policy.evidence}</TableCell>
+                  <TableCell className="text-xs">{policy.nextReview}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAdvancePolicy(policy.id)}
+                    >
+                      Advance
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -426,8 +622,13 @@ function GovernancePage() {
         <div className="grid md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground">Hashing Algorithm</label>
-            <Select value={algorithm} onValueChange={(v) => setAlgorithm(v as "SHA-256" | "SHA-512")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={algorithm}
+              onValueChange={(v) => setAlgorithm(v as "SHA-256" | "SHA-512")}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="SHA-256">SHA-256</SelectItem>
                 <SelectItem value="SHA-512">SHA-512</SelectItem>
@@ -440,11 +641,19 @@ function GovernancePage() {
               <Input
                 placeholder="Enter custom salt value"
                 value={salt}
-                onChange={(e) => { setSalt(e.target.value); setSaltGeneratedByUser(true); }}
+                onChange={(e) => {
+                  setSalt(e.target.value);
+                  setSaltGeneratedByUser(true);
+                }}
                 type="password"
               />
-              <Button variant="outline" onClick={handleGenerateSalt}><Sparkles className="size-4" />Generate</Button>
-              <Button variant="outline" onClick={handleClearSalt}>Clear</Button>
+              <Button variant="outline" onClick={handleGenerateSalt}>
+                <Sparkles className="size-4" />
+                Generate
+              </Button>
+              <Button variant="outline" onClick={handleClearSalt}>
+                Clear
+              </Button>
             </div>
           </div>
           <div className="text-xs text-muted-foreground">
@@ -452,8 +661,8 @@ function GovernancePage() {
             Base64(Hash(value + custom salt))
           </div>
           <div className="text-xs text-muted-foreground">
-            <div className="font-medium text-foreground mb-1">Visible Characters</div>
-            2 characters visible from the final Base64 token
+            <div className="font-medium text-foreground mb-1">Visible Characters</div>2 characters
+            visible from the final Base64 token
           </div>
           <div className="text-xs text-muted-foreground md:col-span-2">
             <div className="font-medium text-foreground mb-1">Storage Rule</div>
@@ -468,7 +677,8 @@ function GovernancePage() {
             <label htmlFor="fulltok" className="text-xs">
               <div className="font-medium">Include Full Protected Tokens in Export</div>
               <div className="text-muted-foreground">
-                Full protected tokens are deterministic for the selected salt and should be handled as sensitive derived data. Salt is never exported.
+                Full protected tokens are deterministic for the selected salt and should be handled
+                as sensitive derived data. Salt is never exported.
               </div>
             </label>
           </div>
@@ -483,41 +693,101 @@ function GovernancePage() {
         </div>
         <div className="grid md:grid-cols-4 gap-3">
           <Select value={selectedBatch} onValueChange={setSelectedBatch}>
-            <SelectTrigger><SelectValue placeholder="Batch" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Batch" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All Batches</SelectItem>
-              {BATCHES.map((b) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+              {BATCHES.map((b) => (
+                <SelectItem key={b.id} value={b.id}>
+                  {b.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
             <SelectContent>
-              {["ALL", "Classified", "Masked", "Quarantined", "Review Required"].map((s) =>
-                <SelectItem key={s} value={s}>{s === "ALL" ? "All Statuses" : s}</SelectItem>)}
+              {["ALL", "Classified", "Masked", "Quarantined", "Review Required"].map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s === "ALL" ? "All Statuses" : s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Select value={selectedSensitivity} onValueChange={setSelectedSensitivity}>
-            <SelectTrigger><SelectValue placeholder="Sensitivity" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Sensitivity" />
+            </SelectTrigger>
             <SelectContent>
-              {["ALL", "Critical", "High", "Medium", "Low"].map((s) =>
-                <SelectItem key={s} value={s}>{s === "ALL" ? "All Sensitivity" : s}</SelectItem>)}
+              {["ALL", "Critical", "High", "Medium", "Low"].map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s === "ALL" ? "All Sensitivity" : s}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Search recordId, batch, source…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Input
+            placeholder="Search recordId, batch, source…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
       </Card>
 
       {/* Capability cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { icon: BrainCircuit, t: "AI-Powered PII Discovery", d: "Detects sensitive fields such as SSNs, customer IDs, addresses, DOBs, account numbers, and contact details.", b: "Active Control" },
-          { icon: FileBarChart, t: "Metadata-Driven Classification", d: "Maps datasets, columns, owners, domains, sensitivity, and policy tags into a governed metadata layer.", b: "Policy Layer" },
-          { icon: ShieldCheck, t: "Zero-Trust Ingestion", d: "Every dataset is untrusted until classification, validation, tokenization, masking, and policy checks complete.", b: "Zero Trust" },
-          { icon: LockKeyhole, t: "Salt-Based Tokenization", d: "Deterministic protected tokens using user-selected SHA-256/512 hashing with custom salt and Base64 encoding.", b: "Tokenized" },
-          { icon: FileCheck, t: "Automated Policy Enforcement", d: "Routes sensitive fields through tokenization, masking, review, or quarantine actions based on policy rules.", b: "Policy Layer" },
-          { icon: Eye, t: "Protected Reporting", d: "Reports show protected token values only, with no raw sensitive values displayed by default.", b: "Active Control" },
-          { icon: ScrollText, t: "Audit Evidence", d: "Captures governance decisions, classification outcomes, policy results, and export evidence for review.", b: "Audit Ready" },
-          { icon: AlertCircle, t: "Steward Review Workflow", d: "Flags high-risk, low-confidence, or policy-violating assets for human-in-the-loop governance review.", b: "Steward Review" },
+          {
+            icon: BrainCircuit,
+            t: "AI-Powered PII Discovery",
+            d: "Detects sensitive fields such as SSNs, customer IDs, addresses, DOBs, account numbers, and contact details.",
+            b: "Active Control",
+          },
+          {
+            icon: FileBarChart,
+            t: "Metadata-Driven Classification",
+            d: "Maps datasets, columns, owners, domains, sensitivity, and policy tags into a governed metadata layer.",
+            b: "Policy Layer",
+          },
+          {
+            icon: ShieldCheck,
+            t: "Zero-Trust Ingestion",
+            d: "Every dataset is untrusted until classification, validation, tokenization, masking, and policy checks complete.",
+            b: "Zero Trust",
+          },
+          {
+            icon: LockKeyhole,
+            t: "Salt-Based Tokenization",
+            d: "Deterministic protected tokens using user-selected SHA-256/512 hashing with custom salt and Base64 encoding.",
+            b: "Tokenized",
+          },
+          {
+            icon: FileCheck,
+            t: "Automated Policy Enforcement",
+            d: "Routes sensitive fields through tokenization, masking, review, or quarantine actions based on policy rules.",
+            b: "Policy Layer",
+          },
+          {
+            icon: Eye,
+            t: "Protected Reporting",
+            d: "Reports show protected token values only, with no raw sensitive values displayed by default.",
+            b: "Active Control",
+          },
+          {
+            icon: ScrollText,
+            t: "Audit Evidence",
+            d: "Captures governance decisions, classification outcomes, policy results, and export evidence for review.",
+            b: "Audit Ready",
+          },
+          {
+            icon: AlertCircle,
+            t: "Steward Review Workflow",
+            d: "Flags high-risk, low-confidence, or policy-violating assets for human-in-the-loop governance review.",
+            b: "Steward Review",
+          },
         ].map((c) => (
           <Card key={c.t} className="p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -525,7 +795,9 @@ function GovernancePage() {
               <div className="font-medium text-sm">{c.t}</div>
             </div>
             <p className="text-xs text-muted-foreground mb-2">{c.d}</p>
-            <span className="inline-block text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary">{c.b}</span>
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary">
+              {c.b}
+            </span>
           </Card>
         ))}
       </div>
@@ -538,9 +810,15 @@ function GovernancePage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {[
-            "Synthetic Data Source", "Metadata Scan", "Sensitivity Classification",
-            "User Salt Selection", "SHA Tokenization", "Base64 Encoding",
-            "Final Token Masking", "Protected Report", "Evidence Export",
+            "Synthetic Data Source",
+            "Metadata Scan",
+            "Sensitivity Classification",
+            "User Salt Selection",
+            "SHA Tokenization",
+            "Base64 Encoding",
+            "Final Token Masking",
+            "Protected Report",
+            "Evidence Export",
           ].map((s, i, arr) => (
             <div key={s} className="flex items-center gap-2">
               <div className="px-3 py-2 rounded-md border bg-muted/30 text-xs font-medium">{s}</div>
@@ -593,7 +871,11 @@ function GovernancePage() {
                     <TableCell className="font-mono text-xs">{r.protectedPhone}</TableCell>
                     <TableCell className="font-mono text-xs">{r.protectedSSN}</TableCell>
                     <TableCell className="font-mono text-xs">{r.protectedAccountNumber}</TableCell>
-                    <TableCell><span className="text-[10px] px-2 py-0.5 rounded bg-muted">{r.sensitivityLevel}</span></TableCell>
+                    <TableCell>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-muted">
+                        {r.sensitivityLevel}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-xs">{r.policyAction}</TableCell>
                     <TableCell className="text-xs">{r.maskingStatus}</TableCell>
                   </TableRow>
@@ -657,41 +939,118 @@ function GovernancePage() {
           </TableHeader>
           <TableBody>
             {[
-              ["SSN", "Critical", "AI + Pattern", "SHA Tokenize + Base64 Encode + Mask", "No cleartext exposure", "Required"],
-              ["Customer ID", "High", "Metadata + Pattern", "Deterministic tokenization", "Protected token only", "Required"],
-              ["Account Number", "Critical", "Pattern", "SHA Tokenize + access restriction", "Restricted processing", "Required"],
-              ["Email", "High", "AI + Pattern", "SHA Tokenize + final token masking", "Protected downstream use", "Required"],
-              ["Phone", "High", "Pattern", "SHA Tokenize + final token masking", "Protected downstream use", "Required"],
-              ["Address", "High", "AI + Metadata", "SHA Tokenize + final token masking", "Protected attribute", "Required"],
-              ["DOB", "Medium", "Pattern", "SHA Tokenize + final token masking", "Minimum necessary use", "Required"],
-              ["Free Text", "Variable", "AI classification", "Review or quarantine", "Based on detected risk", "Conditional"],
+              [
+                "SSN",
+                "Critical",
+                "AI + Pattern",
+                "SHA Tokenize + Base64 Encode + Mask",
+                "No cleartext exposure",
+                "Required",
+              ],
+              [
+                "Customer ID",
+                "High",
+                "Metadata + Pattern",
+                "Deterministic tokenization",
+                "Protected token only",
+                "Required",
+              ],
+              [
+                "Account Number",
+                "Critical",
+                "Pattern",
+                "SHA Tokenize + access restriction",
+                "Restricted processing",
+                "Required",
+              ],
+              [
+                "Email",
+                "High",
+                "AI + Pattern",
+                "SHA Tokenize + final token masking",
+                "Protected downstream use",
+                "Required",
+              ],
+              [
+                "Phone",
+                "High",
+                "Pattern",
+                "SHA Tokenize + final token masking",
+                "Protected downstream use",
+                "Required",
+              ],
+              [
+                "Address",
+                "High",
+                "AI + Metadata",
+                "SHA Tokenize + final token masking",
+                "Protected attribute",
+                "Required",
+              ],
+              [
+                "DOB",
+                "Medium",
+                "Pattern",
+                "SHA Tokenize + final token masking",
+                "Minimum necessary use",
+                "Required",
+              ],
+              [
+                "Free Text",
+                "Variable",
+                "AI classification",
+                "Review or quarantine",
+                "Based on detected risk",
+                "Conditional",
+              ],
             ].map((row) => (
               <TableRow key={row[0]}>
                 {row.map((cell, i) => (
                   <TableCell key={i} className="text-xs">
-                    {i === 1 || i === 5
-                      ? <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary">{cell}</span>
-                      : cell}
+                    {i === 1 || i === 5 ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary">
+                        {cell}
+                      </span>
+                    ) : (
+                      cell
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        <p className="text-[11px] text-muted-foreground mt-3">Synthetic governance policy simulation for demo purposes.</p>
+        <p className="text-[11px] text-muted-foreground mt-3">
+          Synthetic governance policy simulation for demo purposes.
+        </p>
       </Card>
 
       {/* Compliance Readiness Panel */}
       <Card className="p-5">
         <h2 className="font-semibold mb-2">Compliance Evidence Built In</h2>
         <p className="text-sm text-muted-foreground mb-3">
-          Pipeline Pulse shifts governance left by connecting classification, quality checks, tokenization, masking,
-          policy enforcement, incident review, and audit evidence into one operational control layer.
+          Pipeline Pulse shifts governance left by connecting classification, quality checks,
+          tokenization, masking, policy enforcement, incident review, and audit evidence into one
+          operational control layer.
         </p>
         <div className="flex flex-wrap gap-2">
-          {["GDPR", "CCPA", "HIPAA", "PDPL", "Data Minimization", "Privacy by Design", "Access Control",
-            "Auditability", "Non-Repudiation", "Retention Governance", "Data Lineage", "Policy Traceability"].map((t) => (
-            <span key={t} className="text-[10px] px-2 py-1 rounded-full border bg-muted/30">{t}</span>
+          {[
+            "GDPR",
+            "CCPA",
+            "HIPAA",
+            "PDPL",
+            "Data Minimization",
+            "Privacy by Design",
+            "Access Control",
+            "Auditability",
+            "Non-Repudiation",
+            "Retention Governance",
+            "Data Lineage",
+            "Policy Traceability",
+          ].map((t) => (
+            <span key={t} className="text-[10px] px-2 py-1 rounded-full border bg-muted/30">
+              {t}
+            </span>
           ))}
         </div>
       </Card>
@@ -710,8 +1069,9 @@ function GovernancePage() {
           <li>No exposure of secrets, salt, raw values, or token mappings</li>
         </ul>
         <p className="text-[11px] text-muted-foreground mt-3">
-          Sensitive demo fields are converted into Base64-encoded SHA tokens using the selected salt. Reports and exports
-          display protected token values only. Raw sensitive values, salts, and token mappings are not stored, logged, or exported.
+          Sensitive demo fields are converted into Base64-encoded SHA tokens using the selected
+          salt. Reports and exports display protected token values only. Raw sensitive values,
+          salts, and token mappings are not stored, logged, or exported.
         </p>
       </Card>
 
@@ -719,9 +1079,18 @@ function GovernancePage() {
       <Card className="p-5">
         <h2 className="font-semibold mb-3">Export Actions</h2>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={handleExportMasked}><Download className="size-4" />Protected Masked Report (CSV)</Button>
-          <Button variant="outline" onClick={handleExportBatch}><Download className="size-4" />Batch Governance Summary (CSV)</Button>
-          <Button variant="outline" onClick={handleExportEvidence}><Download className="size-4" />Governance Evidence (JSON)</Button>
+          <Button variant="outline" onClick={handleExportMasked}>
+            <Download className="size-4" />
+            Protected Masked Report (CSV)
+          </Button>
+          <Button variant="outline" onClick={handleExportBatch}>
+            <Download className="size-4" />
+            Batch Governance Summary (CSV)
+          </Button>
+          <Button variant="outline" onClick={handleExportEvidence}>
+            <Download className="size-4" />
+            Governance Evidence (JSON)
+          </Button>
         </div>
       </Card>
 

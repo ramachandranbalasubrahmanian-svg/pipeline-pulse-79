@@ -13,6 +13,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { DemoGuide } from "@/components/DemoGuide";
 import { TopBar } from "@/components/TopBar";
 import { Toaster } from "@/components/ui/sonner";
+import { DemoSessionProvider } from "@/lib/demo-backend/demo-session";
 
 function NotFoundComponent() {
   return (
@@ -120,17 +121,19 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <TopBar />
-          <main className="flex-1 p-6 max-w-[1600px] w-full mx-auto">
-            <Outlet />
-          </main>
+      <DemoSessionProvider>
+        <div className="flex min-h-screen w-full bg-background">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col min-w-0">
+            <TopBar />
+            <main className="flex-1 p-6 max-w-[1600px] w-full mx-auto">
+              <Outlet />
+            </main>
+          </div>
         </div>
-      </div>
-      <DemoGuide />
-      <Toaster position="top-right" richColors />
+        <DemoGuide />
+        <Toaster position="top-right" richColors />
+      </DemoSessionProvider>
     </QueryClientProvider>
   );
 }

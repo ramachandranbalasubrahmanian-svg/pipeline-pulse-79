@@ -1,4 +1,11 @@
-import { Search, Bell, Settings as SettingsIcon, AlertTriangle, CheckCircle2, Sparkles } from "lucide-react";
+import {
+  Search,
+  Bell,
+  Settings as SettingsIcon,
+  AlertTriangle,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -6,14 +13,39 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { JOBS, PROJECTS, INCIDENTS } from "@/lib/mock";
 import { toast } from "sonner";
+import { useDemoSession } from "@/lib/demo-backend/demo-session-context";
 
 type Hit = { type: "Job" | "Project" | "Incident"; label: string; sub: string; to: string };
 
 const NOTIFICATIONS = [
-  { id: "n1", icon: AlertTriangle, tone: "text-destructive", title: "INC-0041 raised on SF_CRM_Daily_Full_Sync", time: "12 min ago" },
-  { id: "n2", icon: Sparkles, tone: "text-primary", title: "AI suggested fix for Marketing_Attribution_v2", time: "47 min ago" },
-  { id: "n3", icon: AlertTriangle, tone: "text-warning", title: "Apex Financial passed 100% contracted hours", time: "1h ago" },
-  { id: "n4", icon: CheckCircle2, tone: "text-success", title: "Daily_KPI_Aggregation completed (6m 11s)", time: "4h ago" },
+  {
+    id: "n1",
+    icon: AlertTriangle,
+    tone: "text-destructive",
+    title: "INC-0041 raised on SF_CRM_Daily_Full_Sync",
+    time: "12 min ago",
+  },
+  {
+    id: "n2",
+    icon: Sparkles,
+    tone: "text-primary",
+    title: "AI suggested fix for Marketing_Attribution_v2",
+    time: "47 min ago",
+  },
+  {
+    id: "n3",
+    icon: AlertTriangle,
+    tone: "text-warning",
+    title: "Apex Financial passed 100% contracted hours",
+    time: "1h ago",
+  },
+  {
+    id: "n4",
+    icon: CheckCircle2,
+    tone: "text-success",
+    title: "Daily_KPI_Aggregation completed (6m 11s)",
+    time: "4h ago",
+  },
 ];
 
 export function TopBar() {
@@ -22,21 +54,30 @@ export function TopBar() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(true);
+  const { currentUser, session, sharedPersistenceConfigured } = useDemoSession();
 
   const hits: Hit[] = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return [];
-    const j = JOBS.filter((x) => x.name.toLowerCase().includes(term) || x.id.toLowerCase().includes(term))
-      .slice(0, 4).map<Hit>((x) => ({ type: "Job", label: x.name, sub: `${x.id} · ${x.tenant}`, to: "/jobs" }));
+    const j = JOBS.filter(
+      (x) => x.name.toLowerCase().includes(term) || x.id.toLowerCase().includes(term),
+    )
+      .slice(0, 4)
+      .map<Hit>((x) => ({ type: "Job", label: x.name, sub: `${x.id} · ${x.tenant}`, to: "/jobs" }));
     const p = PROJECTS.filter((x) => x.name.toLowerCase().includes(term))
-      .slice(0, 3).map<Hit>((x) => ({ type: "Project", label: x.name, sub: x.tenant, to: "/projects" }));
-    const i = INCIDENTS.filter((x) => x.job.toLowerCase().includes(term) || x.id.toLowerCase().includes(term))
-      .slice(0, 3).map<Hit>((x) => ({ type: "Incident", label: x.id, sub: x.job, to: "/incidents" }));
+      .slice(0, 3)
+      .map<Hit>((x) => ({ type: "Project", label: x.name, sub: x.tenant, to: "/projects" }));
+    const i = INCIDENTS.filter(
+      (x) => x.job.toLowerCase().includes(term) || x.id.toLowerCase().includes(term),
+    )
+      .slice(0, 3)
+      .map<Hit>((x) => ({ type: "Incident", label: x.id, sub: x.job, to: "/incidents" }));
     return [...j, ...p, ...i];
   }, [q]);
 
   function go(to: string) {
-    setQ(""); setOpen(false);
+    setQ("");
+    setOpen(false);
     navigate({ to });
   }
 
@@ -48,7 +89,10 @@ export function TopBar() {
           placeholder="Search jobs, projects, or incidents..."
           className="pl-9 bg-muted/40 border-border h-9"
           value={q}
-          onChange={(e) => { setQ(e.target.value); setOpen(true); }}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setOpen(true);
+          }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
         />
@@ -60,10 +104,15 @@ export function TopBar() {
               hits.map((h, i) => (
                 <button
                   key={i}
-                  onMouseDown={(e) => { e.preventDefault(); go(h.to); }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    go(h.to);
+                  }}
                   className="w-full text-left px-3 py-2 hover:bg-muted flex items-center gap-3 border-b border-border last:border-0"
                 >
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">{h.type}</span>
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                    {h.type}
+                  </span>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{h.label}</div>
                     <div className="text-xs text-muted-foreground truncate">{h.sub}</div>
@@ -77,14 +126,22 @@ export function TopBar() {
       <div className="flex items-center gap-3">
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
           <span className="size-1.5 rounded-full bg-primary pulse-dot" />
-          Tenant: Global-Enterprise-01
+          Tenant: {session.tenant}
+        </span>
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-foreground text-xs font-medium border border-border">
+          Role: {currentUser.role}
+        </span>
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-foreground text-xs font-medium border border-border">
+          {sharedPersistenceConfigured ? "Supabase mirror ready" : "Local persistence"}
         </span>
 
         <Popover onOpenChange={(o) => o && setUnread(false)}>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
               <Bell className="size-4" />
-              {unread && <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive ring-2 ring-card" />}
+              {unread && (
+                <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive ring-2 ring-card" />
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-80 p-0">
@@ -101,7 +158,10 @@ export function TopBar() {
               {NOTIFICATIONS.map((n) => {
                 const Icon = n.icon;
                 return (
-                  <div key={n.id} className="px-4 py-3 border-b border-border last:border-0 flex gap-3 hover:bg-muted/40">
+                  <div
+                    key={n.id}
+                    className="px-4 py-3 border-b border-border last:border-0 flex gap-3 hover:bg-muted/40"
+                  >
                     <Icon className={`size-4 mt-0.5 ${n.tone}`} />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm leading-snug">{n.title}</div>

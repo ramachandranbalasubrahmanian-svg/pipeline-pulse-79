@@ -111,6 +111,30 @@ const ACTIONS = [
   "Complete zero-trust onboarding for remaining legacy sources",
 ];
 
+const BOARD_DECISIONS = [
+  {
+    decision: "Approve Q3 metadata harvesting rollout",
+    ask: "$85K enablement budget",
+    owner: "CDO",
+    residualRisk: "Medium",
+    impact: "Raises catalog adoption from 58% to 80% target",
+  },
+  {
+    decision: "Mandate AI model-card approval gates",
+    ask: "Policy approval",
+    owner: "AI Governance",
+    residualRisk: "Low",
+    impact: "Blocks unreviewed high-risk models before deployment",
+  },
+  {
+    decision: "Promote MDM pilot to production",
+    ask: "2 sprint teams for 4 weeks",
+    owner: "Data Architecture",
+    residualRisk: "Medium",
+    impact: "Reduces duplicate customer records and downstream reconciliation defects",
+  },
+];
+
 function ExecutivePage() {
   function exportBoardSummary() {
     const pdf = new jsPDF();
@@ -202,6 +226,30 @@ function ExecutivePage() {
                 <div className="text-xs text-muted-foreground">Mitigation: {r.mitigation}</div>
               </div>
               <Badge variant={r.impact === "High" ? "destructive" : "secondary"}>{r.impact}</Badge>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card className="p-5 mb-4">
+        <div className="font-semibold mb-3">Board Decisions Required</div>
+        <div className="space-y-2">
+          {BOARD_DECISIONS.map((item) => (
+            <div key={item.decision} className="rounded-md border p-3">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <div className="font-medium text-sm">{item.decision}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Ask: {item.ask} · Owner: {item.owner}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Expected impact: {item.impact}
+                  </div>
+                </div>
+                <Badge variant={item.residualRisk === "Low" ? "default" : "secondary"}>
+                  Residual risk: {item.residualRisk}
+                </Badge>
+              </div>
             </div>
           ))}
         </div>

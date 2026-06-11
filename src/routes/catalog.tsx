@@ -34,6 +34,7 @@ import {
   Tags,
   RefreshCw,
 } from "lucide-react";
+import { FIELD_CATALOG, HARVEST_RUNS } from "@/lib/demo-backend/catalog-metadata";
 
 export const Route = createFileRoute("/catalog")({
   head: () => ({
@@ -369,6 +370,10 @@ function CatalogPage() {
             <FileText className="size-4 mr-1" />
             Glossary
           </TabsTrigger>
+          <TabsTrigger value="fields">
+            <Tags className="size-4 mr-1" />
+            Field Metadata
+          </TabsTrigger>
           <TabsTrigger value="workflow">
             <CheckCircle2 className="size-4 mr-1" />
             Approval Workflow
@@ -516,6 +521,57 @@ function CatalogPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="fields" className="mt-4">
+          <Card className="p-4 mb-3 bg-primary/5 border-primary/20">
+            <div className="text-sm font-medium">Field-Level Metadata & Policy Linkage</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              This view links physical fields to glossary terms, sensitivity, DQ rules, policy tags,
+              lineage, owners, and stewards. It is the catalog evidence needed for a 92+ enterprise
+              simulation score.
+            </div>
+          </Card>
+          <Card className="overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Asset.Field</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Sensitivity</TableHead>
+                  <TableHead>Glossary Term</TableHead>
+                  <TableHead>DQ Rules</TableHead>
+                  <TableHead>Policy Tags</TableHead>
+                  <TableHead>Lineage</TableHead>
+                  <TableHead>Steward</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {FIELD_CATALOG.map((field) => (
+                  <TableRow key={`${field.asset}.${field.field}`}>
+                    <TableCell className="font-mono text-xs">
+                      {field.asset}.{field.field}
+                    </TableCell>
+                    <TableCell className="text-xs">{field.type}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={field.sensitivity === "Restricted" ? "destructive" : "secondary"}
+                      >
+                        {field.sensitivity}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">{field.glossaryTerm}</TableCell>
+                    <TableCell className="text-xs">{field.dqRules.join(", ")}</TableCell>
+                    <TableCell className="text-xs">{field.policyTags.join(", ")}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-sm">
+                      {field.lineage}
+                    </TableCell>
+                    <TableCell className="text-xs">{field.steward}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="workflow" className="mt-4">
           <Card className="p-6">
             <div className="font-semibold mb-4">Glossary Approval Workflow</div>
@@ -547,32 +603,35 @@ function CatalogPage() {
             ))}
           </div>
           <Card className="p-5 mt-4">
-            <div className="font-semibold mb-3">Latest Harvest Run — HARV-2026-06-001</div>
+            <div className="font-semibold mb-3">Persistent Harvest Run Evidence</div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Source</TableHead>
-                  <TableHead>Assets Found</TableHead>
-                  <TableHead>New Tags</TableHead>
-                  <TableHead>Issues Routed</TableHead>
+                  <TableHead>Run ID</TableHead>
+                  <TableHead>Connector</TableHead>
+                  <TableHead>Assets</TableHead>
+                  <TableHead>Fields</TableHead>
+                  <TableHead>Terms Linked</TableHead>
+                  <TableHead>Policies Applied</TableHead>
+                  <TableHead>Completeness Lift</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {[
-                  ["Snowflake", "42", "118", "5", "Published"],
-                  ["BigQuery", "27", "64", "3", "Published"],
-                  ["Document Store", "6 repos", "31", "8", "Steward Review"],
-                  ["CRM", "18", "52", "2", "Published"],
-                ].map(([source, assets, tags, issues, status]) => (
-                  <TableRow key={source}>
-                    <TableCell>{source}</TableCell>
-                    <TableCell>{assets}</TableCell>
-                    <TableCell>{tags}</TableCell>
-                    <TableCell>{issues}</TableCell>
+                {HARVEST_RUNS.map((run) => (
+                  <TableRow key={run.id}>
+                    <TableCell className="font-mono text-xs">{run.id}</TableCell>
+                    <TableCell>{run.connector}</TableCell>
+                    <TableCell>{run.assetsScanned}</TableCell>
+                    <TableCell>{run.fieldsScanned}</TableCell>
+                    <TableCell>{run.termsLinked}</TableCell>
+                    <TableCell>{run.policiesApplied}</TableCell>
                     <TableCell>
-                      <Badge variant={status === "Published" ? "default" : "secondary"}>
-                        {status}
+                      {run.completenessBefore}% → {run.completenessAfter}%
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={run.status === "Completed" ? "default" : "secondary"}>
+                        {run.status}
                       </Badge>
                     </TableCell>
                   </TableRow>

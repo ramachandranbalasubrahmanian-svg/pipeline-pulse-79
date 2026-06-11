@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Sparkles, AlertTriangle, Loader2, Search } from "lucide-react";
+import { FIELD_LINEAGE } from "@/lib/demo-backend/lineage-fields";
 
 export const Route = createFileRoute("/lineage")({
   head: () => ({
@@ -266,6 +267,45 @@ Affected tenants (${tenants.length}): ${tenants.join(", ") || "—"}.
                       Active
                     </span>
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Card className="p-5 mt-4">
+        <h3 className="font-semibold mb-1">Field-Level Lineage Evidence</h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Field mappings connect source attributes to governed transformations, curated targets,
+          consumers, risks, and controls.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-muted-foreground border-b border-border">
+                <th className="font-medium pb-2">Source Field</th>
+                <th className="font-medium pb-2">Transform</th>
+                <th className="font-medium pb-2">Target Field</th>
+                <th className="font-medium pb-2">Consumer</th>
+                <th className="font-medium pb-2">Risk</th>
+                <th className="font-medium pb-2">Control</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FIELD_LINEAGE.map((field) => (
+                <tr
+                  key={`${field.source}-${field.target}`}
+                  className="border-b border-border last:border-0"
+                >
+                  <td className="py-3 font-mono text-xs">{field.source}</td>
+                  <td className="py-3 font-mono text-xs text-muted-foreground">
+                    {field.transform}
+                  </td>
+                  <td className="py-3 font-mono text-xs">{field.target}</td>
+                  <td className="py-3 text-xs">{field.consumer}</td>
+                  <td className="py-3 text-xs">{field.risk}</td>
+                  <td className="py-3 text-xs text-muted-foreground">{field.control}</td>
                 </tr>
               ))}
             </tbody>

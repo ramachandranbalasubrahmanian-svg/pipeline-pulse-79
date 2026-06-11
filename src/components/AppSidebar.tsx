@@ -38,11 +38,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
+import { DEMO_USERS } from "@/lib/demo-backend/demo-identities";
+import { useDemoSession } from "@/lib/demo-backend/demo-session-context";
 
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
@@ -90,6 +97,15 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const {
+    availableTenants,
+    currentUser,
+    session,
+    sharedPersistenceConfigured,
+    switchTenant,
+    switchUser,
+    resetSession,
+  } = useDemoSession();
 
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
@@ -109,6 +125,13 @@ export function AppSidebar() {
       return next;
     });
   }
+
+  const initials = currentUser.name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
@@ -165,35 +188,75 @@ export function AppSidebar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors">
-              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white text-xs font-semibold">
-                RB
+              <div className="size-8 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                {initials}
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-sm text-white truncate">Ram Balasubrahmanian</div>
-                <div className="text-xs text-sidebar-foreground/60 truncate">jvpramu@gmail.com</div>
+                <div className="text-sm text-white truncate">{currentUser.name}</div>
+                <div className="text-xs text-sidebar-foreground/60 truncate">
+                  {currentUser.role} · {session.tenant}
+                </div>
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" className="w-56">
-            <DropdownMenuLabel>Signed in as Ram Balasubrahmanian</DropdownMenuLabel>
+            <DropdownMenuLabel>Signed in as {currentUser.name}</DropdownMenuLabel>
+            <DropdownMenuItem disabled>{currentUser.email}</DropdownMenuItem>
+            <DropdownMenuItem disabled>
+              {sharedPersistenceConfigured ? "Supabase mirror ready" : "Local persistence only"}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate({ to: "/settings" })}>
               <UserCog className="size-4" />
               Account settings
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <UserCog className="size-4" />
+                Switch persona
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup value={session.userId} onValueChange={switchUser}>
+                  {DEMO_USERS.map((user) => (
+                    <DropdownMenuRadioItem key={user.id} value={user.id}>
+                      {user.name}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Users className="size-4" />
+                Switch tenant
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuRadioGroup value={session.tenant} onValueChange={switchTenant}>
+                  {availableTenants.map((tenant) => (
+                    <DropdownMenuRadioItem key={tenant} value={tenant}>
+                      {tenant}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuItem onClick={() => navigate({ to: "/tenants" })}>
               <Users className="size-4" />
-              Switch tenant
+              Tenant directory
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() =>
-                toast.success("Signed out", { description: "Demo: no real auth wired." })
-              }
+              onClick={() => {
+                resetSession();
+                toast.success("Demo session reset", {
+                  description:
+                    "Persona, tenant, and persistence posture returned to the default admin view.",
+                });
+              }}
             >
               <LogOut className="size-4" />
-              Sign out
+              Reset demo session
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

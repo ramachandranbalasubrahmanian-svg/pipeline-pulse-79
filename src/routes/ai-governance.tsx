@@ -162,6 +162,41 @@ const MODELS = [
   },
 ];
 
+const APPROVAL_GATES = [
+  {
+    gate: "Use Case Intake",
+    evidence: "Business purpose, owner, consumer, and data product linkage captured",
+    status: "Complete",
+  },
+  {
+    gate: "Data Readiness",
+    evidence: "Training lineage, DQ score, consent basis, and PII controls reviewed",
+    status: "Complete",
+  },
+  {
+    gate: "Risk Assessment",
+    evidence: "Criticality, automated decision impact, and regulatory exposure scored",
+    status: "Complete",
+  },
+  {
+    gate: "Model Card Approval",
+    evidence: "Owner, CDO/CRO/DPO approvals and model limitations documented",
+    status: "Watch",
+  },
+  {
+    gate: "Production Monitoring",
+    evidence: "Drift, fairness, override, and decommission triggers configured",
+    status: "Complete",
+  },
+];
+
+const DRIFT_HISTORY = [
+  { period: "W1", drift: 0.04, fairness: 0.02, status: "Healthy" },
+  { period: "W2", drift: 0.07, fairness: 0.03, status: "Healthy" },
+  { period: "W3", drift: 0.09, fairness: 0.05, status: "Watch" },
+  { period: "W4", drift: 0.11, fairness: 0.08, status: "Escalated" },
+];
+
 const riskVariant = (r: Risk) =>
   r === "Critical"
     ? "destructive"
@@ -227,6 +262,10 @@ function AIGovernancePage() {
           <TabsTrigger value="monitoring">
             <Activity className="size-4 mr-1" />
             Monitoring
+          </TabsTrigger>
+          <TabsTrigger value="lifecycle">
+            <ShieldAlert className="size-4 mr-1" />
+            Approval Gates
           </TabsTrigger>
         </TabsList>
 
@@ -325,6 +364,79 @@ function AIGovernancePage() {
               </Card>
             ))}
           </div>
+        </TabsContent>
+
+        <TabsContent value="lifecycle" className="mt-4 space-y-4">
+          <Card className="p-4 bg-primary/5 border-primary/20">
+            <div className="text-sm font-medium">AI Governance Lifecycle Evidence</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              High-risk AI use cases must pass intake, data readiness, risk assessment, model-card
+              approval, and monitoring gates before deployment.
+            </div>
+          </Card>
+          <Card className="overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Gate</TableHead>
+                  <TableHead>Evidence</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {APPROVAL_GATES.map((gate) => (
+                  <TableRow key={gate.gate}>
+                    <TableCell className="font-medium">{gate.gate}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{gate.evidence}</TableCell>
+                    <TableCell>
+                      <Badge variant={gate.status === "Complete" ? "default" : "secondary"}>
+                        {gate.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+          <Card className="overflow-hidden">
+            <div className="px-4 py-3 border-b font-semibold text-sm">
+              Drift/Fairness Threshold History — Credit Risk Scoring
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Period</TableHead>
+                  <TableHead>Drift</TableHead>
+                  <TableHead>Fairness Delta</TableHead>
+                  <TableHead>Threshold</TableHead>
+                  <TableHead>Decision</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {DRIFT_HISTORY.map((row) => (
+                  <TableRow key={row.period}>
+                    <TableCell>{row.period}</TableCell>
+                    <TableCell>{row.drift.toFixed(2)}</TableCell>
+                    <TableCell>{row.fairness.toFixed(2)}</TableCell>
+                    <TableCell>Drift 0.10 / Fairness 0.07</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          row.status === "Escalated"
+                            ? "destructive"
+                            : row.status === "Watch"
+                              ? "secondary"
+                              : "default"
+                        }
+                      >
+                        {row.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </TabsContent>
       </Tabs>
 
