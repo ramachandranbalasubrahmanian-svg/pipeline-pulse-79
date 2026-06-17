@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { AppSidebar } from "@/components/AppSidebar";
+import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { DemoGuide } from "@/components/DemoGuide";
 import { TopBar } from "@/components/TopBar";
 import { Toaster } from "@/components/ui/sonner";
@@ -132,6 +133,7 @@ function RootComponent() {
           </div>
         </div>
         <DemoGuide />
+        <AnalyticsTracker />
         <Toaster position="top-right" richColors />
       </DemoSessionProvider>
     </QueryClientProvider>
