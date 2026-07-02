@@ -85,7 +85,7 @@ function EvidencePage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="maturity-assessment"
         title="DAMA Evidence Hub"
         description="Synthetic Demo Data · Portfolio Simulation — audit-ready evidence across every DAMA knowledge area."
         actions={

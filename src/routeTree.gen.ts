@@ -10,16 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ValueRouteImport } from './routes/value'
+import { Route as TrainerRouteImport } from './routes/trainer'
 import { Route as TenantsRouteImport } from './routes/tenants'
 import { Route as StewardshipRouteImport } from './routes/stewardship'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReliabilityRouteImport } from './routes/reliability'
+import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ModelingRouteImport } from './routes/modeling'
 import { Route as MdmRouteImport } from './routes/mdm'
 import { Route as LineageRouteImport } from './routes/lineage'
 import { Route as LifecycleRouteImport } from './routes/lifecycle'
+import { Route as LearnRouteImport } from './routes/learn'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as GovernanceRouteImport } from './routes/governance'
@@ -44,6 +47,11 @@ const ValueRoute = ValueRouteImport.update({
   path: '/value',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrainerRoute = TrainerRouteImport.update({
+  id: '/trainer',
+  path: '/trainer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TenantsRoute = TenantsRouteImport.update({
   id: '/tenants',
   path: '/tenants',
@@ -62,6 +70,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReliabilityRoute = ReliabilityRouteImport.update({
   id: '/reliability',
   path: '/reliability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -92,6 +105,11 @@ const LineageRoute = LineageRouteImport.update({
 const LifecycleRoute = LifecycleRouteImport.update({
   id: '/lifecycle',
   path: '/lifecycle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JobsRoute = JobsRouteImport.update({
@@ -204,16 +222,19 @@ export interface FileRoutesByFullPath {
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
+  '/learn': typeof LearnRoute
   '/lifecycle': typeof LifecycleRoute
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
   '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/quiz': typeof QuizRoute
   '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/trainer': typeof TrainerRoute
   '/value': typeof ValueRoute
 }
 export interface FileRoutesByTo {
@@ -235,16 +256,19 @@ export interface FileRoutesByTo {
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
+  '/learn': typeof LearnRoute
   '/lifecycle': typeof LifecycleRoute
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
   '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/quiz': typeof QuizRoute
   '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/trainer': typeof TrainerRoute
   '/value': typeof ValueRoute
 }
 export interface FileRoutesById {
@@ -267,16 +291,19 @@ export interface FileRoutesById {
   '/governance': typeof GovernanceRoute
   '/incidents': typeof IncidentsRoute
   '/jobs': typeof JobsRoute
+  '/learn': typeof LearnRoute
   '/lifecycle': typeof LifecycleRoute
   '/lineage': typeof LineageRoute
   '/mdm': typeof MdmRoute
   '/modeling': typeof ModelingRoute
   '/products': typeof ProductsRoute
   '/projects': typeof ProjectsRoute
+  '/quiz': typeof QuizRoute
   '/reliability': typeof ReliabilityRoute
   '/settings': typeof SettingsRoute
   '/stewardship': typeof StewardshipRoute
   '/tenants': typeof TenantsRoute
+  '/trainer': typeof TrainerRoute
   '/value': typeof ValueRoute
 }
 export interface FileRouteTypes {
@@ -300,16 +327,19 @@ export interface FileRouteTypes {
     | '/governance'
     | '/incidents'
     | '/jobs'
+    | '/learn'
     | '/lifecycle'
     | '/lineage'
     | '/mdm'
     | '/modeling'
     | '/products'
     | '/projects'
+    | '/quiz'
     | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/trainer'
     | '/value'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -331,16 +361,19 @@ export interface FileRouteTypes {
     | '/governance'
     | '/incidents'
     | '/jobs'
+    | '/learn'
     | '/lifecycle'
     | '/lineage'
     | '/mdm'
     | '/modeling'
     | '/products'
     | '/projects'
+    | '/quiz'
     | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/trainer'
     | '/value'
   id:
     | '__root__'
@@ -362,16 +395,19 @@ export interface FileRouteTypes {
     | '/governance'
     | '/incidents'
     | '/jobs'
+    | '/learn'
     | '/lifecycle'
     | '/lineage'
     | '/mdm'
     | '/modeling'
     | '/products'
     | '/projects'
+    | '/quiz'
     | '/reliability'
     | '/settings'
     | '/stewardship'
     | '/tenants'
+    | '/trainer'
     | '/value'
   fileRoutesById: FileRoutesById
 }
@@ -394,16 +430,19 @@ export interface RootRouteChildren {
   GovernanceRoute: typeof GovernanceRoute
   IncidentsRoute: typeof IncidentsRoute
   JobsRoute: typeof JobsRoute
+  LearnRoute: typeof LearnRoute
   LifecycleRoute: typeof LifecycleRoute
   LineageRoute: typeof LineageRoute
   MdmRoute: typeof MdmRoute
   ModelingRoute: typeof ModelingRoute
   ProductsRoute: typeof ProductsRoute
   ProjectsRoute: typeof ProjectsRoute
+  QuizRoute: typeof QuizRoute
   ReliabilityRoute: typeof ReliabilityRoute
   SettingsRoute: typeof SettingsRoute
   StewardshipRoute: typeof StewardshipRoute
   TenantsRoute: typeof TenantsRoute
+  TrainerRoute: typeof TrainerRoute
   ValueRoute: typeof ValueRoute
 }
 
@@ -414,6 +453,13 @@ declare module '@tanstack/react-router' {
       path: '/value'
       fullPath: '/value'
       preLoaderRoute: typeof ValueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trainer': {
+      id: '/trainer'
+      path: '/trainer'
+      fullPath: '/trainer'
+      preLoaderRoute: typeof TrainerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tenants': {
@@ -442,6 +488,13 @@ declare module '@tanstack/react-router' {
       path: '/reliability'
       fullPath: '/reliability'
       preLoaderRoute: typeof ReliabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -484,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/lifecycle'
       fullPath: '/lifecycle'
       preLoaderRoute: typeof LifecycleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jobs': {
@@ -634,16 +694,19 @@ const rootRouteChildren: RootRouteChildren = {
   GovernanceRoute: GovernanceRoute,
   IncidentsRoute: IncidentsRoute,
   JobsRoute: JobsRoute,
+  LearnRoute: LearnRoute,
   LifecycleRoute: LifecycleRoute,
   LineageRoute: LineageRoute,
   MdmRoute: MdmRoute,
   ModelingRoute: ModelingRoute,
   ProductsRoute: ProductsRoute,
   ProjectsRoute: ProjectsRoute,
+  QuizRoute: QuizRoute,
   ReliabilityRoute: ReliabilityRoute,
   SettingsRoute: SettingsRoute,
   StewardshipRoute: StewardshipRoute,
   TenantsRoute: TenantsRoute,
+  TrainerRoute: TrainerRoute,
   ValueRoute: ValueRoute,
 }
 export const routeTree = rootRouteImport

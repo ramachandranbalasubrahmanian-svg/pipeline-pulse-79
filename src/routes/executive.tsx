@@ -160,7 +160,7 @@ function ExecutivePage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="dw-bi"
         title="Executive Governance Dashboard"
         description="Portfolio Simulation · CIO/CDO/VP-level view of data trust, maturity, risk, value, and quarterly priorities."
         actions={

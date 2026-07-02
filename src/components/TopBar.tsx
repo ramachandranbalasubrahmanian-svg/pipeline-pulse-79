@@ -82,7 +82,7 @@ export function TopBar() {
   }
 
   return (
-    <header className="h-16 border-b border-border bg-card flex items-center px-6 gap-4 sticky top-0 z-10">
+    <header className="h-16 border-b border-border bg-card flex items-center px-6 gap-4 sticky top-0 z-10 print:hidden">
       <div className="relative flex-1 max-w-xl">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <Input

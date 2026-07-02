@@ -91,7 +91,7 @@ function ValuePage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-management"
         title="Executive Value Realization"
         description="Synthetic demo metrics inspired by enterprise delivery patterns — outcomes from Governance, DQ, DataOps, AI Governance, and Reliability."
         actions={

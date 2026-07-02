@@ -323,7 +323,7 @@ function CatalogPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="metadata"
         title="Data Catalog & Business Glossary"
         description="Synthetic Demo Data · Search certified assets, glossary terms, owners, stewards, sensitivity, and lineage links."
         actions={

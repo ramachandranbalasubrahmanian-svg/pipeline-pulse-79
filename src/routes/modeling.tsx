@@ -295,7 +295,7 @@ function ModelingPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-modeling"
         title="Data Modeling Studio"
         description="Synthetic Demo Data · Conceptual, logical, and physical model views with standards validation and change impact."
         actions={

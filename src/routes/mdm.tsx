@@ -225,7 +225,7 @@ function MDMPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="reference-master-data"
         title="Master & Reference Data Hub"
         description="Synthetic Demo Data · Golden records, duplicate detection, survivorship, reference code sets, and steward queues."
       />

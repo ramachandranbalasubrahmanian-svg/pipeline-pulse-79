@@ -30,3 +30,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# npm lockfile — project is Bun-canonical (bun.lock is committed)
+package-lock.json
+
+# Claude Code local config (launch.json is shared)
+.claude/*
+!.claude/launch.json

@@ -508,7 +508,7 @@ function GovernancePage() {
   // ============================================================
   return (
     <div className="p-6 space-y-6">
-      <PageHeader
+      <PageHeader dmbok="data-governance"
         title="Data Governance Control Center"
         description="Enterprise controls for synthetic classification, tokenization, masking, policy enforcement, audit evidence, and compliance readiness."
         actions={

@@ -32,6 +32,9 @@ import {
   Scale,
   TrendingUp,
   ChevronDown,
+  GraduationCap,
+  ListChecks,
+  Presentation,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -51,44 +54,75 @@ import { toast } from "sonner";
 import { DEMO_USERS } from "@/lib/demo-backend/demo-identities";
 import { useDemoSession } from "@/lib/demo-backend/demo-session-context";
 
-const NAV = [
-  { to: "/", label: "Overview", icon: LayoutDashboard },
-  { to: "/executive", label: "Executive Governance", icon: Crown },
-  { to: "/value", label: "Value Realization", icon: TrendingUp },
-  { to: "/dama", label: "DAMA Control Tower", icon: Compass },
-  { to: "/evidence", label: "DAMA Evidence Hub", icon: FileCheck },
-  { to: "/demo", label: "Demo Video", icon: Film },
-  { to: "/lineage", label: "Pipeline Maps", icon: Network },
-  { to: "/architecture", label: "Architecture", icon: Share2 },
-  { to: "/projects", label: "Projects", icon: Database },
-  { to: "/products", label: "Data Product Marketplace", icon: Package },
-  { to: "/jobs", label: "Job Manager", icon: PlayCircle },
-  { to: "/contracts", label: "Data Contract Registry", icon: FileText },
-  { to: "/reliability", label: "Data Reliability", icon: Activity },
-  { to: "/catalog", label: "Catalog & Glossary", icon: BookOpen },
-  { to: "/modeling", label: "Modeling Studio", icon: Boxes },
-  { to: "/mdm", label: "MDM & Reference", icon: GitMerge },
-  { to: "/dq", label: "DQ Control Center", icon: ShieldCheck },
-  { to: "/governance", label: "Data Governance", icon: LockKeyhole },
-  { to: "/ai-governance", label: "AI Governance", icon: BrainCircuit },
-  { to: "/ethics", label: "Data Ethics Board", icon: Scale },
-  { to: "/documents", label: "Document & Content", icon: FileText },
-  { to: "/lifecycle", label: "Lifecycle & Retention", icon: Archive },
-  { to: "/stewardship", label: "Stewardship", icon: UserCheck },
-  { to: "/access", label: "Access (RBAC/ABAC)", icon: KeyRound },
-  { to: "/billing", label: "Billing & Usage", icon: CreditCard },
-  { to: "/incidents", label: "Incidents", icon: AlertCircle },
-  { to: "/audit", label: "Audit Trail", icon: History },
-  { to: "/tenants", label: "Tenants", icon: Users },
-  { to: "/settings", label: "Settings", icon: Settings },
-] as const;
-
 const NAV_GROUPS = [
-  { id: "executive", label: "Executive Layer", items: NAV.slice(0, 6) },
-  { id: "platform", label: "Data Platform", items: NAV.slice(6, 12) },
-  { id: "governance", label: "Data Governance & Quality", items: NAV.slice(12, 18) },
-  { id: "ai", label: "AI, Ethics & Compliance", items: NAV.slice(18, 23) },
-  { id: "ops", label: "Operations & Admin", items: NAV.slice(23) },
+  {
+    id: "executive",
+    label: "Executive Layer",
+    items: [
+      { to: "/", label: "Overview", icon: LayoutDashboard },
+      { to: "/executive", label: "Executive Governance", icon: Crown },
+      { to: "/value", label: "Value Realization", icon: TrendingUp },
+      { to: "/dama", label: "DAMA Control Tower", icon: Compass },
+      { to: "/evidence", label: "DAMA Evidence Hub", icon: FileCheck },
+      { to: "/demo", label: "Demo Video", icon: Film },
+    ],
+  },
+  {
+    id: "academy",
+    label: "DMBOK Academy",
+    items: [
+      { to: "/learn", label: "Learning Hub (DAMA Wheel)", icon: GraduationCap },
+      { to: "/quiz", label: "CDMP Practice Quiz", icon: ListChecks },
+      { to: "/trainer", label: "Trainer Kit", icon: Presentation },
+    ],
+  },
+  {
+    id: "platform",
+    label: "Data Platform",
+    items: [
+      { to: "/lineage", label: "Pipeline Maps", icon: Network },
+      { to: "/architecture", label: "Architecture", icon: Share2 },
+      { to: "/projects", label: "Projects", icon: Database },
+      { to: "/products", label: "Data Product Marketplace", icon: Package },
+      { to: "/jobs", label: "Job Manager", icon: PlayCircle },
+      { to: "/contracts", label: "Data Contract Registry", icon: FileText },
+    ],
+  },
+  {
+    id: "governance",
+    label: "Data Governance & Quality",
+    items: [
+      { to: "/reliability", label: "Data Reliability", icon: Activity },
+      { to: "/catalog", label: "Catalog & Glossary", icon: BookOpen },
+      { to: "/modeling", label: "Modeling Studio", icon: Boxes },
+      { to: "/mdm", label: "MDM & Reference", icon: GitMerge },
+      { to: "/dq", label: "DQ Control Center", icon: ShieldCheck },
+      { to: "/governance", label: "Data Governance", icon: LockKeyhole },
+    ],
+  },
+  {
+    id: "ai",
+    label: "AI, Ethics & Compliance",
+    items: [
+      { to: "/ai-governance", label: "AI Governance", icon: BrainCircuit },
+      { to: "/ethics", label: "Data Ethics Board", icon: Scale },
+      { to: "/documents", label: "Document & Content", icon: FileText },
+      { to: "/lifecycle", label: "Lifecycle & Retention", icon: Archive },
+      { to: "/stewardship", label: "Stewardship & Org", icon: UserCheck },
+    ],
+  },
+  {
+    id: "ops",
+    label: "Operations & Admin",
+    items: [
+      { to: "/access", label: "Access (RBAC/ABAC)", icon: KeyRound },
+      { to: "/billing", label: "Billing & Usage", icon: CreditCard },
+      { to: "/incidents", label: "Incidents", icon: AlertCircle },
+      { to: "/audit", label: "Audit Trail", icon: History },
+      { to: "/tenants", label: "Tenants", icon: Users },
+      { to: "/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ] as const;
 
 const STORAGE_KEY = "pipelinePulse.sidebar.collapsedSections";
@@ -134,7 +168,7 @@ export function AppSidebar() {
     .toUpperCase();
 
   return (
-    <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
+    <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0 print:hidden">
       <div className="px-5 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-lg bg-primary flex items-center justify-center">

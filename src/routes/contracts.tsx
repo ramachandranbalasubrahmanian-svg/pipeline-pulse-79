@@ -177,7 +177,7 @@ function ContractsPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-integration"
         title="Data Contract & Schema Registry"
         description="Synthetic Demo Data · Portfolio Simulation — producer/consumer governance, schema change control, and breaking-change prevention."
         actions={

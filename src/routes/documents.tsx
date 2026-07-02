@@ -231,7 +231,7 @@ function DocumentsPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="document-content"
         title="Document & Content Governance"
         description="Synthetic Demo Data · Portfolio Simulation — govern unstructured/semi-structured content alongside structured data."
         actions={

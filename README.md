@@ -16,6 +16,12 @@
 
 ## ✨ Highlights
 
+- **DMBOK Academy** 🎓 — the teaching layer for CDMP aspirants and DAMA study groups:
+  - **Learning Hub (`/learn`)** — interactive DAMA Wheel (Data Governance at the hub, 10 KAs on the ring), the Aiken pyramid, and the environmental-factors hexagon, each clickable through to live modules
+  - **CDMP Practice Mode (`/quiz`)** — 87 original practice questions with explanations, per-chapter drills + a cross-chapter mock exam, best-score tracking, and LinkedIn-shareable results
+  - **Trainer Kit (`/trainer`)** — the "Meridian Retail" running case study, per-chapter facilitator one-pagers (print / PDF / Markdown), warm-up questions, and ready 60-minute & half-day workshop agendas
+  - **DMBOK Lens** — every module page carries a collapsible panel mapping that screen to its DMBOK2 chapter: goals, activities, deliverables, roles, metrics, and CDMP exam pointers
+- **Complete DMBOK2 coverage** — all 17 chapters: the 11 wheel knowledge areas + 3 extended disciplines (Ethics, Big Data & AI, Maturity) + 2 organizational enablers (Org & Roles with a RACI matrix, Change Management with Kotter tracking) + the Ch 1 foundation
 - **Real-time Overview** — KPIs, execution trend, system pulse, freshness scoreboard
 - **DAMA Guided Demo Mode** — global 1-minute and 10-minute walkthroughs for portfolio, interview, and executive review flows
 - **Job Manager** — Lifecycle controls, log viewer, and an **AI Job Config Generator** (`"ETL from Salesforce to Snowflake nightly, retry 3x"` → filled form)
@@ -52,19 +58,24 @@ bun run build        # production build
 
 ## 🗺 Pages
 
-| Route           | Purpose                                     |
-| --------------- | ------------------------------------------- |
-| `/`             | Overview — KPIs, trends, system pulse       |
-| `/jobs`         | Job Manager + AI config generator           |
-| `/lineage`      | Pipeline Maps with AI impact analysis       |
-| `/architecture` | System diagrams + narrated PDF export       |
-| `/audit`        | Audit log with AI anomaly detection         |
-| `/dq`           | Metadata-Driven Data Quality Control Center |
-| `/incidents`    | Active incidents                            |
-| `/projects`     | Cross-tenant pipeline projects              |
-| `/tenants`      | Tenant management, contracts, billing rates |
-| `/billing`      | Usage & alerts                              |
-| `/settings`     | Org preferences & integrations              |
+| Route           | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `/`             | Overview — KPIs, trends, system pulse                          |
+| `/learn`        | 🎓 DMBOK2 Learning Hub — interactive DAMA Wheel, pyramid, hexagon |
+| `/quiz`         | 🎓 CDMP practice questions + mock exam with shareable results   |
+| `/trainer`      | 🎓 Trainer Kit — case study, one-pagers, workshop agendas       |
+| `/dama`         | DAMA Control Tower — 17-chapter maturity heatmap & evidence    |
+| `/jobs`         | Job Manager + AI config generator                              |
+| `/lineage`      | Pipeline Maps with AI impact analysis                          |
+| `/architecture` | System diagrams + narrated PDF export                          |
+| `/audit`        | Audit log with AI anomaly detection                            |
+| `/dq`           | Metadata-Driven Data Quality Control Center                    |
+| `/stewardship`  | Steward queues + RACI operating model + change management      |
+| `/incidents`    | Active incidents                                               |
+| `/projects`     | Cross-tenant pipeline projects                                 |
+| `/tenants`      | Tenant management, contracts, billing rates                    |
+| `/billing`      | Usage & alerts                                                 |
+| `/settings`     | Org preferences & integrations                                 |
 
 ## 🛡 Data Quality Control Center (`/dq`)
 
@@ -88,9 +99,24 @@ into an auditable enterprise capability.
 Use the floating **Demo Guide** button on any page for:
 
 - **1-Minute Overview:** Overview → DAMA Control Tower → Governance → DQ Control Center → AI Governance
-- **10-Minute Deep Dive:** Adds Lineage, MDM, Document & Content, Catalog, and Executive Governance
+- **10-Minute Deep Dive:** Adds Lineage, MDM, Document & Content, Catalog, Learning Hub, and Executive Governance
 
 The app remains a client-side synthetic portfolio simulation. All DAMA improvements preserve the existing Lovable visual system and use local React state only.
+
+### How the coverage maps to DMBOK2 (the accurate framing)
+
+DAMA's DMBOK wheel officially contains **11 knowledge areas** (chapters 3–13). This platform
+covers **all 17 DMBOK2 chapters**:
+
+| Group                        | Chapters | Coverage                                                            |
+| ---------------------------- | -------- | ------------------------------------------------------------------- |
+| Foundation                   | Ch 1     | Data Management → `/value`                                           |
+| **DMBOK Wheel (11 KAs)**     | Ch 3–13  | Governance, Architecture, Modeling, Storage & Ops, Security, Integration, Docs & Content, Reference & Master, DW/BI, Metadata, Data Quality |
+| Extended disciplines         | Ch 2, 14, 15 | Data Handling Ethics → `/ethics`, Big Data & AI → `/ai-governance`, Maturity Assessment → `/dama` |
+| Organizational enablers      | Ch 16, 17 | Org & Roles (RACI) and Change Management (Kotter) → `/stewardship`   |
+
+> ⚠️ Not "14 pillars" — CDMP-certified reviewers will look for the 11-knowledge-area wheel.
+> The Learning Hub (`/learn`) renders it interactively.
 
 ## 🔒 Security & Best Practices
 

@@ -52,7 +52,7 @@ function ProductsPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="dw-bi"
         title="Data Product Marketplace"
         description="Synthetic Demo Data · Portfolio Simulation — governed, reusable data products with ownership, quality, and access controls."
       />

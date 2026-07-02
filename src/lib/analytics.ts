@@ -13,7 +13,7 @@ let initialized = false;
 
 function isProd(): boolean {
   if (typeof window === "undefined") return false;
-  return ANALYTICS_CONFIG.prodDomains.includes(window.location.hostname);
+  return (ANALYTICS_CONFIG.prodDomains as readonly string[]).includes(window.location.hostname);
 }
 
 export function initAnalytics(): void {

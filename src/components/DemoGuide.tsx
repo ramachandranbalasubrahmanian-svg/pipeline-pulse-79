@@ -23,7 +23,7 @@ const QUICK_STEPS = [
   {
     page: "DAMA Control Tower",
     url: "/dama",
-    talk: "Show maturity across all 14 DAMA knowledge areas and the honest gap register.",
+    talk: "Show maturity across all 11 DMBOK knowledge areas plus the extended disciplines — and the honest gap register.",
   },
   {
     page: "Data Governance",
@@ -63,6 +63,11 @@ const DEEP_STEPS = [
     page: "Catalog & Glossary",
     url: "/catalog",
     talk: "Use search, filters, tag cloud, and harvesting simulation to explain metadata adoption.",
+  },
+  {
+    page: "Learning Hub",
+    url: "/learn",
+    talk: "Show the interactive DAMA wheel — every DMBOK2 chapter mapped to a live module, plus the CDMP quiz and trainer kit.",
   },
   {
     page: "Executive Governance",

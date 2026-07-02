@@ -57,7 +57,7 @@ function Audit() {
 
   return (
     <div>
-      <PageHeader
+      <PageHeader dmbok="data-governance"
         title="Audit Trail"
         description={`${filtered.length} of ${AUDIT.length} events`}
         actions={

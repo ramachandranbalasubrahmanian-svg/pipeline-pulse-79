@@ -101,7 +101,7 @@ function Incidents() {
 
   return (
     <div>
-      <PageHeader
+      <PageHeader dmbok="data-quality"
         title="Incidents"
         description="AI-assisted root cause analysis and remediation."
       />

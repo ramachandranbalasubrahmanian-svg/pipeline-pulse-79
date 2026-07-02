@@ -50,7 +50,7 @@ function LifecyclePage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="document-content"
         title="Data Lifecycle & Retention Manager"
         description="Synthetic Demo Data · Stage tracking, retention policies, archive eligibility, legal hold, and evidence export."
         actions={

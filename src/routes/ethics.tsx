@@ -154,7 +154,7 @@ function EthicsPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-ethics"
         title="Data Ethics & Responsible Use Board"
         description="Synthetic Demo Data · Portfolio Simulation — consent, fairness, purpose limitation, and human oversight."
       />

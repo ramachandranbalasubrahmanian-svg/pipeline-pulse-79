@@ -164,7 +164,7 @@ Affected tenants (${tenants.length}): ${tenants.join(", ") || "—"}.
 
   return (
     <div>
-      <PageHeader
+      <PageHeader dmbok="data-integration"
         title="Pipeline Maps"
         description="End-to-end data lineage. Click any node for AI impact analysis."
       />

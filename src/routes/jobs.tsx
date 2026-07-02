@@ -138,7 +138,7 @@ function JobsPage() {
 
   return (
     <div>
-      <PageHeader
+      <PageHeader dmbok="data-storage-operations"
         title="Job Manager"
         description={`${filtered.length} of ${jobs.length} jobs visible`}
         actions={

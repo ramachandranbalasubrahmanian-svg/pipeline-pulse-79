@@ -481,7 +481,7 @@ function DQPage() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-quality"
         title="Metadata-Driven Data Quality Control Center"
         description="Validate every record before it enters the pipeline. Reject bad data, quarantine risky records, and generate audit-ready reconciliation in minutes."
         actions={

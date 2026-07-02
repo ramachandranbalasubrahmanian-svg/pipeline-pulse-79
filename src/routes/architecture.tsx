@@ -295,7 +295,7 @@ function Architecture() {
 
   return (
     <div>
-      <PageHeader
+      <PageHeader dmbok="data-architecture"
         title="Architecture Viewer"
         description="System diagrams for lead architects and security reviewers."
         actions={

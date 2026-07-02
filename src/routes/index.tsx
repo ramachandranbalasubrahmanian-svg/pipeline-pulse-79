@@ -16,6 +16,7 @@ import {
   Layers,
   Wifi,
   Compass,
+  BookOpen,
 } from "lucide-react";
 import {
   LineChart,
@@ -74,14 +75,21 @@ function Overview() {
             </div>
             <h1 className="text-3xl font-semibold tracking-tight mt-2">Enterprise Data Platform</h1>
             <p className="text-sm text-muted-foreground mt-2 max-w-3xl">
-              DAMA DM-BOK2 aligned control plane for governance, quality, lineage, AI risk,
-              reliability, stewardship, and executive evidence.
+              DAMA-DMBOK2 aligned control plane covering all 17 chapters — the 11 wheel knowledge
+              areas plus ethics, AI governance, maturity assessment, and the organizational
+              enablers — each mapped to a working module with evidence.
             </p>
           </div>
-          <Button onClick={() => navigate({ to: "/dama" })}>
-            <Compass className="size-4" />
-            Start Demo
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => navigate({ to: "/learn" })}>
+              <BookOpen className="size-4" />
+              Learning Hub
+            </Button>
+            <Button onClick={() => navigate({ to: "/dama" })}>
+              <Compass className="size-4" />
+              Start Demo
+            </Button>
+          </div>
         </div>
       </Card>
       <VisitorCounter />

@@ -159,7 +159,7 @@ function ReliabilityPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-storage-operations"
         title="Data Reliability Engineering"
         description="Synthetic Demo Data · Portfolio Simulation — SLO/SLI tracking, error budgets, and preventive recommendations."
       />

@@ -223,7 +223,7 @@ function AIGovernancePage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="big-data-ai"
         title="AI Governance Control Center"
         description="Synthetic Demo Data · Model registry, risk tier, PII exposure, drift, fairness, explainability, and human-in-the-loop."
       />

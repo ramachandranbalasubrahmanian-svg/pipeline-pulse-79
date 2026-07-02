@@ -229,7 +229,7 @@ function AccessPage() {
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto">
-      <PageHeader
+      <PageHeader dmbok="data-security"
         title="Access Control — RBAC + ABAC"
         description="Synthetic Demo Data · Users, role-permission matrix, attribute-based policies, and a live policy decision simulator."
       />
