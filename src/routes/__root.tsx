@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AnalyticsTracker } from "@/components/AnalyticsTracker";
 import { DemoGuide } from "@/components/DemoGuide";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { TopBar } from "@/components/TopBar";
 import { Toaster } from "@/components/ui/sonner";
 import { DemoSessionProvider } from "@/lib/demo-backend/demo-session";
@@ -128,7 +129,9 @@ function RootComponent() {
           <div className="flex-1 flex flex-col min-w-0">
             <TopBar />
             <main className="flex-1 p-6 max-w-[1600px] w-full mx-auto">
-              <Outlet />
+              <PageAccessGuard>
+                <Outlet />
+              </PageAccessGuard>
             </main>
           </div>
         </div>

@@ -40,6 +40,13 @@ import {
   type DemoUser as User,
 } from "@/lib/demo-backend/demo-identities";
 import { useDemoSession } from "@/lib/demo-backend/demo-session-context";
+import {
+  PAGE_POLICIES,
+  evaluatePageAccess,
+  readPageDecisions,
+  clearPageDecisions,
+  type PageDecisionEntry,
+} from "@/lib/demo-backend/page-access";
 
 export const Route = createFileRoute("/access")({
   head: () => ({ meta: [{ title: "Access Control (RBAC / ABAC) — Enterprise Data Platform" }] }),
@@ -201,6 +208,11 @@ function AccessPage() {
   const [region, setRegion] = useState(currentUser.region);
   const [action, setAction] = useState<"READ" | "WRITE" | "DELETE">("WRITE");
   const [decision, setDecision] = useState<ReturnType<typeof decide> | null>(null);
+  const [pageLog, setPageLog] = useState<PageDecisionEntry[]>([]);
+
+  useEffect(() => {
+    setPageLog(readPageDecisions());
+  }, []);
 
   useEffect(() => {
     setUserId(session.userId);
@@ -231,8 +243,157 @@ function AccessPage() {
     <div className="p-6 max-w-[1600px] mx-auto">
       <PageHeader dmbok="data-security"
         title="Access Control — RBAC + ABAC"
-        description="Synthetic Demo Data · Users, role-permission matrix, attribute-based policies, and a live policy decision simulator."
+        description="Synthetic Demo Data · Users, role-permission matrix, attribute-based policies, and a live policy decision simulator. Page policies below are ENFORCED across this app — switch persona in the sidebar and watch the locks change."
       />
+
+      {/* Enforced page-access matrix */}
+      <Card className="p-5 mb-6 border-primary/20 bg-primary/5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+          <div className="font-semibold flex items-center gap-2">
+            <ShieldCheck className="size-4 text-primary" />
+            Enforced Page Access — persona × page (live)
+          </div>
+          <Badge variant="secondary">RBAC role gate + ABAC clearance / MFA / tenant / status</Badge>
+        </div>
+        <div className="text-xs text-muted-foreground mb-4">
+          This matrix is computed from the same policy engine that guards every route. Locked
+          sidebar items stay clickable on purpose — the denial screen shows the full decision
+          trace as teaching evidence.
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-48">Page</TableHead>
+                <TableHead>Tier</TableHead>
+                {USERS.map((u) => (
+                  <TableHead key={u.id} className="text-center text-xs">
+                    <div>{u.name.split(" ")[0]}</div>
+                    <div className="font-normal text-muted-foreground">{u.role}</div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {PAGE_POLICIES.map((policy) => (
+                <TableRow key={policy.route}>
+                  <TableCell className="text-xs">
+                    <span className="font-medium">{policy.label}</span>{" "}
+                    <span className="font-mono text-muted-foreground">{policy.route}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Badge
+                        variant={
+                          policy.minClearance === "Restricted"
+                            ? "destructive"
+                            : policy.minClearance === "Confidential"
+                              ? "secondary"
+                              : "outline"
+                        }
+                      >
+                        {policy.minClearance}
+                      </Badge>
+                      {policy.requireMfa && <Badge variant="outline">MFA</Badge>}
+                    </div>
+                  </TableCell>
+                  {USERS.map((u) => {
+                    const personaTenant = u.tenants.includes(session.tenant)
+                      ? session.tenant
+                      : u.tenants[0];
+                    const res = evaluatePageAccess(u, personaTenant, policy.route);
+                    return (
+                      <TableCell
+                        key={u.id}
+                        className="text-center"
+                        title={
+                          res.allow
+                            ? `${u.name}: allowed`
+                            : `${u.name}: denied — ${res.failed?.id} ${res.failed?.rule}`
+                        }
+                      >
+                        {res.allow ? (
+                          <CheckCircle2 className="size-4 text-emerald-500 inline" />
+                        ) : (
+                          <XCircle className="size-4 text-rose-500 inline" />
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
+
+      {/* Page-access decision log */}
+      <Card className="p-5 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <div className="font-semibold">Recent Page Access Decisions (this browser)</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              Every route evaluation is logged locally — audit evidence for the page guard.
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setPageLog(readPageDecisions())}>
+              Refresh
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                clearPageDecisions();
+                setPageLog([]);
+                toast.success("Page decision log cleared");
+              }}
+            >
+              Clear log
+            </Button>
+          </div>
+        </div>
+        {pageLog.length === 0 ? (
+          <div className="text-sm text-muted-foreground">
+            No decisions logged yet — navigate around the app (try a locked page) and hit Refresh.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>When (UTC)</TableHead>
+                <TableHead>Persona</TableHead>
+                <TableHead>Tenant</TableHead>
+                <TableHead>Route</TableHead>
+                <TableHead>Decision</TableHead>
+                <TableHead>Failed Rule</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pageLog.slice(0, 12).map((entry, i) => (
+                <TableRow key={`${entry.when}-${i}`}>
+                  <TableCell className="font-mono text-xs">
+                    {entry.when.slice(0, 19).replace("T", " ")}
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    {entry.user} · {entry.role}
+                  </TableCell>
+                  <TableCell className="text-xs">{entry.tenant}</TableCell>
+                  <TableCell className="font-mono text-xs">{entry.route}</TableCell>
+                  <TableCell>
+                    <Badge variant={entry.allow ? "default" : "destructive"}>
+                      {entry.allow ? "ALLOW" : "DENY"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {entry.failedRule ?? "—"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Card>
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">

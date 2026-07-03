@@ -51,8 +51,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
+import { Lock } from "lucide-react";
 import { DEMO_USERS } from "@/lib/demo-backend/demo-identities";
 import { useDemoSession } from "@/lib/demo-backend/demo-session-context";
+import { evaluatePageAccess } from "@/lib/demo-backend/page-access";
 
 const NAV_GROUPS = [
   {
@@ -198,18 +200,27 @@ export function AppSidebar() {
                 {group.items.map((item) => {
                   const active = pathname === item.to;
                   const Icon = item.icon;
+                  const denied = !evaluatePageAccess(currentUser, session.tenant, item.to).allow;
                   return (
                     <Link
                       key={item.to}
                       to={item.to}
+                      title={
+                        denied
+                          ? `Locked for ${currentUser.role} — click to see the policy decision`
+                          : undefined
+                      }
                       className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
                         active
                           ? "bg-primary text-primary-foreground font-medium"
-                          : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white"
+                          : denied
+                            ? "text-sidebar-foreground/35 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground/60"
+                            : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white"
                       }`}
                     >
                       <Icon className="size-4" />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {denied && <Lock className="size-3 shrink-0 opacity-70" />}
                     </Link>
                   );
                 })}

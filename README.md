@@ -33,6 +33,7 @@
 - **MDM & Reference Data** — Golden record view plus side-by-side duplicate merge review with survivorship recommendation and steward escalation
 - **AI Governance Model Cards** — Training lineage, evaluation metrics, fairness checks, approval history, and decommission triggers
 - **Catalog & Glossary Adoption** — Search/filter, tag cloud, completeness formula, harvesting simulation, and glossary approval flow
+- **Enforced page-level RBAC + ABAC** — five demo personas (Admin, Steward, Engineer, Analyst, Auditor); every route is guarded by a live policy engine layering role entitlements with clearance tier, MFA, tenant scope, and account status. Denials render a full decision trace ("first failing rule wins"), locked pages show in the sidebar, and `/access` displays the live persona × page matrix plus a browser-local decision log
 - **Multi-tenant** — Tenants, contracted hours, billing rates, usage alerts
 - **Incidents & Projects** — Severity tracking, ownership, cross-tenant pipeline projects
 - **Live visitor counter** on the homepage
